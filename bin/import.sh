@@ -1,30 +1,14 @@
 #!/bin/bash
-
 #
-# If you use the premium geonames dump, run bin/geonames_login.sh first.
-# If you change this, remove the data subdirectory to flush the cached data.
+# Prepare the downloaded files for import into MongoDB.
 #
-USE_PREMIUM_GEONAMES=0
-
-#
-# This is only relevant when using the premium geonames dump.
-# The free dump is not versioned, and only the most recent dump is available.
-#
-DATASET=$1
-if [ -z "$DATASET" ]; then
-  DATASET=$(date +%Y%m)
+if [ -z "$1" ]
+then
+    echo "usage: bash $0 data_dir"
+    exit 1
 fi
+DATA_DIR=$1
 
-echo "Checking dependencies ..."
-
-for prog in mongo pv jq unzip python
-do
-    if [ -z `which $prog` ]
-    then
-        echo "$prog not found. Please install it and run this script again."
-        exit 1
-    fi
-done
 
 echo "Configuring paths ..."
 if [ -z "$ROOT_PATH" ]; then
@@ -33,10 +17,29 @@ if [ -z "$ROOT_PATH" ]; then
 fi
 
 MONGO_DB=geonames
-CONFIG_DIR="$ROOT_PATH/conf"
-DATA_DIR="$ROOT_PATH/data/$DATASET"
 SCRIPT_DIR="$ROOT_PATH/bin"
 export PYTHONPATH=$SCRIPT_DIR:$PYTHONPATH
+
+echo "  ROOT_PATH: $ROOT_PATH"
+echo "  DATA_DIR: $DATA_DIR"
+echo "  SCRIPT_DIR: $SCRIPT_DIR"
+
+for prog in mongo pv jq python
+do
+    if [ -z `which $prog` ]
+    then
+        echo "$prog not found. Please install it and run this script again."
+        exit 1
+    fi
+done
+
+echo "Testing mongo connection ..."
+mongo --eval "printjson(db.adminCommand('listDatabases'))" > /dev/null
+if [ $? -eq 1 ]
+then
+    echo "Cannot connect to mongo ..."
+    exit 1;
+fi
 
 python "$SCRIPT_DIR/check_imports.py"
 if [ $? -ne 0 ];
@@ -45,130 +48,13 @@ then
   exit 1
 fi
 
-GEONAMES_FREE_URL=http://download.geonames.org/export/dump
-GEONAMES_PREMIUM_URL=http://www.geonames.org/premiumdump/$DATASET
-
-if [ $USE_PREMIUM_GEONAMES -eq 1 ]
-then
-    GEONAMES_URL=$GEONAMES_PREMIUM_URL
-else
-    GEONAMES_URL=$GEONAMES_FREE_URL
-fi
-
-echo "  GEONAMES_URL: $GEONAMES_URL"
-echo "  ROOT_PATH: $ROOT_PATH"
-echo "  CONFIG_DIR: $CONFIG_DIR"
-echo "  DATA_DIR: $DATA_DIR"
-echo "  SCRIPT_DIR: $SCRIPT_DIR"
-
-if [ ! -d $DATA_DIR ]; then
-    mkdir -p $DATA_DIR || exit 3
-fi
-
-echo "Testing mongo connection ..."
-mongo --eval "printjson(db.adminCommand('listDatabases'))" > /dev/null
-if [ $? -eq 1 ]; then
-    echo "Cannot connect to mongo ..."
-    exit 1;
-fi
-
-echo "Start fetching Geonames resources ..."
-cd $DATA_DIR || exit 1
-
-function safe_wget() {
-    #
-    # Calls wget.
-    # If downloading premium data, checks that the cookie file is there first.
-    # This is required because wget returns 0 even if it doesn't find the
-    # cookies. Then, authenticates the wget requests with cookies if
-    # downloading premium data.
-    #
-    echo "safe_wget: downloading $@"
-    if [[ $USE_PREMIUM_GEONAMES -eq 1 && ! -f "$ROOT_PATH/cookies.txt" ]]
-    then
-        echo "$ROOT_PATH/cookies.txt not found, run bin/geonames_login.sh "
-        exit 1
-    elif [ $USE_PREMIUM_GEONAMES -eq 1 ]
-    then
-        wget --load-cookies "$ROOT_PATH/cookies.txt" $@
-    else
-        wget $@
-    fi
-}
-
-if [ ! -s allCountries.zip ];then
-    safe_wget $GEONAMES_URL/allCountries.zip
-    #
-    # If our login token expires, the wget "succeeds" but fetches a HTML page
-    # saying "please log in" instead. Check that we've actually downloaded a
-    # zip, and bail if we haven't.
-    #
-    unzip -l allCountries.zip 2> /dev/null
-    if [ $? -ne 0 ]
-    then
-        echo "stale cookies, run bin/geonames_login.sh"
-        rm allCountries.zip
-        exit 1
-    fi
-fi
-
 #
 # Any errors encountered from now on will cause this script to terminate.
 # http://stackoverflow.com/questions/4381618/exit-a-script-on-error
 #
 set -e
 set -o pipefail
-
-if [ ! -s countryInfo.txt ]
-then
-    safe_wget $GEONAMES_URL/countryInfo.txt
-fi
-
-if [ ! -s allCountriesPostcodes.zip ]
-then
-    #
-    # Postcode data is only available from the free dump.
-    #
-    echo "Downloading allCountriesPostcodes.zip"
-    wget $GEONAMES_FREE_URL/../zip/allCountries.zip -O allCountriesPostcodes.zip
-fi
-
-if [ ! -s alternateNames.zip ]
-then
-    safe_wget $GEONAMES_URL/alternateNames.zip
-fi
-
-if [ ! -s countryInfo.txt ];then
-    wget $GEONAMES_URL/countryInfo.txt
-fi
-
-
-echo "Start unpacking Geonames resources ..."
-
-if [ ! -s allCountries.tsv ];then
-    echo "Extracting allCountries.zip"
-    unzip -o allCountries.zip
-    #
-    # append_alternate_names.py depends on this being sorted by geoid.
-    #
-    pv allCountries.txt | sort -n -k 1,2 > allCountries.tsv
-fi
-
-if [ ! -s alternateNames.tsv ]
-then
-    echo "Extracting alternateNames.zip"
-    unzip -o alternateNames.zip
-    #
-    # append_alternate_names.py depends on this being sorted by geoid.
-    #
-    pv alternateNames.txt | sort -n -k 2,3 > alternateNames.tsv
-fi
-
-if [ ! -s allCountriesPostcodes.txt ]
-then
-    echo "Extracting allCountriesPostcodes.zip"
-    unzip -o -p allCountriesPostcodes.zip > allCountriesPostcodes.txt
-fi
+cd $DATA_DIR
 
 if [ ! -s countries.json ]
 then
