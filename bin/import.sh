@@ -117,7 +117,7 @@ fi
 if [ ! -s postcodes.json ]
 then
     echo "generating postcodes.json"
-    pv allCountriesPostcodes.txt | cut --only-delimited --fields=1,2,3,4 | \
+    pv allCountriesPostcodes.txt | cut -s -f 1,2,3,4 | \
         $SCRIPT_DIR/tsv2json.py \
         --field-names countryCode postCode placeName adminName \
         --field-types str str str str > postcodes.json
