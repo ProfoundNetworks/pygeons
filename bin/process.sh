@@ -68,6 +68,7 @@ then
     bash $SCRIPT_DIR/pipeline.sh | \
     jq --compact-output \
         '. + {"admin1names": .names} | del(.names)' > adm1.json
+    python $SCRIPT_DIR/split_by_cc.py adm1.json split/
 fi
 
 if [ ! -s adm2.json ]
@@ -78,6 +79,7 @@ then
     python $SCRIPT_DIR/append_admin_names.py adm1.json --admin2 adm2.json | \
     jq --compact-output \
         '. + {"admin2names": .names} | del(.names)' > adm2.json
+    python $SCRIPT_DIR/split_by_cc.py adm2.json split/
 fi
 
 if [ ! -s cities.json ]
@@ -86,6 +88,7 @@ then
     pv allCountries.tsv | awk -F"\t" '$7 == "P"' | \
     bash $SCRIPT_DIR/pipeline.sh | \
     python $SCRIPT_DIR/append_admin_names.py adm1.json --admin2 adm2.json > cities.json
+    python $SCRIPT_DIR/split_by_cc.py cities.json split/
 fi
 
 if [ ! -s admd.json ]
@@ -94,6 +97,7 @@ then
     pv allCountries.tsv | awk -F"\t" '$8 ~ /ADMDH?/' | \
     bash $SCRIPT_DIR/pipeline.sh | \
     python $SCRIPT_DIR/append_admin_names.py adm1.json --admin2 adm2.json > admd.json
+    python $SCRIPT_DIR/split_by_cc.py admd.json split/
 fi
 
 if [ ! -s countries-final.json ]
@@ -112,4 +116,5 @@ then
         $SCRIPT_DIR/tsv2json.py \
         --field-names countryCode postCode placeName adminName \
         --field-types str str str str > postcodes.json
+    python $SCRIPT_DIR/split_by_cc.py postcodes.json split/
 fi

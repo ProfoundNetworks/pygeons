@@ -55,23 +55,65 @@ set -e
 set -o pipefail
 cd $DATA_DIR
 
-echo "Importing adm1.json"
-mongoimport -d $MONGO_DB -c admin1 --drop --stopOnError adm1.json
 
-echo "Importing adm2.json"
-mongoimport -d $MONGO_DB -c admin2 --drop --stopOnError adm2.json
+function import_all() {
+    echo "Importing adm1.json"
+    mongoimport -d $MONGO_DB -c admin1 --stopOnError adm1.json
 
-echo "Importing admd.json"
-mongoimport -d $MONGO_DB -c admind --drop --stopOnError admd.json
+    echo "Importing adm2.json"
+    mongoimport -d $MONGO_DB -c admin2 --stopOnError adm2.json
 
-echo "Importing cities.json"
-mongoimport -d $MONGO_DB -c cities --drop --stopOnError cities.json
+    echo "Importing admd.json"
+    mongoimport -d $MONGO_DB -c admind --stopOnError admd.json
 
-echo "Importing postcodes.json"
-mongoimport -d $MONGO_DB -c postcodes --drop --stopOnError postcodes.json
+    echo "Importing cities.json"
+    mongoimport -d $MONGO_DB -c cities --stopOnError cities.json
+
+    echo "Importing postcodes.json"
+    mongoimport -d $MONGO_DB -c postcodes --stopOnError postcodes.json
+}
+
+
+function import_country() {
+    country_code=$1
+    echo "Importing $country_code.adm1.json"
+    mongoimport -d $MONGO_DB -c admin1 --stopOnError "split/$country_code.adm1.json"
+
+    echo "Importing $country_code.adm2.json"
+    mongoimport -d $MONGO_DB -c admin2 --stopOnError "split/$country_code.adm2.json"
+
+    echo "Importing $country_code.admd.json"
+    mongoimport -d $MONGO_DB -c admind --stopOnError "split/$country_code.admd.json"
+
+    echo "Importing $country_code.cities.json"
+    mongoimport -d $MONGO_DB -c cities --stopOnError "split/$country_code.cities.json"
+
+    echo "Importing $country_code.postcodes.json"
+    mongoimport -d $MONGO_DB -c postcodes --stopOnError "split/$country_code.postcodes.json"
+}
+
+
+echo "dropping existing collections"
+for collection in admin1 admin2 admind cities postcodes countries
+do
+    mongo $MONGO_DB --eval "db.$collection.drop()" --quiet
+done
 
 echo "Importing countries-final.json"
-mongoimport -d $MONGO_DB -c countries --drop --stopOnError countries-final.json
+mongoimport -d $MONGO_DB -c countries --stopOnError countries-final.json
+
+if [ -z "$2" ]
+then
+    import_all
+else
+    #
+    # https://stackoverflow.com/questions/6287419/getting-all-elements-of-a-bash-array-except-the-first
+    #
+    for country_code in ${@:2}
+    do
+        import_country $country_code
+    done
+fi
 
 
 function runmongo() {
