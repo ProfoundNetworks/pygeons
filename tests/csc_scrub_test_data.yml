@@ -1,0 +1,340 @@
+---
+-
+  desc: 'Good city/state1 w/cc'
+  input:
+    city: Sydney
+    state: NSW
+    cc: AU
+  expected:
+    cc: AU
+    cc_status: O
+-
+  desc: 'Good city/state2 w/cc'
+  input:
+    city: Abingdon
+    state: Oxfordshire
+    cc: GB
+  expected:
+    cc: GB
+    cc_status: O
+-
+  desc: 'Good city w/cc'
+  input:
+    city: Sydney
+    cc: AU
+  expected:
+    cc: AU
+    cc_status: O
+-
+  desc: 'Good city as state w/cc'
+  input:
+    state: Sydney
+    cc: AU
+  expected:
+    cc: AU
+    cc_status: O
+-
+  desc: 'Bad city/state/cc'
+  input:
+    city: Foobar
+    state: XZ
+    cc: ZZ
+  expected: ~
+-
+  desc: 'Modify cc from city/state1, single result'
+  input:
+    city: Sydney
+    state: NSW
+    cc: GB
+  expected:
+    cc: AU
+    cc_status: M
+-
+  desc: 'Modify cc from city/state2, single result'
+  input:
+    city: Abingdon
+    state: Oxfordshire
+    cc: AU
+  expected:
+    cc: GB
+    cc_status: M
+-
+  desc: 'Modify cc from city, single result'
+  input:
+    city: Ruatoria
+    cc: TK
+  expected:
+    cc: NZ
+    cc_status: M
+-
+  desc: 'Modify cc from city, multiple results across countries'
+  input:
+    city: Sydney
+    cc: GB
+    verbose: 0
+  expected:
+    cc: AU
+    cc_status: M
+-
+  desc: 'Derive cc from city/state1, single result'
+  input:
+    city: Sydney
+    state: NSW
+  expected:
+    cc: AU
+    cc_status: D
+-
+  desc: 'Derive cc from city/state2, single result'
+  input:
+    city: Abingdon
+    state: Oxfordshire
+  expected:
+    cc: GB
+    cc_status: D
+-
+  desc: 'Derive cc from city, single result'
+  input:
+    city: Ruatoria
+  expected:
+    cc: NZ
+    cc_status: D
+-
+  desc: 'Derive cc from city, multiple results across countries'
+  input:
+    city: Sydney
+    verbose: 0
+  expected:
+    cc: AU
+    cc_status: D
+-
+  desc: 'Elements with whitespace'
+  input:
+    city: ' Sydney '
+    state: ' NSW '
+    cc: ' AU '
+  expected:
+    cc: AU
+    cc_status: O
+-
+  desc: Good bracketed city
+  input:
+    city: 'Buchen (Odenwald)'
+    state: 'Baden-Württemberg'
+    cc: DE
+  expected:
+    cc: DE
+    cc_status: O
+-
+  desc: Puerto Rico as state
+  input:
+    city: San Juan
+    state: PR
+    cc: US
+  expected:
+    city: San Juan
+    cc: PR
+    cc_status: O
+- desc: 'Cities with space-separated Mc X (dnb)'
+  input:
+    city: Mc Murray
+    state: PA
+    cc: US
+  expected:
+    city: McMurray
+- desc: 'Cities with space-separated O X (dnb)'
+  input:
+    city: O Fallon
+    state: MO
+    cc: US
+  expected:
+    city: "O'Fallon"
+- desc: 'Cities suffixed with Township vs. City vs. Village 1'
+  input:
+    city: Clinton Township
+    state: MI
+    cc: US
+  expected:
+    city: Clinton
+- desc: 'Cities suffixed with Township vs. City vs. Village 2'
+  input:
+    city: Clinton City
+    state: MI
+    cc: US
+  expected:
+    city: Clinton
+#
+# This test relies on buggy geonames_cities_dedup behavior to pass.
+# The buggy behavior is fixed, so this test no longer passes.
+#
+# - desc: 'Cities suffixed with Township vs. City vs. Village 3'
+#   input:
+#     city: Cranberry City
+#     state: PA
+#     cc: US
+#   expected:
+#     city: Cranberry
+- desc: 'Cities suffixed with Township vs. City vs. Village 4'
+  input:
+    city: Carson Twp
+    state: NV
+    cc: US
+  expected:
+    city: Carson City
+- desc: 'Cities suffixed with Township vs. City vs. Village 5'
+  input:
+    city: Coal Township
+    state: IL
+    cc: US
+  expected:
+    city: Coal City
+    gnid: 4888270
+- desc: 'Cities X on Y should handle reasonable variants'
+  input:
+    city: Annandale-On-Hudson
+    state: NY
+    cc: US
+  expected:
+    city: Annandale-on-Hudson
+- desc: 'Cities X on Y should handle reasonable variants'
+  input:
+    city: Annandale on Hudson
+    state: NY
+    cc: US
+  expected:
+    city: Annandale-on-Hudson
+- desc: 'Cities X on Y should handle reasonable variants'
+  input:
+    city: Annandale
+    state: NY
+    cc: US
+  expected:
+    city: Annandale-on-Hudson
+- desc: 'Cities X on Y should handle reasonable variants'
+  input:
+    city: Mentor-On-The-Lake
+    state: OH
+    cc: US
+  expected:
+    city: Mentor-on-the-Lake
+- desc: 'Cities X on Y should handle reasonable variants'
+  input:
+    city: Mentor On The Lake
+    state: OH
+    cc: US
+  expected:
+    city: Mentor-on-the-Lake
+- desc: 'Cities X by (the) Y should handle reasonable variants'
+  input:
+    city: Cardiff-By-The-Sea
+    state: CA
+    cc: US
+  expected:
+    city: Cardiff-by-the-Sea
+- desc: 'Cities X by (the) Y should handle reasonable variants'
+  input:
+    city: Cardiff By The Sea
+    state: CA
+    cc: US
+  expected:
+    city: Cardiff-by-the-Sea
+- desc: 'Cities X by (the) Y should handle reasonable variants'
+  input:
+    city: Cardiff
+    state: CA
+    cc: US
+  expected:
+    city: Cardiff-by-the-Sea
+- desc: "Cities X O' Y should have 'of' and 'o' variants"
+  input:
+    city: "Land O' Lakes"
+    state: Florida
+    cc: US
+  expected:
+    city: "Land O' Lakes"
+- desc: "Cities X O' Y should have 'of' and 'o' variants"
+  input:
+    city: "Land o’ Lakes"
+    state: Florida
+    cc: US
+  expected:
+    city: "Land O' Lakes"
+- desc: "Cities X O' Y should have 'of' and 'o' variants"
+  input:
+    city: "Land of Lakes"
+    state: Florida
+    cc: US
+  expected:
+    city: "Land O' Lakes"
+- desc: "Cities X O' Y should have 'of' and 'o' variants"
+  input:
+    city: "Land o Lakes"
+    state: Florida
+    cc: US
+  expected:
+    city: "Land O' Lakes"
+- desc: 'Saint XYZ should handle St and Saint variants'
+  input:
+    city: Saint Francis
+    state: WI
+    cc: US
+  expected:
+    city: Saint Francis
+- desc: 'Saint XYZ should handle St and Saint variants'
+  input:
+    city: St Francis
+    state: WI
+    cc: US
+  expected:
+    city: Saint Francis
+- desc: 'Saint XYZ should handle St and Saint variants'
+  input:
+    city: Saint George
+    state: UT
+    cc: US
+  expected:
+    city: Saint George
+- desc: 'Saint XYZ should handle St and Saint variants'
+  input:
+    city: St George
+    state: UT
+    cc: US
+  expected:
+    city: Saint George
+- desc: 'Saint XYZ should handle St and Saint variants'
+  input:
+    city: Saint Lawrence Township
+    state: VIC
+    cc: AU
+  expected:
+    city: Saint Lawrence
+- desc: 'Saint XYZ should handle St and Saint variants'
+  input:
+    city: St Lawrence Township
+    state: VIC
+    cc: AU
+  expected:
+    city: Saint Lawrence
+- desc: 'Should work with Japanese state name'
+  input:
+    city: 札幌市
+    state: 北海道
+    cc: JP
+  expected:
+    city: Sapporo
+    cc_status: O
+- desc: 'Should work with Japanese country name'
+  input:
+    city: 札幌市
+    state: 北海道
+    cc: 日本
+  expected:
+    city: Sapporo
+    cc_status: O
+- desc: 'Should work with admin2 instead of city'
+  input:
+    city: 港区
+    state: 東京都
+    cc: JP
+  expected:
+    city: Minato-ku
+    cc_status: O
