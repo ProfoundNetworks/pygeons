@@ -1,4 +1,5 @@
 #
+# -*- coding: utf-8 -*-
 # (C) Copyright: Profound Networks, LLC 2016
 #
 """Queries the GeoNames database in MongoDB."""

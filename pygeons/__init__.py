@@ -1,4 +1,7 @@
+#
 # -*- coding: utf-8 -*-
+# (C) Copyright: Profound Networks, LLC 2016
+#
 
 """Top-level package for pygeons."""
 
