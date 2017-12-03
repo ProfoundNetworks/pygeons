@@ -1,7 +1,7 @@
 #
 # (C) Copyright: Profound Networks, LLC 2016
 #
-"""Queries the Geonames database in MongoDB."""
+"""Queries the GeoNames database in MongoDB."""
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import absolute_import
@@ -203,12 +203,25 @@ def check_version():
 
 
 def country_to_iso(name):
-    """Return the ISO 2-letter code for the specified country."""
+    """Return the ISO 2-letter code for the specified country.
+
+    :param str name: The name of the country.
+    :returns: The ISO2 code.
+    :rtype: str
+    """
     return country_info(name)["iso"]
 
 
 def country_info(name):
-    """Return the info for the country with the specified name."""
+    """Return the info for the country with the specified name.
+
+    >>> sorted(pygeons.country_info('russia').keys())
+    ['_id', 'abbr', 'capital', 'fips', 'iso', 'iso3', 'languages', 'name', 'names', 'names_lang', 'population', 'tld']
+
+    :param str name: The name of the country.
+    :returns: The country information.
+    :rtype: dict
+    """
     if not name:
         raise ValueError("country name may not be empty")
     _test_connection()
@@ -224,7 +237,20 @@ def country_info(name):
 
 
 def norm(collection, country_code, name, lang=DEFAULT_LANG):
-    """Normalize the name with respect to a collection and country code."""
+    """Normalize the name with respect to a collection and country code.
+
+    >>> pygeons.norm(pygeons.ADM1, 'RU', 'leningrad')
+    'Leningradskaya Oblast’'
+    >>> pygeons.norm(pygeons.CITY, 'RU', 'peterburg')
+    'Saint Petersburg'
+
+    :param str collection: The collection to look within to normalize.
+    :param str country_code: The country's ISO2 code.
+    :param str name: The name to normalize.
+    :param str lang: The language that the name is in.
+    :returns: The normalized name.
+    :rtype: str
+    """
     LOGGER.debug("norm: %r", locals())
     _test_connection()
 
@@ -246,7 +272,17 @@ def norm(collection, country_code, name, lang=DEFAULT_LANG):
 
 
 def norm_country(country_name, lang=DEFAULT_LANG):
-    """Return the canonical name for a country."""
+    """Return the canonical name for a country.
+
+    >>> pygeons.norm_country('JP')
+    'Japan'
+    >>> pygeons.norm_country('日本', lang='ja')
+    'Japan'
+
+    :param str country_name: The name of the country to normalize.
+    :param str lang: The language that the country name is in.
+    :returns: The canonical country name.
+    :rtype: str"""
     meth_name = "norm_country"
     _test_connection()
     country_name = _scrub(country_name)
@@ -267,7 +303,13 @@ def norm_country(country_name, lang=DEFAULT_LANG):
 
 
 def norm_ppc(country_code, place_name):
-    """Return the canonical name for a place with a postcode."""
+    """Return the canonical name for a place with a postcode.
+
+    :param str country_code: The ISO2 code of the country for which to search.
+    :param str place_name: The place name to normalize.
+    :returns: The canonical place name.
+    :rtype: str
+    """
     _test_connection()
     #
     # TODO: make placeNames lowercase on the DB side for these lookups to
@@ -281,7 +323,12 @@ def norm_ppc(country_code, place_name):
 
 
 def is_ppc(country_code, place_name):
-    """Is the place_name in the postcode database?"""
+    """Is the place_name in the postcode database?
+
+    :param str country_code: The ISO2 code of the country for which to search.
+    :param str place_name: The place name to look for.
+    :rtype: boolean
+    """
     try:
         norm_ppc(country_code, place_name)
         return True
@@ -290,7 +337,20 @@ def is_ppc(country_code, place_name):
 
 
 def is_city(country_code, city_name, lang=DEFAULT_LANG):
-    """Is city_name in the city database?"""
+    """Is city_name in the city database?
+
+    >>> pygeons.is_city('JP', 'Sapporo')
+    True
+    >>> pygeons.is_city('JP', '札幌')
+    False
+    >>> pygeons.is_city('JP', '札幌', lang='ja')
+    True
+
+    :param str country_code: The ISO2 code of the country for which to search.
+    :param str city_name: The city name to look for.
+    :param str lang: The language that the city name is in.
+    :rtype: boolean
+    """
     meth_name = "is_city"
     try:
         norm(CITY, country_code, city_name, lang)
@@ -307,7 +367,20 @@ def is_city(country_code, city_name, lang=DEFAULT_LANG):
 
 
 def is_admin1(country_code, admin1_name, lang=DEFAULT_LANG):
-    """Is admin1_name in the admin1 database?"""
+    """Is admin1_name in the admin1 database?
+
+    >>> pygeons.is_admin1('RU', 'leningrad oblast')
+    True
+    >>> pygeons.is_admin1('RU', 'ленинградская область')
+    False
+    >>> pygeons.is_admin1('RU', 'ленинградская область', lang='ru')
+    True
+
+    :param str country_code: The ISO2 code of the country for which to search.
+    :param str admin1_name: The admin1 name to look for.
+    :param str lang: The language that the city name is in.
+    :rtype: boolean
+    """
     try:
         norm(ADM1, country_code, admin1_name, lang)
         return True
@@ -316,7 +389,13 @@ def is_admin1(country_code, admin1_name, lang=DEFAULT_LANG):
 
 
 def is_admin2(country_code, admin2_name, lang=DEFAULT_LANG):
-    """Is admin2name in the admin2 database?"""
+    """Is admin2name in the admin2 database?
+
+    :param str country_code: The ISO2 code of the country for which to search.
+    :param str admin1_name: The admin2 name to look for.
+    :param str lang: The language that the city name is in.
+    :rtype: boolean
+    """
     try:
         norm(ADM2, country_code, admin2_name, lang)
         return True
@@ -325,7 +404,13 @@ def is_admin2(country_code, admin2_name, lang=DEFAULT_LANG):
 
 
 def is_admind(country_code, name, lang=DEFAULT_LANG):
-    """Is admin2name in the admin2 database?"""
+    """Is admin2name in the admin2 database?
+
+    :param str country_code: The ISO2 code of the country for which to search.
+    :param str admind_name: The admin2 name to look for.
+    :param str lang: The language that the city name is in.
+    :rtype: boolean
+    """
     try:
         norm(ADMD, country_code, name, lang)
         return True
@@ -334,6 +419,23 @@ def is_admind(country_code, name, lang=DEFAULT_LANG):
 
 
 def is_country(country_name, lang=DEFAULT_LANG):
+    """Returns True if the specified country name is in the database.
+
+    >>> pygeons.is_country('russia')
+    True
+    >>> pygeons.is_country('russian federation')
+    True
+    >>> pygeons.is_country('ru')
+    True
+    >>> pygeons.is_country('россия', lang='ru')
+    True
+    >>> pygeons.is_country('российская федерация', lang='ru')
+    True
+
+    :param str country_name: The name of the country.
+    :param str lang: The language that the country name is in.
+    :rtype: boolean
+    """
     try:
         norm_country(country_name, lang)
         return True
@@ -342,7 +444,21 @@ def is_country(country_name, lang=DEFAULT_LANG):
 
 
 def expand(collection, country_code, abbr):
-    """Expand the specified abbreviation."""
+    """Expand the specified abbreviation.
+
+    >>> pygeons.expand(pygeons.ADM1, 'AU', 'nsw')
+    'State of New South Wales'
+    >>> pygeons.expand(pygeons.ADM1, 'AU', 'vic')
+    'State of Victoria'
+    >>> pygeons.expand(pygeons.ADM1, 'AU', 'qld')
+    'State of Queensland'
+
+    :param str collection: The collection within which to look.
+    :param str country_code: The code of the country within which to look.
+    :param str abbr: The abbreviation to expand.
+    :returns: The expanded abbreviation.
+    :rtype: str
+    """
     _test_connection()
     logging.debug("expand: %r", locals())
     if collection not in [ADM1, ADM2, ADMD, CITY]:
@@ -355,6 +471,17 @@ def expand(collection, country_code, abbr):
 
 
 def expand_country(abbr):
+    """Expand the specified country name abbreviation.
+
+    >>> pygeons.expand_country('RU')
+    'Russia'
+    >>> pygeons.expand_country('RUS')
+    'Russia'
+
+    :param str abbr: The abbreviation to expand.
+    :returns: The canonical country name.
+    :rtype: str
+    """
     _test_connection()
     country = DB.countries.find_one({"abbr": _scrub(abbr)})
     if country:
@@ -386,7 +513,16 @@ def _scrub(s):
 
 def csc_exists(city_str, state_str, country_str):
     """Return True if the specified city, state, country combination exists
-    in the Geonames database."""
+    in the GeoNames database.
+
+    >>> pygeons.csc_exists('sydney', 'new south wales', 'AU')
+    True
+
+    :param str city_str: The city name.
+    :param str state_str: The state name.
+    :param str country_str: The country name.
+    :rtype: boolean
+    """
     LOGGER.debug("csc_exists: %r" % locals())
     _test_connection()
 
@@ -422,7 +558,16 @@ def csc_find(city, state, country, dedup=True):
     """Return a list of all cities that satisfy the (city, state, country)
     combination.
 
-    State and country are optional."""
+    >>> [x['countryCode'] for x in pygeons.csc_find('sydney', None, None)]
+    ['AU', 'CA', 'US', 'US', 'ZA', 'ZA', 'VU', 'US', 'US']
+
+    :param str city: The name of the city.
+    :param str state: The name of the state.  May be None.
+    :param str country: The name of the country.  May be None.
+    :param boolean dedup: Whether to deduplicate the found results.
+    :returns: Cities that match the (city, state, country) query.
+    :rtype: list of dict
+    """
     LOGGER.debug("csc_find: %r", locals())
     _test_connection()
     clean_city, state, iso2, _ = _csc_clean_params(city, state, country)
@@ -609,7 +754,12 @@ def _geonames_cities_dedup(cities):
 
 
 def is_state(state, country):
-    """Return True if the state exists within the specified country."""
+    """Return True if the state exists within the specified country.
+
+    :param str state: The name of the state.
+    :param str country: The name of the country.
+    :rtype: boolean
+    """
     if not (state and country):
         raise ValueError("state and country may not be empty or None")
     _test_connection()
@@ -628,8 +778,31 @@ def is_state(state, country):
 
 
 def csc_scrub(city, state, country, hint=None):
-    """Check the combination of (city, state, country), returning a result
-    object if a unique match can be found (with some level of confidence)."""
+    """Check the combination of (city, state, country).
+
+    Returning a result object if a unique match can be found (with some level of confidence).
+    If either state and country are incorrect, attempts to correct them.
+
+    >>> scrubbed = pygeons.csc_scrub('moscow', None, None)
+    >>> scrubbed_result = scrubbed.pop('result')
+    >>> scrubbed
+    {'score': 0.3, 'st_status': 'D', 'cc_status': 'D', 'count': 33}
+    >>> sorted(scrubbed_result.keys())
+    ['_id', 'abbr', 'admin1', 'admin1names', 'admin2', 'admin2names', 'asciiname', 'countryCode', 'featureClass', 'featureCode', 'latitude', 'longitude', 'name', 'names', 'names_lang', 'population']
+
+    :param str city: The name of the city.
+    :param str state: The name of the state.  May be None.
+    :param str country: The name of the country.  May be None.
+    :param str hint: unused
+    :rtype: dict
+
+    The scrub result includes the best match, as well as some auxiliary information:
+
+        - score: The confidence score.  Higher is better.
+        - st_status: How the state for the scrubbed result was attained.
+        - cc_status: How the country for the scrubbed result was attained.
+        - count: The total number of results that matched the query.
+    """
 
     def mkretval(results, score, st_status, cc_status):
         return {"result": results[0], "score": score, "st_status": st_status,
@@ -722,7 +895,20 @@ no country given", len(res), city, state)
 
 
 def sc_scrub(state, country):
-    """Validate (state, country) combinations."""
+    """Validate (state, country) combinations.
+
+    If the country is incorrect, attempts to correct it.
+
+    >>> scrubbed = pygeons.sc_scrub('nsw', 'ca')
+    >>> scrubbed_result = scrubbed.pop('result')
+    >>> scrubbed
+    {'score': 0.8, 'cc_status': 'D'}
+    >>> sorted(scrubbed_result.keys())
+    ['_id', 'abbr', 'admin1', 'admin1id', 'admin1names', 'admin2', 'asciiname', 'countryCode', 'featureClass', 'featureCode', 'latitude', 'longitude', 'name', 'names_lang', 'population']
+
+    :param str state: The name of the state.
+    :param str country: The name of the country.
+    :rtype: dict"""
     LOGGER.debug("sc_scrub: %r", locals())
     _test_connection()
     _, state, country, _ = _csc_clean_params(None, state, country)
@@ -761,7 +947,14 @@ def csc_list(city, state, country):
     """Given a (city, state, country) query, return a list of matching
     cities.
 
-    Tries harder than csc_find by considering alternative city names, etc."""
+    Tries harder than csc_find by considering alternative city names, etc.
+
+    :param str city: The name of the city.
+    :param str state: The name of the state.  May be None.
+    :param str country: The name of the country.  May be None.
+    :returns: Cities that match the (city, state, country) query.
+    :rtype: list of dict
+    """
     LOGGER.debug("csc_list: %r", locals())
     if not (city or state):
         raise ValueError("city and state may not both be empty")
@@ -813,7 +1006,14 @@ def csc_list(city, state, country):
 
 
 def sc_list(state, country):
-    """Given a (state, country) query, return a list of matching states."""
+    """Given a (state, country) query, return a list of matching states.
+
+    >>> ['%(name)s, %(countryCode)s' % x for x in pygeons.sc_list('or', None)]
+    ['Oregon, US', 'State of Odisha, IN', 'Provincia di Oristano, IT']
+
+    :param str state: The name of the state.
+    :param str country: The name of the country.  May be None.
+    """
     _test_connection()
 
     if not state:

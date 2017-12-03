@@ -19,6 +19,7 @@ from .pygeons import csc_list
 from .pygeons import csc_scrub
 
 from .pygeons import expand
+from .pygeons import expand_country
 from .pygeons import find_country
 
 from .pygeons import is_admin1
@@ -37,15 +38,6 @@ from .pygeons import sc_scrub
 from .pygeons import sc_list
 
 __all__ = (
-    'csc_exists',
-    'country_to_iso',
-    'norm_country',
-    'csc_find',
-    'csc_scrub',
-    'is_state',
-    'sc_scrub',
-    'csc_list',
-    'sc_list',
     'SCRUB_OK', 'SCRUB_MOD', 'SCRUB_DERIVED',
     'ADM1', 'ADM2', 'ADMD', 'CITY',
     'NotFound',
@@ -57,6 +49,7 @@ __all__ = (
     'csc_list',
     'csc_scrub',
     'expand',
+    'expand_country',
     'find_country',
     'is_admin1',
     'is_admin2',
