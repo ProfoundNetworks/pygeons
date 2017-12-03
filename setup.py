@@ -29,8 +29,8 @@ test_requirements = [
 
 setup(
     name='pygeons',
-    version='0.1.0',
-    description="Pygeons creates a local GeoNames server and enables you to query it",
+    version='0.1.1',
+    description="Geographical queries made easy.",
     long_description=readme + '\n\n' + history,
     author="Michael Penkov",
     author_email='misha.penkov@gmail.com',

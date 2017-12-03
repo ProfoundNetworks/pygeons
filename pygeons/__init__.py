@@ -7,7 +7,7 @@
 
 __author__ = """Michael Penkov"""
 __email__ = 'misha.penkov@gmail.com'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 from .pygeons import SCRUB_OK, SCRUB_MOD, SCRUB_DERIVED
 from .pygeons import ADM1, ADM2, ADMD, CITY
