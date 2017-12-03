@@ -34,7 +34,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Michael Penkov",
     author_email='misha.penkov@gmail.com',
-    url='https://github.com/mpenkov/pygeons',
+    url='https://github.com/ProfoundNetworks/pygeons',
     packages=find_packages(include=['pygeons']),
     include_package_data=True,
     install_requires=requirements,
