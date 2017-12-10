@@ -38,7 +38,7 @@ echo "  GEONAMES_URL: $GEONAMES_URL"
 
 echo "Checking dependencies ..."
 
-for prog in get unzip
+for prog in wget unzip pv
 do
     if [ -z `which $prog` ]
     then
