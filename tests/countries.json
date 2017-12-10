@@ -1,0 +1,250 @@
+{"name":"Andorra","tld":".ad","languages":["ca"],"iso3":"AND","fips":"AN","capital":"Andorra la Vella","iso":"AD","_id":3041565,"population":84000}
+{"name":"United Arab Emirates","tld":".ae","languages":["ar-AE","fa","en","hi","ur"],"iso3":"ARE","fips":"AE","capital":"Abu Dhabi","iso":"AE","_id":290557,"population":4975593}
+{"name":"Afghanistan","tld":".af","languages":["fa-AF","ps","uz-AF","tk"],"iso3":"AFG","fips":"AF","capital":"Kabul","iso":"AF","_id":1149361,"population":29121286}
+{"name":"Antigua and Barbuda","tld":".ag","languages":["en-AG"],"iso3":"ATG","fips":"AC","capital":"St. John's","iso":"AG","_id":3576396,"population":86754}
+{"name":"Anguilla","tld":".ai","languages":["en-AI"],"iso3":"AIA","fips":"AV","capital":"The Valley","iso":"AI","_id":3573511,"population":13254}
+{"name":"Albania","tld":".al","languages":["sq","el"],"iso3":"ALB","fips":"AL","capital":"Tirana","iso":"AL","_id":783754,"population":2986952}
+{"name":"Armenia","tld":".am","languages":["hy"],"iso3":"ARM","fips":"AM","capital":"Yerevan","iso":"AM","_id":174982,"population":2968000}
+{"name":"Angola","tld":".ao","languages":["pt-AO"],"iso3":"AGO","fips":"AO","capital":"Luanda","iso":"AO","_id":3351879,"population":13068161}
+{"name":"Antarctica","tld":".aq","languages":[""],"iso3":"ATA","fips":"AY","capital":"","iso":"AQ","_id":6697173,"population":0}
+{"name":"Argentina","tld":".ar","languages":["es-AR","en","it","de","fr","gn"],"iso3":"ARG","fips":"AR","capital":"Buenos Aires","iso":"AR","_id":3865483,"population":41343201}
+{"name":"American Samoa","tld":".as","languages":["en-AS","sm","to"],"iso3":"ASM","fips":"AQ","capital":"Pago Pago","iso":"AS","_id":5880801,"population":57881}
+{"name":"Austria","tld":".at","languages":["de-AT","hr","hu","sl"],"iso3":"AUT","fips":"AU","capital":"Vienna","iso":"AT","_id":2782113,"population":8205000}
+{"name":"Australia","tld":".au","languages":["en-AU"],"iso3":"AUS","fips":"AS","capital":"Canberra","iso":"AU","_id":2077456,"population":21515754}
+{"name":"Aruba","tld":".aw","languages":["nl-AW","es","en"],"iso3":"ABW","fips":"AA","capital":"Oranjestad","iso":"AW","_id":3577279,"population":71566}
+{"name":"Aland Islands","tld":".ax","languages":["sv-AX"],"iso3":"ALA","fips":"","capital":"Mariehamn","iso":"AX","_id":661882,"population":26711}
+{"name":"Azerbaijan","tld":".az","languages":["az","ru","hy"],"iso3":"AZE","fips":"AJ","capital":"Baku","iso":"AZ","_id":587116,"population":8303512}
+{"name":"Bosnia and Herzegovina","tld":".ba","languages":["bs","hr-BA","sr-BA"],"iso3":"BIH","fips":"BK","capital":"Sarajevo","iso":"BA","_id":3277605,"population":4590000}
+{"name":"Barbados","tld":".bb","languages":["en-BB"],"iso3":"BRB","fips":"BB","capital":"Bridgetown","iso":"BB","_id":3374084,"population":285653}
+{"name":"Bangladesh","tld":".bd","languages":["bn-BD","en"],"iso3":"BGD","fips":"BG","capital":"Dhaka","iso":"BD","_id":1210997,"population":156118464}
+{"name":"Belgium","tld":".be","languages":["nl-BE","fr-BE","de-BE"],"iso3":"BEL","fips":"BE","capital":"Brussels","iso":"BE","_id":2802361,"population":10403000}
+{"name":"Burkina Faso","tld":".bf","languages":["fr-BF"],"iso3":"BFA","fips":"UV","capital":"Ouagadougou","iso":"BF","_id":2361809,"population":16241811}
+{"name":"Bulgaria","tld":".bg","languages":["bg","tr-BG"],"iso3":"BGR","fips":"BU","capital":"Sofia","iso":"BG","_id":732800,"population":7148785}
+{"name":"Bahrain","tld":".bh","languages":["ar-BH","en","fa","ur"],"iso3":"BHR","fips":"BA","capital":"Manama","iso":"BH","_id":290291,"population":738004}
+{"name":"Burundi","tld":".bi","languages":["fr-BI","rn"],"iso3":"BDI","fips":"BY","capital":"Bujumbura","iso":"BI","_id":433561,"population":9863117}
+{"name":"Benin","tld":".bj","languages":["fr-BJ"],"iso3":"BEN","fips":"BN","capital":"Porto-Novo","iso":"BJ","_id":2395170,"population":9056010}
+{"name":"Saint Barthélemy","tld":".gp","languages":["fr"],"iso3":"BLM","fips":"TB","capital":"Gustavia","iso":"BL","_id":3578476,"population":8450}
+{"name":"Bermuda","tld":".bm","languages":["en-BM","pt"],"iso3":"BMU","fips":"BD","capital":"Hamilton","iso":"BM","_id":3573345,"population":65365}
+{"name":"Brunei","tld":".bn","languages":["ms-BN","en-BN"],"iso3":"BRN","fips":"BX","capital":"Bandar Seri Begawan","iso":"BN","_id":1820814,"population":395027}
+{"name":"Bolivia","tld":".bo","languages":["es-BO","qu","ay"],"iso3":"BOL","fips":"BL","capital":"La Paz","iso":"BO","_id":3923057,"population":9947418}
+{"name":"Bonaire, Saint Eustatius and Saba ","tld":".bq","languages":["nl","pap","en"],"iso3":"BES","fips":"","capital":"","iso":"BQ","_id":7626844,"population":18012}
+{"name":"Brazil","tld":".br","languages":["pt-BR","es","en","fr"],"iso3":"BRA","fips":"BR","capital":"Brasília","iso":"BR","_id":3469034,"population":201103330}
+{"name":"Bahamas","tld":".bs","languages":["en-BS"],"iso3":"BHS","fips":"BF","capital":"Nassau","iso":"BS","_id":3572887,"population":301790}
+{"name":"Bhutan","tld":".bt","languages":["dz"],"iso3":"BTN","fips":"BT","capital":"Thimphu","iso":"BT","_id":1252634,"population":699847}
+{"name":"Bouvet Island","tld":".bv","languages":[""],"iso3":"BVT","fips":"BV","capital":"","iso":"BV","_id":3371123,"population":0}
+{"name":"Botswana","tld":".bw","languages":["en-BW","tn-BW"],"iso3":"BWA","fips":"BC","capital":"Gaborone","iso":"BW","_id":933860,"population":2029307}
+{"name":"Belarus","tld":".by","languages":["be","ru"],"iso3":"BLR","fips":"BO","capital":"Minsk","iso":"BY","_id":630336,"population":9685000}
+{"name":"Belize","tld":".bz","languages":["en-BZ","es"],"iso3":"BLZ","fips":"BH","capital":"Belmopan","iso":"BZ","_id":3582678,"population":314522}
+{"name":"Canada","tld":".ca","languages":["en-CA","fr-CA","iu"],"iso3":"CAN","fips":"CA","capital":"Ottawa","iso":"CA","_id":6251999,"population":33679000}
+{"name":"Cocos Islands","tld":".cc","languages":["ms-CC","en"],"iso3":"CCK","fips":"CK","capital":"West Island","iso":"CC","_id":1547376,"population":628}
+{"name":"Democratic Republic of the Congo","tld":".cd","languages":["fr-CD","ln","kg"],"iso3":"COD","fips":"CG","capital":"Kinshasa","iso":"CD","_id":203312,"population":70916439}
+{"name":"Central African Republic","tld":".cf","languages":["fr-CF","sg","ln","kg"],"iso3":"CAF","fips":"CT","capital":"Bangui","iso":"CF","_id":239880,"population":4844927}
+{"name":"Republic of the Congo","tld":".cg","languages":["fr-CG","kg","ln-CG"],"iso3":"COG","fips":"CF","capital":"Brazzaville","iso":"CG","_id":2260494,"population":3039126}
+{"name":"Switzerland","tld":".ch","languages":["de-CH","fr-CH","it-CH","rm"],"iso3":"CHE","fips":"SZ","capital":"Berne","iso":"CH","_id":2658434,"population":7581000}
+{"name":"Ivory Coast","tld":".ci","languages":["fr-CI"],"iso3":"CIV","fips":"IV","capital":"Yamoussoukro","iso":"CI","_id":2287781,"population":21058798}
+{"name":"Cook Islands","tld":".ck","languages":["en-CK","mi"],"iso3":"COK","fips":"CW","capital":"Avarua","iso":"CK","_id":1899402,"population":21388}
+{"name":"Chile","tld":".cl","languages":["es-CL"],"iso3":"CHL","fips":"CI","capital":"Santiago","iso":"CL","_id":3895114,"population":16746491}
+{"name":"Cameroon","tld":".cm","languages":["en-CM","fr-CM"],"iso3":"CMR","fips":"CM","capital":"Yaoundé","iso":"CM","_id":2233387,"population":19294149}
+{"name":"China","tld":".cn","languages":["zh-CN","yue","wuu","dta","ug","za"],"iso3":"CHN","fips":"CH","capital":"Beijing","iso":"CN","_id":1814991,"population":1330044000}
+{"name":"Colombia","tld":".co","languages":["es-CO"],"iso3":"COL","fips":"CO","capital":"Bogotá","iso":"CO","_id":3686110,"population":44205293}
+{"name":"Costa Rica","tld":".cr","languages":["es-CR","en"],"iso3":"CRI","fips":"CS","capital":"San José","iso":"CR","_id":3624060,"population":4516220}
+{"name":"Cuba","tld":".cu","languages":["es-CU"],"iso3":"CUB","fips":"CU","capital":"Havana","iso":"CU","_id":3562981,"population":11423000}
+{"name":"Cape Verde","tld":".cv","languages":["pt-CV"],"iso3":"CPV","fips":"CV","capital":"Praia","iso":"CV","_id":3374766,"population":508659}
+{"name":"Curaçao","tld":".cw","languages":["nl","pap"],"iso3":"CUW","fips":"UC","capital":" Willemstad","iso":"CW","_id":7626836,"population":141766}
+{"name":"Christmas Island","tld":".cx","languages":["en","zh","ms-CC"],"iso3":"CXR","fips":"KT","capital":"Flying Fish Cove","iso":"CX","_id":2078138,"population":1500}
+{"name":"Cyprus","tld":".cy","languages":["el-CY","tr-CY","en"],"iso3":"CYP","fips":"CY","capital":"Nicosia","iso":"CY","_id":146669,"population":1102677}
+{"name":"Czech Republic","tld":".cz","languages":["cs","sk"],"iso3":"CZE","fips":"EZ","capital":"Prague","iso":"CZ","_id":3077311,"population":10476000}
+{"name":"Germany","tld":".de","languages":["de"],"iso3":"DEU","fips":"GM","capital":"Berlin","iso":"DE","_id":2921044,"population":81802257}
+{"name":"Djibouti","tld":".dj","languages":["fr-DJ","ar","so-DJ","aa"],"iso3":"DJI","fips":"DJ","capital":"Djibouti","iso":"DJ","_id":223816,"population":740528}
+{"name":"Denmark","tld":".dk","languages":["da-DK","en","fo","de-DK"],"iso3":"DNK","fips":"DA","capital":"Copenhagen","iso":"DK","_id":2623032,"population":5484000}
+{"name":"Dominica","tld":".dm","languages":["en-DM"],"iso3":"DMA","fips":"DO","capital":"Roseau","iso":"DM","_id":3575830,"population":72813}
+{"name":"Dominican Republic","tld":".do","languages":["es-DO"],"iso3":"DOM","fips":"DR","capital":"Santo Domingo","iso":"DO","_id":3508796,"population":9823821}
+{"name":"Algeria","tld":".dz","languages":["ar-DZ"],"iso3":"DZA","fips":"AG","capital":"Algiers","iso":"DZ","_id":2589581,"population":34586184}
+{"name":"Ecuador","tld":".ec","languages":["es-EC"],"iso3":"ECU","fips":"EC","capital":"Quito","iso":"EC","_id":3658394,"population":14790608}
+{"name":"Estonia","tld":".ee","languages":["et","ru"],"iso3":"EST","fips":"EN","capital":"Tallinn","iso":"EE","_id":453733,"population":1291170}
+{"name":"Egypt","tld":".eg","languages":["ar-EG","en","fr"],"iso3":"EGY","fips":"EG","capital":"Cairo","iso":"EG","_id":357994,"population":80471869}
+{"name":"Western Sahara","tld":".eh","languages":["ar","mey"],"iso3":"ESH","fips":"WI","capital":"El-Aaiun","iso":"EH","_id":2461445,"population":273008}
+{"name":"Eritrea","tld":".er","languages":["aa-ER","ar","tig","kun","ti-ER"],"iso3":"ERI","fips":"ER","capital":"Asmara","iso":"ER","_id":338010,"population":5792984}
+{"name":"Spain","tld":".es","languages":["es-ES","ca","gl","eu","oc"],"iso3":"ESP","fips":"SP","capital":"Madrid","iso":"ES","_id":2510769,"population":46505963}
+{"name":"Ethiopia","tld":".et","languages":["am","en-ET","om-ET","ti-ET","so-ET","sid"],"iso3":"ETH","fips":"ET","capital":"Addis Ababa","iso":"ET","_id":337996,"population":88013491}
+{"name":"Finland","tld":".fi","languages":["fi-FI","sv-FI","smn"],"iso3":"FIN","fips":"FI","capital":"Helsinki","iso":"FI","_id":660013,"population":5244000}
+{"name":"Fiji","tld":".fj","languages":["en-FJ","fj"],"iso3":"FJI","fips":"FJ","capital":"Suva","iso":"FJ","_id":2205218,"population":875983}
+{"name":"Falkland Islands","tld":".fk","languages":["en-FK"],"iso3":"FLK","fips":"FK","capital":"Stanley","iso":"FK","_id":3474414,"population":2638}
+{"name":"Micronesia","tld":".fm","languages":["en-FM","chk","pon","yap","kos","uli","woe","nkr","kpg"],"iso3":"FSM","fips":"FM","capital":"Palikir","iso":"FM","_id":2081918,"population":107708}
+{"name":"Faroe Islands","tld":".fo","languages":["fo","da-FO"],"iso3":"FRO","fips":"FO","capital":"Tórshavn","iso":"FO","_id":2622320,"population":48228}
+{"name":"France","tld":".fr","languages":["fr-FR","frp","br","co","ca","eu","oc"],"iso3":"FRA","fips":"FR","capital":"Paris","iso":"FR","_id":3017382,"population":64768389}
+{"name":"Gabon","tld":".ga","languages":["fr-GA"],"iso3":"GAB","fips":"GB","capital":"Libreville","iso":"GA","_id":2400553,"population":1545255}
+{"name":"United Kingdom","tld":".uk","languages":["en-GB","cy-GB","gd"],"iso3":"GBR","fips":"UK","capital":"London","iso":"GB","_id":2635167,"population":62348447}
+{"name":"Grenada","tld":".gd","languages":["en-GD"],"iso3":"GRD","fips":"GJ","capital":"St. George's","iso":"GD","_id":3580239,"population":107818}
+{"name":"Georgia","tld":".ge","languages":["ka","ru","hy","az"],"iso3":"GEO","fips":"GG","capital":"Tbilisi","iso":"GE","_id":614540,"population":4630000}
+{"name":"French Guiana","tld":".gf","languages":["fr-GF"],"iso3":"GUF","fips":"FG","capital":"Cayenne","iso":"GF","_id":3381670,"population":195506}
+{"name":"Guernsey","tld":".gg","languages":["en","fr"],"iso3":"GGY","fips":"GK","capital":"St Peter Port","iso":"GG","_id":3042362,"population":65228}
+{"name":"Ghana","tld":".gh","languages":["en-GH","ak","ee","tw"],"iso3":"GHA","fips":"GH","capital":"Accra","iso":"GH","_id":2300660,"population":24339838}
+{"name":"Gibraltar","tld":".gi","languages":["en-GI","es","it","pt"],"iso3":"GIB","fips":"GI","capital":"Gibraltar","iso":"GI","_id":2411586,"population":27884}
+{"name":"Greenland","tld":".gl","languages":["kl","da-GL","en"],"iso3":"GRL","fips":"GL","capital":"Nuuk","iso":"GL","_id":3425505,"population":56375}
+{"name":"Gambia","tld":".gm","languages":["en-GM","mnk","wof","wo","ff"],"iso3":"GMB","fips":"GA","capital":"Banjul","iso":"GM","_id":2413451,"population":1593256}
+{"name":"Guinea","tld":".gn","languages":["fr-GN"],"iso3":"GIN","fips":"GV","capital":"Conakry","iso":"GN","_id":2420477,"population":10324025}
+{"name":"Guadeloupe","tld":".gp","languages":["fr-GP"],"iso3":"GLP","fips":"GP","capital":"Basse-Terre","iso":"GP","_id":3579143,"population":443000}
+{"name":"Equatorial Guinea","tld":".gq","languages":["es-GQ","fr"],"iso3":"GNQ","fips":"EK","capital":"Malabo","iso":"GQ","_id":2309096,"population":1014999}
+{"name":"Greece","tld":".gr","languages":["el-GR","en","fr"],"iso3":"GRC","fips":"GR","capital":"Athens","iso":"GR","_id":390903,"population":11000000}
+{"name":"South Georgia and the South Sandwich Islands","tld":".gs","languages":["en"],"iso3":"SGS","fips":"SX","capital":"Grytviken","iso":"GS","_id":3474415,"population":30}
+{"name":"Guatemala","tld":".gt","languages":["es-GT"],"iso3":"GTM","fips":"GT","capital":"Guatemala City","iso":"GT","_id":3595528,"population":13550440}
+{"name":"Guam","tld":".gu","languages":["en-GU","ch-GU"],"iso3":"GUM","fips":"GQ","capital":"Hagåtña","iso":"GU","_id":4043988,"population":168564}
+{"name":"Guinea-Bissau","tld":".gw","languages":["pt-GW","pov"],"iso3":"GNB","fips":"PU","capital":"Bissau","iso":"GW","_id":2372248,"population":1565126}
+{"name":"Guyana","tld":".gy","languages":["en-GY"],"iso3":"GUY","fips":"GY","capital":"Georgetown","iso":"GY","_id":3378535,"population":748486}
+{"name":"Hong Kong","tld":".hk","languages":["zh-HK","yue","zh","en"],"iso3":"HKG","fips":"HK","capital":"Hong Kong","iso":"HK","_id":1819730,"population":6898686}
+{"name":"Heard Island and McDonald Islands","tld":".hm","languages":[""],"iso3":"HMD","fips":"HM","capital":"","iso":"HM","_id":1547314,"population":0}
+{"name":"Honduras","tld":".hn","languages":["es-HN"],"iso3":"HND","fips":"HO","capital":"Tegucigalpa","iso":"HN","_id":3608932,"population":7989415}
+{"name":"Croatia","tld":".hr","languages":["hr-HR","sr"],"iso3":"HRV","fips":"HR","capital":"Zagreb","iso":"HR","_id":3202326,"population":4491000}
+{"name":"Haiti","tld":".ht","languages":["ht","fr-HT"],"iso3":"HTI","fips":"HA","capital":"Port-au-Prince","iso":"HT","_id":3723988,"population":9648924}
+{"name":"Hungary","tld":".hu","languages":["hu-HU"],"iso3":"HUN","fips":"HU","capital":"Budapest","iso":"HU","_id":719819,"population":9930000}
+{"name":"Indonesia","tld":".id","languages":["id","en","nl","jv"],"iso3":"IDN","fips":"ID","capital":"Jakarta","iso":"ID","_id":1643084,"population":242968342}
+{"name":"Ireland","tld":".ie","languages":["en-IE","ga-IE"],"iso3":"IRL","fips":"EI","capital":"Dublin","iso":"IE","_id":2963597,"population":4622917}
+{"name":"Israel","tld":".il","languages":["he","ar-IL","en-IL",""],"iso3":"ISR","fips":"IS","capital":"Jerusalem","iso":"IL","_id":294640,"population":7353985}
+{"name":"Isle of Man","tld":".im","languages":["en","gv"],"iso3":"IMN","fips":"IM","capital":"Douglas, Isle of Man","iso":"IM","_id":3042225,"population":75049}
+{"name":"India","tld":".in","languages":["en-IN","hi","bn","te","mr","ta","ur","gu","kn","ml","or","pa","as","bh","sat","ks","ne","sd","kok","doi","mni","sit","sa","fr","lus","inc"],"iso3":"IND","fips":"IN","capital":"New Delhi","iso":"IN","_id":1269750,"population":1173108018}
+{"name":"British Indian Ocean Territory","tld":".io","languages":["en-IO"],"iso3":"IOT","fips":"IO","capital":"Diego Garcia","iso":"IO","_id":1282588,"population":4000}
+{"name":"Iraq","tld":".iq","languages":["ar-IQ","ku","hy"],"iso3":"IRQ","fips":"IZ","capital":"Baghdad","iso":"IQ","_id":99237,"population":29671605}
+{"name":"Iran","tld":".ir","languages":["fa-IR","ku"],"iso3":"IRN","fips":"IR","capital":"Tehran","iso":"IR","_id":130758,"population":76923300}
+{"name":"Iceland","tld":".is","languages":["is","en","de","da","sv","no"],"iso3":"ISL","fips":"IC","capital":"Reykjavík","iso":"IS","_id":2629691,"population":308910}
+{"name":"Italy","tld":".it","languages":["it-IT","de-IT","fr-IT","sc","ca","co","sl"],"iso3":"ITA","fips":"IT","capital":"Rome","iso":"IT","_id":3175395,"population":60340328}
+{"name":"Jersey","tld":".je","languages":["en","pt"],"iso3":"JEY","fips":"JE","capital":"Saint Helier","iso":"JE","_id":3042142,"population":90812}
+{"name":"Jamaica","tld":".jm","languages":["en-JM"],"iso3":"JAM","fips":"JM","capital":"Kingston","iso":"JM","_id":3489940,"population":2847232}
+{"name":"Jordan","tld":".jo","languages":["ar-JO","en"],"iso3":"JOR","fips":"JO","capital":"Amman","iso":"JO","_id":248816,"population":6407085}
+{"name":"Japan","tld":".jp","languages":["ja"],"iso3":"JPN","fips":"JA","capital":"Tokyo","iso":"JP","_id":1861060,"population":127288000}
+{"name":"Kenya","tld":".ke","languages":["en-KE","sw-KE"],"iso3":"KEN","fips":"KE","capital":"Nairobi","iso":"KE","_id":192950,"population":40046566}
+{"name":"Kyrgyzstan","tld":".kg","languages":["ky","uz","ru"],"iso3":"KGZ","fips":"KG","capital":"Bishkek","iso":"KG","_id":1527747,"population":5508626}
+{"name":"Cambodia","tld":".kh","languages":["km","fr","en"],"iso3":"KHM","fips":"CB","capital":"Phnom Penh","iso":"KH","_id":1831722,"population":14453680}
+{"name":"Kiribati","tld":".ki","languages":["en-KI","gil"],"iso3":"KIR","fips":"KR","capital":"Tarawa","iso":"KI","_id":4030945,"population":92533}
+{"name":"Comoros","tld":".km","languages":["ar","fr-KM"],"iso3":"COM","fips":"CN","capital":"Moroni","iso":"KM","_id":921929,"population":773407}
+{"name":"Saint Kitts and Nevis","tld":".kn","languages":["en-KN"],"iso3":"KNA","fips":"SC","capital":"Basseterre","iso":"KN","_id":3575174,"population":49898}
+{"name":"North Korea","tld":".kp","languages":["ko-KP"],"iso3":"PRK","fips":"KN","capital":"Pyongyang","iso":"KP","_id":1873107,"population":22912177}
+{"name":"South Korea","tld":".kr","languages":["ko-KR","en"],"iso3":"KOR","fips":"KS","capital":"Seoul","iso":"KR","_id":1835841,"population":48422644}
+{"name":"Kosovo","tld":"","languages":["sq","sr"],"iso3":"XKX","fips":"KV","capital":"Pristina","iso":"XK","_id":831053,"population":1800000}
+{"name":"Kuwait","tld":".kw","languages":["ar-KW","en"],"iso3":"KWT","fips":"KU","capital":"Kuwait City","iso":"KW","_id":285570,"population":2789132}
+{"name":"Cayman Islands","tld":".ky","languages":["en-KY"],"iso3":"CYM","fips":"CJ","capital":"George Town","iso":"KY","_id":3580718,"population":44270}
+{"name":"Kazakhstan","tld":".kz","languages":["kk","ru"],"iso3":"KAZ","fips":"KZ","capital":"Astana","iso":"KZ","_id":1522867,"population":15340000}
+{"name":"Laos","tld":".la","languages":["lo","fr","en"],"iso3":"LAO","fips":"LA","capital":"Vientiane","iso":"LA","_id":1655842,"population":6368162}
+{"name":"Lebanon","tld":".lb","languages":["ar-LB","fr-LB","en","hy"],"iso3":"LBN","fips":"LE","capital":"Beirut","iso":"LB","_id":272103,"population":4125247}
+{"name":"Saint Lucia","tld":".lc","languages":["en-LC"],"iso3":"LCA","fips":"ST","capital":"Castries","iso":"LC","_id":3576468,"population":160922}
+{"name":"Liechtenstein","tld":".li","languages":["de-LI"],"iso3":"LIE","fips":"LS","capital":"Vaduz","iso":"LI","_id":3042058,"population":35000}
+{"name":"Sri Lanka","tld":".lk","languages":["si","ta","en"],"iso3":"LKA","fips":"CE","capital":"Colombo","iso":"LK","_id":1227603,"population":21513990}
+{"name":"Liberia","tld":".lr","languages":["en-LR"],"iso3":"LBR","fips":"LI","capital":"Monrovia","iso":"LR","_id":2275384,"population":3685076}
+{"name":"Lesotho","tld":".ls","languages":["en-LS","st","zu","xh"],"iso3":"LSO","fips":"LT","capital":"Maseru","iso":"LS","_id":932692,"population":1919552}
+{"name":"Lithuania","tld":".lt","languages":["lt","ru","pl"],"iso3":"LTU","fips":"LH","capital":"Vilnius","iso":"LT","_id":597427,"population":3565000}
+{"name":"Luxembourg","tld":".lu","languages":["lb","de-LU","fr-LU"],"iso3":"LUX","fips":"LU","capital":"Luxembourg","iso":"LU","_id":2960313,"population":497538}
+{"name":"Latvia","tld":".lv","languages":["lv","ru","lt"],"iso3":"LVA","fips":"LG","capital":"Riga","iso":"LV","_id":458258,"population":2217969}
+{"name":"Libya","tld":".ly","languages":["ar-LY","it","en"],"iso3":"LBY","fips":"LY","capital":"Tripolis","iso":"LY","_id":2215636,"population":6461454}
+{"name":"Morocco","tld":".ma","languages":["ar-MA","fr"],"iso3":"MAR","fips":"MO","capital":"Rabat","iso":"MA","_id":2542007,"population":31627428}
+{"name":"Monaco","tld":".mc","languages":["fr-MC","en","it"],"iso3":"MCO","fips":"MN","capital":"Monaco","iso":"MC","_id":2993457,"population":32965}
+{"name":"Moldova","tld":".md","languages":["ro","ru","gag","tr"],"iso3":"MDA","fips":"MD","capital":"Chişinău","iso":"MD","_id":617790,"population":4324000}
+{"name":"Montenegro","tld":".me","languages":["sr","hu","bs","sq","hr","rom"],"iso3":"MNE","fips":"MJ","capital":"Podgorica","iso":"ME","_id":3194884,"population":666730}
+{"name":"Saint Martin","tld":".gp","languages":["fr"],"iso3":"MAF","fips":"RN","capital":"Marigot","iso":"MF","_id":3578421,"population":35925}
+{"name":"Madagascar","tld":".mg","languages":["fr-MG","mg"],"iso3":"MDG","fips":"MA","capital":"Antananarivo","iso":"MG","_id":1062947,"population":21281844}
+{"name":"Marshall Islands","tld":".mh","languages":["mh","en-MH"],"iso3":"MHL","fips":"RM","capital":"Majuro","iso":"MH","_id":2080185,"population":65859}
+{"name":"Macedonia","tld":".mk","languages":["mk","sq","tr","rmm","sr"],"iso3":"MKD","fips":"MK","capital":"Skopje","iso":"MK","_id":718075,"population":2061000}
+{"name":"Mali","tld":".ml","languages":["fr-ML","bm"],"iso3":"MLI","fips":"ML","capital":"Bamako","iso":"ML","_id":2453866,"population":13796354}
+{"name":"Myanmar","tld":".mm","languages":["my"],"iso3":"MMR","fips":"BM","capital":"Nay Pyi Taw","iso":"MM","_id":1327865,"population":53414374}
+{"name":"Mongolia","tld":".mn","languages":["mn","ru"],"iso3":"MNG","fips":"MG","capital":"Ulan Bator","iso":"MN","_id":2029969,"population":3086918}
+{"name":"Macao","tld":".mo","languages":["zh","zh-MO","pt"],"iso3":"MAC","fips":"MC","capital":"Macao","iso":"MO","_id":1821275,"population":449198}
+{"name":"Northern Mariana Islands","tld":".mp","languages":["fil","tl","zh","ch-MP","en-MP"],"iso3":"MNP","fips":"CQ","capital":"Saipan","iso":"MP","_id":4041468,"population":86000}
+{"name":"Martinique","tld":".mq","languages":["fr-MQ"],"iso3":"MTQ","fips":"MB","capital":"Fort-de-France","iso":"MQ","_id":3570311,"population":432900}
+{"name":"Mauritania","tld":".mr","languages":["ar-MR","fuc","snk","fr","mey","wo"],"iso3":"MRT","fips":"MR","capital":"Nouakchott","iso":"MR","_id":2378080,"population":3205060}
+{"name":"Montserrat","tld":".ms","languages":["en-MS"],"iso3":"MSR","fips":"MH","capital":"Plymouth","iso":"MS","_id":3578097,"population":9341}
+{"name":"Malta","tld":".mt","languages":["mt","en-MT"],"iso3":"MLT","fips":"MT","capital":"Valletta","iso":"MT","_id":2562770,"population":403000}
+{"name":"Mauritius","tld":".mu","languages":["en-MU","bho","fr"],"iso3":"MUS","fips":"MP","capital":"Port Louis","iso":"MU","_id":934292,"population":1294104}
+{"name":"Maldives","tld":".mv","languages":["dv","en"],"iso3":"MDV","fips":"MV","capital":"Malé","iso":"MV","_id":1282028,"population":395650}
+{"name":"Malawi","tld":".mw","languages":["ny","yao","tum","swk"],"iso3":"MWI","fips":"MI","capital":"Lilongwe","iso":"MW","_id":927384,"population":15447500}
+{"name":"Mexico","tld":".mx","languages":["es-MX"],"iso3":"MEX","fips":"MX","capital":"Mexico City","iso":"MX","_id":3996063,"population":112468855}
+{"name":"Malaysia","tld":".my","languages":["ms-MY","en","zh","ta","te","ml","pa","th"],"iso3":"MYS","fips":"MY","capital":"Kuala Lumpur","iso":"MY","_id":1733045,"population":28274729}
+{"name":"Mozambique","tld":".mz","languages":["pt-MZ","vmw"],"iso3":"MOZ","fips":"MZ","capital":"Maputo","iso":"MZ","_id":1036973,"population":22061451}
+{"name":"Namibia","tld":".na","languages":["en-NA","af","de","hz","naq"],"iso3":"NAM","fips":"WA","capital":"Windhoek","iso":"NA","_id":3355338,"population":2128471}
+{"name":"New Caledonia","tld":".nc","languages":["fr-NC"],"iso3":"NCL","fips":"NC","capital":"Nouméa","iso":"NC","_id":2139685,"population":216494}
+{"name":"Niger","tld":".ne","languages":["fr-NE","ha","kr","dje"],"iso3":"NER","fips":"NG","capital":"Niamey","iso":"NE","_id":2440476,"population":15878271}
+{"name":"Norfolk Island","tld":".nf","languages":["en-NF"],"iso3":"NFK","fips":"NF","capital":"Kingston","iso":"NF","_id":2155115,"population":1828}
+{"name":"Nigeria","tld":".ng","languages":["en-NG","ha","yo","ig","ff"],"iso3":"NGA","fips":"NI","capital":"Abuja","iso":"NG","_id":2328926,"population":154000000}
+{"name":"Nicaragua","tld":".ni","languages":["es-NI","en"],"iso3":"NIC","fips":"NU","capital":"Managua","iso":"NI","_id":3617476,"population":5995928}
+{"name":"Netherlands","tld":".nl","languages":["nl-NL","fy-NL"],"iso3":"NLD","fips":"NL","capital":"Amsterdam","iso":"NL","_id":2750405,"population":16645000}
+{"name":"Norway","tld":".no","languages":["no","nb","nn","se","fi"],"iso3":"NOR","fips":"NO","capital":"Oslo","iso":"NO","_id":3144096,"population":4907000}
+{"name":"Nepal","tld":".np","languages":["ne","en"],"iso3":"NPL","fips":"NP","capital":"Kathmandu","iso":"NP","_id":1282988,"population":28951852}
+{"name":"Nauru","tld":".nr","languages":["na","en-NR"],"iso3":"NRU","fips":"NR","capital":"Yaren","iso":"NR","_id":2110425,"population":10065}
+{"name":"Niue","tld":".nu","languages":["niu","en-NU"],"iso3":"NIU","fips":"NE","capital":"Alofi","iso":"NU","_id":4036232,"population":2166}
+{"name":"New Zealand","tld":".nz","languages":["en-NZ","mi"],"iso3":"NZL","fips":"NZ","capital":"Wellington","iso":"NZ","_id":2186224,"population":4252277}
+{"name":"Oman","tld":".om","languages":["ar-OM","en","bal","ur"],"iso3":"OMN","fips":"MU","capital":"Muscat","iso":"OM","_id":286963,"population":2967717}
+{"name":"Panama","tld":".pa","languages":["es-PA","en"],"iso3":"PAN","fips":"PM","capital":"Panama City","iso":"PA","_id":3703430,"population":3410676}
+{"name":"Peru","tld":".pe","languages":["es-PE","qu","ay"],"iso3":"PER","fips":"PE","capital":"Lima","iso":"PE","_id":3932488,"population":29907003}
+{"name":"French Polynesia","tld":".pf","languages":["fr-PF","ty"],"iso3":"PYF","fips":"FP","capital":"Papeete","iso":"PF","_id":4030656,"population":270485}
+{"name":"Papua New Guinea","tld":".pg","languages":["en-PG","ho","meu","tpi"],"iso3":"PNG","fips":"PP","capital":"Port Moresby","iso":"PG","_id":2088628,"population":6064515}
+{"name":"Philippines","tld":".ph","languages":["tl","en-PH","fil"],"iso3":"PHL","fips":"RP","capital":"Manila","iso":"PH","_id":1694008,"population":99900177}
+{"name":"Pakistan","tld":".pk","languages":["ur-PK","en-PK","pa","sd","ps","brh"],"iso3":"PAK","fips":"PK","capital":"Islamabad","iso":"PK","_id":1168579,"population":184404791}
+{"name":"Poland","tld":".pl","languages":["pl"],"iso3":"POL","fips":"PL","capital":"Warsaw","iso":"PL","_id":798544,"population":38500000}
+{"name":"Saint Pierre and Miquelon","tld":".pm","languages":["fr-PM"],"iso3":"SPM","fips":"SB","capital":"Saint-Pierre","iso":"PM","_id":3424932,"population":7012}
+{"name":"Pitcairn","tld":".pn","languages":["en-PN"],"iso3":"PCN","fips":"PC","capital":"Adamstown","iso":"PN","_id":4030699,"population":46}
+{"name":"Puerto Rico","tld":".pr","languages":["en-PR","es-PR"],"iso3":"PRI","fips":"RQ","capital":"San Juan","iso":"PR","_id":4566966,"population":3916632}
+{"name":"Palestinian Territory","tld":".ps","languages":["ar-PS"],"iso3":"PSE","fips":"WE","capital":"East Jerusalem","iso":"PS","_id":6254930,"population":3800000}
+{"name":"Portugal","tld":".pt","languages":["pt-PT","mwl"],"iso3":"PRT","fips":"PO","capital":"Lisbon","iso":"PT","_id":2264397,"population":10676000}
+{"name":"Palau","tld":".pw","languages":["pau","sov","en-PW","tox","ja","fil","zh"],"iso3":"PLW","fips":"PS","capital":"Melekeok","iso":"PW","_id":1559582,"population":19907}
+{"name":"Paraguay","tld":".py","languages":["es-PY","gn"],"iso3":"PRY","fips":"PA","capital":"Asunción","iso":"PY","_id":3437598,"population":6375830}
+{"name":"Qatar","tld":".qa","languages":["ar-QA","es"],"iso3":"QAT","fips":"QA","capital":"Doha","iso":"QA","_id":289688,"population":840926}
+{"name":"Reunion","tld":".re","languages":["fr-RE"],"iso3":"REU","fips":"RE","capital":"Saint-Denis","iso":"RE","_id":935317,"population":776948}
+{"name":"Romania","tld":".ro","languages":["ro","hu","rom"],"iso3":"ROU","fips":"RO","capital":"Bucharest","iso":"RO","_id":798549,"population":21959278}
+{"name":"Serbia","tld":".rs","languages":["sr","hu","bs","rom"],"iso3":"SRB","fips":"RI","capital":"Belgrade","iso":"RS","_id":6290252,"population":7344847}
+{"name":"Russia","tld":".ru","languages":["ru","tt","xal","cau","ady","kv","ce","tyv","cv","udm","tut","mns","bua","myv","mdf","chm","ba","inh","tut","kbd","krc","ava","sah","nog"],"iso3":"RUS","fips":"RS","capital":"Moscow","iso":"RU","_id":2017370,"population":140702000}
+{"name":"Rwanda","tld":".rw","languages":["rw","en-RW","fr-RW","sw"],"iso3":"RWA","fips":"RW","capital":"Kigali","iso":"RW","_id":49518,"population":11055976}
+{"name":"Saudi Arabia","tld":".sa","languages":["ar-SA"],"iso3":"SAU","fips":"SA","capital":"Riyadh","iso":"SA","_id":102358,"population":25731776}
+{"name":"Solomon Islands","tld":".sb","languages":["en-SB","tpi"],"iso3":"SLB","fips":"BP","capital":"Honiara","iso":"SB","_id":2103350,"population":559198}
+{"name":"Seychelles","tld":".sc","languages":["en-SC","fr-SC"],"iso3":"SYC","fips":"SE","capital":"Victoria","iso":"SC","_id":241170,"population":88340}
+{"name":"Sudan","tld":".sd","languages":["ar-SD","en","fia"],"iso3":"SDN","fips":"SU","capital":"Khartoum","iso":"SD","_id":366755,"population":35000000}
+{"name":"South Sudan","tld":"","languages":["en"],"iso3":"SSD","fips":"OD","capital":"Juba","iso":"SS","_id":7909807,"population":8260490}
+{"name":"Sweden","tld":".se","languages":["sv-SE","se","sma","fi-SE"],"iso3":"SWE","fips":"SW","capital":"Stockholm","iso":"SE","_id":2661886,"population":9045000}
+{"name":"Singapore","tld":".sg","languages":["cmn","en-SG","ms-SG","ta-SG","zh-SG"],"iso3":"SGP","fips":"SN","capital":"Singapur","iso":"SG","_id":1880251,"population":4701069}
+{"name":"Saint Helena","tld":".sh","languages":["en-SH"],"iso3":"SHN","fips":"SH","capital":"Jamestown","iso":"SH","_id":3370751,"population":7460}
+{"name":"Slovenia","tld":".si","languages":["sl","sh"],"iso3":"SVN","fips":"SI","capital":"Ljubljana","iso":"SI","_id":3190538,"population":2007000}
+{"name":"Svalbard and Jan Mayen","tld":".sj","languages":["no","ru"],"iso3":"SJM","fips":"SV","capital":"Longyearbyen","iso":"SJ","_id":607072,"population":2550}
+{"name":"Slovakia","tld":".sk","languages":["sk","hu"],"iso3":"SVK","fips":"LO","capital":"Bratislava","iso":"SK","_id":3057568,"population":5455000}
+{"name":"Sierra Leone","tld":".sl","languages":["en-SL","men","tem"],"iso3":"SLE","fips":"SL","capital":"Freetown","iso":"SL","_id":2403846,"population":5245695}
+{"name":"San Marino","tld":".sm","languages":["it-SM"],"iso3":"SMR","fips":"SM","capital":"San Marino","iso":"SM","_id":3168068,"population":31477}
+{"name":"Senegal","tld":".sn","languages":["fr-SN","wo","fuc","mnk"],"iso3":"SEN","fips":"SG","capital":"Dakar","iso":"SN","_id":2245662,"population":12323252}
+{"name":"Somalia","tld":".so","languages":["so-SO","ar-SO","it","en-SO"],"iso3":"SOM","fips":"SO","capital":"Mogadishu","iso":"SO","_id":51537,"population":10112453}
+{"name":"Suriname","tld":".sr","languages":["nl-SR","en","srn","hns","jv"],"iso3":"SUR","fips":"NS","capital":"Paramaribo","iso":"SR","_id":3382998,"population":492829}
+{"name":"Sao Tome and Principe","tld":".st","languages":["pt-ST"],"iso3":"STP","fips":"TP","capital":"São Tomé","iso":"ST","_id":2410758,"population":175808}
+{"name":"El Salvador","tld":".sv","languages":["es-SV"],"iso3":"SLV","fips":"ES","capital":"San Salvador","iso":"SV","_id":3585968,"population":6052064}
+{"name":"Sint Maarten","tld":".sx","languages":["nl","en"],"iso3":"SXM","fips":"NN","capital":"Philipsburg","iso":"SX","_id":7609695,"population":37429}
+{"name":"Syria","tld":".sy","languages":["ar-SY","ku","hy","arc","fr","en"],"iso3":"SYR","fips":"SY","capital":"Damascus","iso":"SY","_id":163843,"population":22198110}
+{"name":"Swaziland","tld":".sz","languages":["en-SZ","ss-SZ"],"iso3":"SWZ","fips":"WZ","capital":"Mbabane","iso":"SZ","_id":934841,"population":1354051}
+{"name":"Turks and Caicos Islands","tld":".tc","languages":["en-TC"],"iso3":"TCA","fips":"TK","capital":"Cockburn Town","iso":"TC","_id":3576916,"population":20556}
+{"name":"Chad","tld":".td","languages":["fr-TD","ar-TD","sre"],"iso3":"TCD","fips":"CD","capital":"N'Djamena","iso":"TD","_id":2434508,"population":10543464}
+{"name":"French Southern Territories","tld":".tf","languages":["fr"],"iso3":"ATF","fips":"FS","capital":"Port-aux-Français","iso":"TF","_id":1546748,"population":140}
+{"name":"Togo","tld":".tg","languages":["fr-TG","ee","hna","kbp","dag","ha"],"iso3":"TGO","fips":"TO","capital":"Lomé","iso":"TG","_id":2363686,"population":6587239}
+{"name":"Thailand","tld":".th","languages":["th","en"],"iso3":"THA","fips":"TH","capital":"Bangkok","iso":"TH","_id":1605651,"population":67089500}
+{"name":"Tajikistan","tld":".tj","languages":["tg","ru"],"iso3":"TJK","fips":"TI","capital":"Dushanbe","iso":"TJ","_id":1220409,"population":7487489}
+{"name":"Tokelau","tld":".tk","languages":["tkl","en-TK"],"iso3":"TKL","fips":"TL","capital":"","iso":"TK","_id":4031074,"population":1466}
+{"name":"East Timor","tld":".tp","languages":["tet","pt-TL","id","en"],"iso3":"TLS","fips":"TT","capital":"Dili","iso":"TL","_id":1966436,"population":1154625}
+{"name":"Turkmenistan","tld":".tm","languages":["tk","ru","uz"],"iso3":"TKM","fips":"TX","capital":"Ashgabat","iso":"TM","_id":1218197,"population":4940916}
+{"name":"Tunisia","tld":".tn","languages":["ar-TN","fr"],"iso3":"TUN","fips":"TS","capital":"Tunis","iso":"TN","_id":2464461,"population":10589025}
+{"name":"Tonga","tld":".to","languages":["to","en-TO"],"iso3":"TON","fips":"TN","capital":"Nuku'alofa","iso":"TO","_id":4032283,"population":122580}
+{"name":"Turkey","tld":".tr","languages":["tr-TR","ku","diq","az","av"],"iso3":"TUR","fips":"TU","capital":"Ankara","iso":"TR","_id":298795,"population":77804122}
+{"name":"Trinidad and Tobago","tld":".tt","languages":["en-TT","hns","fr","es","zh"],"iso3":"TTO","fips":"TD","capital":"Port of Spain","iso":"TT","_id":3573591,"population":1228691}
+{"name":"Tuvalu","tld":".tv","languages":["tvl","en","sm","gil"],"iso3":"TUV","fips":"TV","capital":"Funafuti","iso":"TV","_id":2110297,"population":10472}
+{"name":"Taiwan","tld":".tw","languages":["zh-TW","zh","nan","hak"],"iso3":"TWN","fips":"TW","capital":"Taipei","iso":"TW","_id":1668284,"population":22894384}
+{"name":"Tanzania","tld":".tz","languages":["sw-TZ","en","ar"],"iso3":"TZA","fips":"TZ","capital":"Dodoma","iso":"TZ","_id":149590,"population":41892895}
+{"name":"Ukraine","tld":".ua","languages":["uk","ru-UA","rom","pl","hu"],"iso3":"UKR","fips":"UP","capital":"Kiev","iso":"UA","_id":690791,"population":45415596}
+{"name":"Uganda","tld":".ug","languages":["en-UG","lg","sw","ar"],"iso3":"UGA","fips":"UG","capital":"Kampala","iso":"UG","_id":226074,"population":33398682}
+{"name":"United States Minor Outlying Islands","tld":".um","languages":["en-UM"],"iso3":"UMI","fips":"","capital":"","iso":"UM","_id":5854968,"population":0}
+{"name":"United States","tld":".us","languages":["en-US","es-US","haw","fr"],"iso3":"USA","fips":"US","capital":"Washington","iso":"US","_id":6252001,"population":310232863}
+{"name":"Uruguay","tld":".uy","languages":["es-UY"],"iso3":"URY","fips":"UY","capital":"Montevideo","iso":"UY","_id":3439705,"population":3477000}
+{"name":"Uzbekistan","tld":".uz","languages":["uz","ru","tg"],"iso3":"UZB","fips":"UZ","capital":"Tashkent","iso":"UZ","_id":1512440,"population":27865738}
+{"name":"Vatican","tld":".va","languages":["la","it","fr"],"iso3":"VAT","fips":"VT","capital":"Vatican City","iso":"VA","_id":3164670,"population":921}
+{"name":"Saint Vincent and the Grenadines","tld":".vc","languages":["en-VC","fr"],"iso3":"VCT","fips":"VC","capital":"Kingstown","iso":"VC","_id":3577815,"population":104217}
+{"name":"Venezuela","tld":".ve","languages":["es-VE"],"iso3":"VEN","fips":"VE","capital":"Caracas","iso":"VE","_id":3625428,"population":27223228}
+{"name":"British Virgin Islands","tld":".vg","languages":["en-VG"],"iso3":"VGB","fips":"VI","capital":"Road Town","iso":"VG","_id":3577718,"population":21730}
+{"name":"U.S. Virgin Islands","tld":".vi","languages":["en-VI"],"iso3":"VIR","fips":"VQ","capital":"Charlotte Amalie","iso":"VI","_id":4796775,"population":108708}
+{"name":"Vietnam","tld":".vn","languages":["vi","en","fr","zh","km"],"iso3":"VNM","fips":"VM","capital":"Hanoi","iso":"VN","_id":1562822,"population":89571130}
+{"name":"Vanuatu","tld":".vu","languages":["bi","en-VU","fr-VU"],"iso3":"VUT","fips":"NH","capital":"Port Vila","iso":"VU","_id":2134431,"population":221552}
+{"name":"Wallis and Futuna","tld":".wf","languages":["wls","fud","fr-WF"],"iso3":"WLF","fips":"WF","capital":"Matâ'Utu","iso":"WF","_id":4034749,"population":16025}
+{"name":"Samoa","tld":".ws","languages":["sm","en-WS"],"iso3":"WSM","fips":"WS","capital":"Apia","iso":"WS","_id":4034894,"population":192001}
+{"name":"Yemen","tld":".ye","languages":["ar-YE"],"iso3":"YEM","fips":"YM","capital":"San‘a’","iso":"YE","_id":69543,"population":23495361}
+{"name":"Mayotte","tld":".yt","languages":["fr-YT"],"iso3":"MYT","fips":"MF","capital":"Mamoudzou","iso":"YT","_id":1024031,"population":159042}
+{"name":"South Africa","tld":".za","languages":["zu","xh","af","nso","en-ZA","tn","st","ts","ss","ve","nr"],"iso3":"ZAF","fips":"SF","capital":"Pretoria","iso":"ZA","_id":953987,"population":49000000}
+{"name":"Zambia","tld":".zm","languages":["en-ZM","bem","loz","lun","lue","ny","toi"],"iso3":"ZMB","fips":"ZA","capital":"Lusaka","iso":"ZM","_id":895949,"population":13460305}
+{"name":"Zimbabwe","tld":".zw","languages":["en-ZW","sn","nr","nd"],"iso3":"ZWE","fips":"ZI","capital":"Harare","iso":"ZW","_id":878675,"population":11651858}

@@ -13,6 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     # TODO: put package requirements here
+    'plumbum',
     'pymongo',
     'pyyaml',
 ]
@@ -24,6 +25,9 @@ setup_requirements = [
 
 test_requirements = [
     'pytest',
+    'parameterizedtestcase',
+    'mock',
+    'nose',
     # TODO: put package test requirements here
 ]
 

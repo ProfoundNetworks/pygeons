@@ -1,0 +1,232 @@
+# - name: City of Foo
+#   countryCode: US
+#   expected:
+#     - foo
+- name: Foo-bar
+  countryCode: US
+  expected:
+    - foo bar
+- name: Saint Foo
+  countryCode: US
+  expected:
+    - st foo
+- name: Mount Foo
+  countryCode: US
+  expected:
+    - mt foo
+- name: Foo o' Bar
+  countryCode: US
+  expected:
+    - foo o bar
+    - foo o’ bar
+    - foo o bar
+    - foo of bar
+- name: O' Bar
+  countryCode: US
+  expected:
+    - o'bar
+    - o’bar
+- name: County Dromadery
+  countryCode: IE
+  expected:
+    - co dromadery
+- name: Loch Garman
+  countryCode: IE
+  expected:
+    - co wexford
+- name: Bedfordshire
+  countryCode: GB
+  expected:
+    - beds
+- asciiname: Osaka-fu
+  countryCode: JP
+  expected:
+    - osaka prefecture
+    - osaka pref
+    - osaka
+- asciiname: Yamagata-ken
+  countryCode: JP
+  expected:
+    - yamagata prefecture
+    - yamagata pref
+    - yamagata ken
+    - yamagata
+- name: Sapporo shi
+  countryCode: JP
+  expected:
+    - sapporo
+    - sapporo-city
+    - sapporo city
+- name: Meguro-ku
+  countryCode: JP
+  expected:
+    - meguro ku
+    - meguro ward
+    - meguro
+- name: 札幌市
+  countryCode: JP
+  expected:
+    - 札幌
+- name: Moscow Oblast
+  alternativenames:
+    - Московская область
+  countryCode: RU
+  expected:
+    - moscow
+    - moscow region
+    - moscow reg
+    - mo
+    - моск обл
+    - москва
+    - мо
+    - московской обл
+    - московской области
+- name: Altayskiy Kray
+  alternativenames:
+    - алтайский край
+  countryCode: RU
+  expected:
+    - altay kray
+    - altay region
+    - altay reg
+    - altay
+    - altai krai
+    - altai region
+    - altai reg
+    - altai
+- name: Respublika Sakha (Yakutiya)
+  countryCode: RU
+  expected:
+    - respublika sakha (yakutia)
+    - republic of sakha
+    - republic of sakha (yakutiya)
+    - republic of sakha (yakutia)
+    - republic of yakutia
+    - republic of yakutiya
+    - sakha republic
+    - yakutia
+    - yakutiya
+    - республика саха
+    - якутия
+- name: Saint Petersburg
+  countryCode: RU
+  expected:
+    - st petersburg
+    - sankt peterburg
+    - санкт - петербург
+- name: Bashkortostan
+  countryCode: RU
+  expected:
+    - republic of bashkortostan
+    - bashkiria
+    - bashkiriya
+    - rb
+- name: Yaroslavskaya Oblast’
+  countryCode: RU
+  expected:
+    - yaroslavl
+    - yaroslavl oblast
+    - yaroslavl region
+    - yaroslavl reg
+- name: Tula Oblast
+  countryCode: RU
+  expected:
+    - tula
+    - tula region
+    - tula reg
+- name: Khanty-Mansiyskiy Avtonomnyy Okrug-Yugra
+  countryCode: RU
+  expected:
+    - khanty-mansi autonomous okrug
+    - khanty-mansiysk autonomous okrug
+    - ханты-мансийский автономный округ - югра
+    - ханты-мансийский автономный округ югра
+    - хмао
+- name: Estado de Quintana Roo
+  countryCode: MX
+  expected:
+   - qr
+- name: Estado de México
+  countryCode: MX
+  expected:
+   - méx
+   - edomex
+   - edo de mex
+- name: Distrito Federal
+  countryCode: MX
+  expected:
+   - df
+- name: Mexico City
+  countryCode: MX
+  expected:
+    - mex
+    - méx
+- name: Tláhuac
+  countryCode: MX
+  expected:
+    - delegación tláhuac
+- name: Tlalpan
+  countryCode: MX
+  expected:
+    - delegación tlalpan
+- name: ciudad de foo
+  countryCode: MX
+  expected:
+    - cd de foo
+- name: Delegación de Foo
+  countryCode: MX
+  expected:
+    - delegación foo
+    - del foo
+    - deleg foo
+- name: Colonia Foo
+  countryCode: MX
+  expected:
+    - col foo
+- name: foo (bar)
+  countryCode: MX
+  expected:
+    - foo
+    - bar
+- name: Isles of Saint Francis
+  countryCode: AU
+  alternativenames:
+    - iles saint francois
+    - isles of saint francis
+    - ostrova sent-fransis
+    - saint francis isles
+    - sent-fransis
+    - острова сент-франсис
+    - сент-франсис
+  expected:
+    - iles st francois
+    - isles of st francis
+    - st francis isles
+- name: Mount Isa
+  countryCode: AU
+  alternativenames:
+    - ISA
+    - Maunt Ajza
+    - Maunt-Ajza
+    - Mont Isa
+    - Mount Ajza
+    - Mount Isa
+    - Mt Isa
+    - Mt. Isa
+    - maunteuaija
+    - mawnt yysa
+    - mwnt aysa
+    - yi sa shan
+    - Маунт Айза
+    - Маунт Ајза
+    - Маунт-Айза
+    - Моунт Айза
+    - מאונט איסה
+    - ماؤنٹ ایسا
+    - ماونت ئیسا
+    - مونت ایسا
+    - მაუნტ-აიზა
+    - 伊薩山
+    - 마운트아이자
+  expected:
+    - mt ajza
