@@ -59,7 +59,7 @@ setup(
     setup_requires=setup_requirements,
     entry_points={
         'console_scripts': [
-            'pygeons=pygeons.pygeons:main',
+            'pygeons=pygeons.cli:main',
         ]
     },
 )
