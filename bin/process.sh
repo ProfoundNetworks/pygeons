@@ -76,7 +76,7 @@ then
     echo "creating adm2.json"
     pv allCountries.tsv | awk -F"\t" '$8 ~ /ADM2H?/' | \
     bash $SCRIPT_DIR/pipeline.sh | \
-    python $SCRIPT_DIR/append_admin_names.py adm1.json --admin2 adm2.json | \
+    python $SCRIPT_DIR/append_admin_names.py adm1.json | \
     jq --compact-output \
         '. + {"admin2names": .names} | del(.names)' > adm2.json
     python $SCRIPT_DIR/split_by_cc.py adm2.json split/
@@ -103,7 +103,7 @@ fi
 if [ ! -s countries-final.json ]
 then
     echo "generating countries-final.json"
-    pv countries.json | sed "/^#/d" | \
+    pv countries.json | \
         python $SCRIPT_DIR/append_alternatenames.py \
             --format countryInfo \
             alternateNames.tsv countries.json > countries-final.json
