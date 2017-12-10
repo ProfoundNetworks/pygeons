@@ -118,11 +118,6 @@ then
     safe_wget $GEONAMES_URL/alternateNames.zip
 fi
 
-if [ ! -s countryInfo.txt ];then
-    wget $GEONAMES_URL/countryInfo.txt
-fi
-
-
 echo "Start unpacking Geonames resources ..."
 
 if [ ! -s allCountries.tsv ];then
