@@ -34,6 +34,9 @@ def _scrub(s):
 
 
 def read_iso6391():
+    #
+    # curl "https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt" | awk -F'|' '{print $3}' | sort -u > iso639-1.txt  # noqa
+    #
     curr_dir = P.dirname(P.abspath(__file__))
     with open(P.join(curr_dir, "data/iso639-1.txt")) as fin:
         return fin.read().strip().split("\n")
