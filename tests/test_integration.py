@@ -327,7 +327,7 @@ class CscFindTest(unittest.TestCase):
 def load_test_cases():
     curr_dir = P.dirname(P.abspath(__file__))
     with open(P.join(curr_dir, "csc_scrub_test_data.yml")) as fin:
-        data = yaml.load(fin)
+        data = yaml.full_load(fin)
     return data
 
 
@@ -537,7 +537,7 @@ class CsListTest(unittest.TestCase):
 def load_city_data(filename):
     curr_dir = P.dirname(P.abspath(__file__))
     with open(P.join(curr_dir, filename)) as fin:
-        data = yaml.load(fin)
+        data = yaml.full_load(fin)
     return [(d["name"], d["country"], d["geoid"]) for d in data]
 
 

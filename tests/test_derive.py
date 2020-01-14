@@ -19,7 +19,7 @@ CURR_DIR = P.dirname(P.abspath(__file__))
 
 def load_test_cases():
     with open(P.join(CURR_DIR, "test_derive.yml")) as fin:
-        return [(x,) for x in yaml.load(fin)]
+        return [(x,) for x in yaml.full_load(fin)]
 
 
 class DeriveNamesTest(ParameterizedTestCase):

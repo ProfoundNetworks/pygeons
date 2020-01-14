@@ -48,7 +48,7 @@ Name = collections.namedtuple("Name", ["geoid", "lang", "name"])
 
 def csv_to_name(row):
     row[1] = int(row[1])
-    row[3] = row[3].decode("utf-8")
+    row[3] = row[3]
     if row[2] == "":
         row[2] = UNKNOWN
     return Name(*row[1:4])
@@ -60,7 +60,7 @@ class NameReader(object):
     Expects the file to be sorted by geoid."""
 
     def __init__(self, fin):
-        self.reader = csv.reader(fin, delimiter=b"\t", quoting=csv.QUOTE_NONE)
+        self.reader = csv.reader(fin, delimiter="\t", quoting=csv.QUOTE_NONE)
         self.last_requested_geoid = None
         self.buf = None
 

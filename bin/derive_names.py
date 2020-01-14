@@ -28,7 +28,7 @@ def load_support(name):
     """Load the support file with the specified name."""
     curr = P.dirname(P.abspath(__file__))
     with open(P.join(curr, "data", "%s.yml" % name)) as fin:
-        return yaml.load(fin)
+        return yaml.full_load(fin)
 
 GB_SUPPORT = load_support("gb-support")
 

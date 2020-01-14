@@ -117,7 +117,7 @@ def _hide_password(conf):
 
 
 def _load_configuration_helper(fin):
-    conf = yaml.load(fin)
+    conf = yaml.full_load(fin)
     if not conf:
         conf = {}
     LOGGER.info("conf: %r", _hide_password(conf))
@@ -139,7 +139,7 @@ def _load_configuration():
         with open(config_path) as fin:
             return _load_configuration_helper(fin)
     else:
-        LOGGER.warn("%r does not exist, using default config", config_path)
+        LOGGER.warning("%r does not exist, using default config", config_path)
     return Config()
 
 CONFIG = _load_configuration()

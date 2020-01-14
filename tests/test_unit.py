@@ -39,23 +39,23 @@ password: simpson
 
         cfg = pygeons._load_configuration()
         logging.info("cfg: %s", cfg)
-        self.assertEquals(cfg.host, "foo")
-        self.assertEquals(cfg.port, 1234)
-        self.assertEquals(cfg.dbname, "bar")
-        self.assertEquals(cfg.auth_dbname, "baz")
-        self.assertEquals(cfg.username, "homer")
-        self.assertEquals(cfg.password, "simpson")
+        self.assertEqual(cfg.host, "foo")
+        self.assertEqual(cfg.port, 1234)
+        self.assertEqual(cfg.dbname, "bar")
+        self.assertEqual(cfg.auth_dbname, "baz")
+        self.assertEqual(cfg.username, "homer")
+        self.assertEqual(cfg.password, "simpson")
 
     @mock.patch("pygeons.pygeons.P.isfile")
     def test_file_doesnt_exist(self, mock_isfile):
         mock_isfile.return_value = False
         cfg = pygeons._load_configuration()
-        self.assertEquals(cfg.host, pygeons.DEFAULT_HOST)
-        self.assertEquals(cfg.port, pygeons.DEFAULT_PORT)
-        self.assertEquals(cfg.dbname, pygeons.DEFAULT_DBNAME)
-        self.assertEquals(cfg.auth_dbname, pygeons.DEFAULT_AUTH_DBNAME)
-        self.assertEquals(cfg.username, pygeons.DEFAULT_USERNAME)
-        self.assertEquals(cfg.password, pygeons.DEFAULT_PASSWORD)
+        self.assertEqual(cfg.host, pygeons.DEFAULT_HOST)
+        self.assertEqual(cfg.port, pygeons.DEFAULT_PORT)
+        self.assertEqual(cfg.dbname, pygeons.DEFAULT_DBNAME)
+        self.assertEqual(cfg.auth_dbname, pygeons.DEFAULT_AUTH_DBNAME)
+        self.assertEqual(cfg.username, pygeons.DEFAULT_USERNAME)
+        self.assertEqual(cfg.password, pygeons.DEFAULT_PASSWORD)
 
     @mock.patch("pygeons.pygeons.open")
     @mock.patch("pygeons.pygeons.P.isfile")
@@ -66,12 +66,12 @@ password: simpson
 
         cfg = pygeons._load_configuration()
         logging.info("cfg: %s", cfg)
-        self.assertEquals(cfg.host, pygeons.DEFAULT_HOST)
-        self.assertEquals(cfg.port, pygeons.DEFAULT_PORT)
-        self.assertEquals(cfg.dbname, pygeons.DEFAULT_DBNAME)
-        self.assertEquals(cfg.auth_dbname, pygeons.DEFAULT_AUTH_DBNAME)
-        self.assertEquals(cfg.username, pygeons.DEFAULT_USERNAME)
-        self.assertEquals(cfg.password, pygeons.DEFAULT_PASSWORD)
+        self.assertEqual(cfg.host, pygeons.DEFAULT_HOST)
+        self.assertEqual(cfg.port, pygeons.DEFAULT_PORT)
+        self.assertEqual(cfg.dbname, pygeons.DEFAULT_DBNAME)
+        self.assertEqual(cfg.auth_dbname, pygeons.DEFAULT_AUTH_DBNAME)
+        self.assertEqual(cfg.username, pygeons.DEFAULT_USERNAME)
+        self.assertEqual(cfg.password, pygeons.DEFAULT_PASSWORD)
 
     @mock.patch("pygeons.pygeons.open")
     @mock.patch("pygeons.pygeons.P.isfile")
@@ -334,7 +334,7 @@ class HaversineDistTest(ParameterizedTestCase):
     )
     def test(self, lat1, lng1, lat2, lng2, dist):
         actual = pygeons._haversine_dist(lat1, lng1, lat2, lng2)
-        self.assertAlmostEquals(dist, actual, 0)
+        self.assertAlmostEqual(dist, actual, 0)
 
 
 class ClusterCitiesTest(unittest.TestCase):
