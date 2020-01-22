@@ -53,8 +53,7 @@ var processNames = function(city) {
 };
 
 // Run processNames on all rows in cities
-// http://stackoverflow.com/questions/23356296/why-is-this-mongodb-loop-executing-more-times-than-expected
-var cur = db.cities.find().snapshot();
+var cur = db.cities.find()
 cur.immortal = true;
 var j = 0;
 cur.forEach(function(city) {

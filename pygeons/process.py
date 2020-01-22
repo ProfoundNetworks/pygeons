@@ -274,10 +274,14 @@ def _parse_row(row, names, types):
 
 def _get_admin_code(plc, kind):
     """Return the admin code for a place."""
-    if kind == "ADM1":
-        return ".".join([plc["countryCode"], plc["admin1"]])
-    elif kind == "ADM2":
-        return ".".join([plc["countryCode"], plc["admin1"], plc["admin2"]])
+    if kind == "ADM1" and plc['admin1']:
+        return "%(countryCode)s.%(admin1)s" % plc
+    elif kind == 'ADM1':
+        return None
+    elif kind == "ADM2" and plc['admin1'] and plc['admin2']:
+        return "%(countryCode)s.%(admin1)s.%(admin2)s" % plc
+    elif kind == 'ADM2':
+        return None
     else:
         raise ValueError("unexpected kind: %r", kind)
 
@@ -306,8 +310,9 @@ def tsv2json(field_names=None, field_types=None, stdin=sys.stdin, stdout=sys.std
         stdout.write("\n")
 
 
-def _process_countries(stdin=sys.stdin, stdout=sys.stdout):
+def _process_countries(infile, outfile):
     """Read countryInfo.txt from stdin and write JSON to stdout."""
+    pv = plumbum.local['pv'][infile]
     sort = plumbum.local['sort']['-n', '-k', '17,18', '-t\t']
     sed = plumbum.local['sed']['/^#/d']
     field_names = (
@@ -323,8 +328,8 @@ def _process_countries(stdin=sys.stdin, stdout=sys.stdout):
     tsv2json_kwargs = json.dumps({'field_names': field_names, 'field_types': field_types})
     tsv2json = plumbum.local['pygeons']['tsv2json', '--kwargs', tsv2json_kwargs]
     jq = plumbum.local['jq']['--compact-output', '--unbuffered', 'select(._id != null)']
-    chain = (sort < stdin) | sed | tsv2json | jq > stdout
-    _run_chain(chain)
+    chain = (pv | sort | sed | tsv2json | jq > outfile) >= sys.stderr
+    chain()
 
 
 def _create_pipeline(alt_tsv_path, countries_json_path):
@@ -367,12 +372,16 @@ def _read_admin_names(fin):
             #
             continue
 
-        admin_code = _get_admin_code(place, place["featureCode"])
+        if place['featureCode'].startswith('ADM1'):
+            admin_code = place['admin1id']
+        else:
+            admin_code = place['admin2id']
 
         alternative_names = _get_alt_names(place)
         names = alternative_names + [name, asciiname]
         names = sorted(set([x.lower() for x in names]))
-        by_code[admin_code] = Admin(geoid, admin_code, name, names)
+        if admin_code:
+            by_code[admin_code] = Admin(geoid, admin_code, name, names)
     return by_code
 
 
@@ -393,7 +402,7 @@ def _append_admin_names(obj, admin1, admin2):
         try:
             place = admin1[admin1code]
         except KeyError:
-            _LOGGER.info("unknown admin1 code: %r", admin1code)
+            _LOGGER.debug("unknown admin1 code: %r", admin1code)
             obj["admin1names"] = []
         else:
             obj["admin1"] = place.name
@@ -403,7 +412,7 @@ def _append_admin_names(obj, admin1, admin2):
         try:
             place = admin2[admin2code]
         except KeyError:
-            _LOGGER.info("unknown admin2 code: %r", admin2code)
+            _LOGGER.debug("unknown admin2 code: %r", admin2code)
             obj["admin2names"] = []
         else:
             obj["admin2"] = place.name
@@ -446,74 +455,99 @@ def _run_chain(chain):
         os.unlink(tmp_file)
 
 
-def _process_adm1(alt_names_path, countries_path, stdin=sys.stdin, stdout=sys.stdout):
+def _process_adm1(alt_names_path, countries_path, infile, outfile):
+    pv = plumbum.local['pv'][infile]
     awk = plumbum.local['awk']['-F', '\\t', '$8 ~ /ADM1H?/']
     pipeline = _create_pipeline(alt_names_path, countries_path)
     jq_flags = ['--compact-output', '. + {"admin1names": .names} | del(.names)']
     jq = plumbum.local['jq'][jq_flags]
-    chain = (awk < stdin) | pipeline | jq > stdout
-    _run_chain(chain)
+
+    chain = (pv | awk | pipeline | jq > outfile) >= sys.stderr
+    chain()
 
 
-def _process_adm2(adm1_json_path, alt_names_path, countries_path,
-                  stdin=sys.stdin, stdout=sys.stdout):
+def _process_adm2(adm1_json_path, alt_names_path, countries_path, infile, outfile):
+    pv = plumbum.local['pv'][infile]
     awk = plumbum.local['awk']['-F', '\\t', '$8 ~ /ADM2H?/']
     pipeline = _create_pipeline(alt_names_path, countries_path)
     append_args = json.dumps([adm1_json_path])
     append_admin_names = plumbum.local['pygeons']['append_admin_names', '--args', append_args]
     jq_flags = ['--compact-output', '. + {"admin2names": .names} | del(.names)']
     jq = plumbum.local['jq'][jq_flags]
-    chain = (awk < stdin) | pipeline | append_admin_names | jq > stdout
-    _run_chain(chain)
+    chain = (pv | awk | pipeline | append_admin_names | jq > outfile) >= sys.stderr
+    chain()
 
 
 def _process_cities(adm1_json_path, adm2_json_path, alt_names_path, countries_path,
-                    stdin=sys.stdin, stdout=sys.stdout):
+                    infile, outfile):
+    pv = plumbum.local['pv'][infile]
     awk = plumbum.local['awk']['-F', '\\t', '$7 == "P"']
     pipeline = _create_pipeline(alt_names_path, countries_path)
     append_args = json.dumps([adm1_json_path, adm2_json_path])
     append_admin_names = plumbum.local['pygeons']['append_admin_names', '--args', append_args]
-    chain = (awk < stdin) | pipeline | append_admin_names > stdout
-    _run_chain(chain)
+    chain = (pv | awk | pipeline | append_admin_names > outfile) >= sys.stderr
+    chain()
 
 
 def _process_admd(adm1_json_path, adm2_json_path, alt_names_path, countries_path,
-                  stdin=sys.stdin, stdout=sys.stdout):
+                  infile, outfile):
+    pv = plumbum.local['pv'][infile]
     awk = plumbum.local['awk']['-F', '\\t', '$8 ~ /ADMDH?/']
     pipeline = _create_pipeline(alt_names_path, countries_path)
     append_args = json.dumps([adm1_json_path, adm2_json_path])
     append_admin_names = plumbum.local['pygeons']['append_admin_names', '--args', append_args]
-    chain = (awk < stdin) | pipeline | append_admin_names > stdout
-    _run_chain(chain)
+    chain = (pv | awk | pipeline | append_admin_names > outfile) >= sys.stderr
+    chain()
 
 
-def _finalize_countries(alt_tsv_path, countries_json_path, stdin=sys.stdin, stdout=sys.stdout):
+def _finalize_countries(alt_tsv_path, countries_json_path, outfile):
     append_args = json.dumps([alt_tsv_path, countries_json_path, _COUNTRY_INFO])
     append_flags = ['append_alt_names', '--args', append_args]
     append_alt_names = plumbum.local['pygeons'][append_flags]
-    chain = (append_alt_names < stdin) > stdout
-    _run_chain(chain)
+    chain = (append_alt_names < countries_json_path) > outfile
+    chain()
 
 
-def _process_postcodes(stdin=sys.stdin, stdout=sys.stdout):
+def _process_postcodes(infile, outfile):
+    pv = plumbum.local['pv'][infile]
     cut = plumbum.local['cut']['-s', '-f', '1,2,3,4']
     field_names = ('countryCode', 'postCode', 'placeName', 'adminName')
     field_types = ('str', 'str', 'str', 'str')
     tsv2json_kwargs = json.dumps({'field_names': field_names, 'field_types': field_types})
     tsv2json = plumbum.local['pygeons']['tsv2json', '--kwargs', tsv2json_kwargs]
-    chain = (cut < stdin) | tsv2json > stdout
-    _run_chain(chain)
+    chain = (pv | cut | tsv2json > outfile) >= sys.stderr
+    chain()
+
+
+def _split(infile, output_dir):
+    fouts = {}
+    with open(infile) as fin:
+        for line in fin:
+            country_code = json.loads(line)['countryCode']
+            try:
+                fout = fouts[country_code]
+            except KeyError:
+                suffix = P.basename(infile)
+                outfile = P.join(output_dir, country_code + '.' + suffix)
+                fout = fouts[country_code] = open(outfile, 'w')
+            fout.write(line)
+    for fout in fouts.values():
+        fout.close()
 
 
 def process(subdir, clobber=False):
+    split_subdir = P.join(subdir, 'split')
+    if not P.isdir(split_subdir):
+        os.mkdir(split_subdir)
+
     def ap(filename):
         return P.join(subdir, filename)
 
     countries_txt = ap('countryInfo.txt')
     countries_json = ap('countries.json')
+    _LOGGER.info('%s -> %s', countries_txt, countries_json)
     if clobber or not P.isfile(countries_json):
-        with open(countries_txt, 'rb') as fin, open(countries_json, 'wb') as fout:
-            _process_countries(stdin=fin, stdout=fout)
+        _process_countries(countries_txt, countries_json)
 
     #
     # TODO: this part here is a bit silly.
@@ -521,37 +555,42 @@ def process(subdir, clobber=False):
     # This is all to shoehorn it into the append_alt_names function.
     # We should really just write a separate function to handle this for us.
     #
-    countries_final_json = ap('countries-final.json')
-    if clobber or not P.isfile(countries_final_json):
-        with open(countries_json, 'rb') as fin, open(countries_final_json, 'wb') as fout:
-            _finalize_countries(countries_json, stdin=fin, stdout=fout)
-
     alt_names_path = ap('alternateNames.tsv')
+    countries_final_json = ap('countries-final.json')
+    _LOGGER.info('%s -> %s', countries_json, countries_final_json)
+    if clobber or not P.isfile(countries_final_json):
+        _finalize_countries(alt_names_path, countries_json, countries_final_json)
+
     all_countries_tsv = ap('allCountries.tsv')
     adm1_json = ap('adm1.json')
+    _LOGGER.info('%s -> %s', all_countries_tsv, adm1_json)
     if clobber or not P.isfile(adm1_json):
-        with open(all_countries_tsv, 'rb') as fin, open(adm1_json, 'wb') as fout:
-            _process_adm1(alt_names_path, countries_json, stdin=fin, stdout=fout)
+        _process_adm1(alt_names_path, countries_json, all_countries_tsv, adm1_json)
+        _split(adm1_json, split_subdir)
 
     adm2_json = ap('adm2.json')
+    _LOGGER.info('%s -> %s', all_countries_tsv, adm2_json)
     if clobber or not P.isfile(adm2_json):
-        with open(all_countries_tsv, 'rb') as fin, open(adm2_json, 'wb') as fout:
-            _process_adm2(adm1_json, alt_names_path, countries_json, stdin=fin, stdout=fout)
+        _process_adm2(adm1_json, alt_names_path, countries_json, all_countries_tsv, adm2_json)
+        _split(adm2_json, split_subdir)
 
     admd_json = ap('admd.json')
+    _LOGGER.info('%s -> %s', all_countries_tsv, admd_json)
     if clobber or not P.isfile(admd_json):
-        with open(all_countries_tsv, 'rb') as fin, open(admd_json, 'wb') as fout:
-            _process_admd(adm1_json, adm2_json, alt_names_path, countries_json,
-                          stdin=fin, stdout=fout)
+        _process_admd(adm1_json, adm2_json, alt_names_path, countries_json,
+                      all_countries_tsv, admd_json)
+        _split(admd_json, split_subdir)
 
     cities_json = ap('cities.json')
+    _LOGGER.info('%s -> %s', all_countries_tsv, cities_json)
     if clobber or not P.isfile(cities_json):
-        with open(all_countries_tsv, 'rb') as fin, open(cities_json, 'wb') as fout:
-            _process_cities(adm1_json, adm2_json, alt_names_path, countries_json,
-                            stdin=fin, stdout=fout)
+        _process_cities(adm1_json, adm2_json, alt_names_path, countries_json,
+                        all_countries_tsv, cities_json)
+        _split(cities_json, split_subdir)
 
     postcodes_txt = ap('allCountriesPostcodes.txt')
     postcodes_json = ap('postcodes.json')
+    _LOGGER.info('%s -> %s', postcodes_txt, postcodes_json)
     if clobber or not P.isfile(postcodes_json):
-        with open(postcodes_txt, 'rb') as fin, open(postcodes_json, 'wb') as fout:
-            _process_postcodes(stdin=fin, stdout=fout)
+        _process_postcodes(postcodes_txt, postcodes_json)
+        _split(postcodes_json, split_subdir)

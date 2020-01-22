@@ -38,11 +38,13 @@ def _process_subparser(subparsers):
     epilog = ''
     parser = subparsers.add_parser(cmd, help='%s --help' % cmd, description=desc, epilog=epilog)
     parser.add_argument('subdir', help='The temporary directory where downloaded files are')
+    parser.add_argument('--clobber', action='store_true', default=False,
+                        help='Overwrite existing files')
     parser.set_defaults(function=_process)
 
 
 def _process(args):
-    process.process(args.subdir)
+    process.process(args.subdir, clobber=args.clobber)
 
 
 def _register_function(subparsers, function):

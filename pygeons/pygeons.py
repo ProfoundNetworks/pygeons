@@ -3,26 +3,17 @@
 # (C) Copyright: Profound Networks, LLC 2016
 #
 """Queries the GeoNames database in MongoDB."""
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import argparse
 import warnings
 import logging
-import os.path as P
-import datetime
 import re
-import os
 import math
 import itertools
 import pkg_resources
 import sys
 
-import yaml
-import pymongo
-import pymongo.errors
+from . import db
+from .db import ADM1, ADM2, ADMD, CITY, test_connection, reconnect
 
 #
 # http://stackoverflow.com/questions/2058802/how-can-i-get-the-version-defined-in-setup-py-setuptools-in-my-package
@@ -37,36 +28,6 @@ LOGGER = logging.getLogger(__name__)
 #
 LOGGER.addHandler(logging.NullHandler())
 
-DEFAULT_HOST = "localhost"
-"""The default hostname of the MongoDB server."""
-
-DEFAULT_PORT = 27017
-"""The default port that the MongoDB server listens on."""
-
-DEFAULT_DBNAME = "geonames"
-"""The default name of the database to read from."""
-
-DEFAULT_AUTH_DBNAME = "admin"
-"""The default name of the database to verify user information against."""
-
-DEFAULT_USERNAME = None
-"""The default username.  If None, will not authenticate."""
-
-DEFAULT_PASSWORD = None
-"""The default password.  If None, will not authenticate."""
-
-ADM1 = "admin1"
-"""Constant for the admin1 collection."""
-
-ADM2 = "admin2"
-"""Constant for the admin2 collection."""
-
-ADMD = "admind"
-"""Constant for the admind collection."""
-
-CITY = "cities"
-"""Constant for the cities collection."""
-
 SCRUB_OK = "O"
 """Indicates that the input field matched completely."""
 SCRUB_MOD = "M"
@@ -75,132 +36,13 @@ SCRUB_DERIVED = "D"
 """Indicates that the input field was missing and was derived to achieve
 a match."""
 
-CLIENT = None
-"""The PyMongo client for connecting to the database."""
-
-DB = None
-"""The database object."""
-
-EXPECTED_VERSION = datetime.datetime(2016, 11, 4, 13, 3, 8)
-"""The expected database version.  If this is newer than the actual version
-at runtime, a warning will be printed to standard error at runtime."""
-
 DEFAULT_LANG = "en"
 """The default language for queries."""
-
-
-class Config(object):
-    """Our writable namedtuple."""
-
-    def __init__(
-            self, host=DEFAULT_HOST, port=DEFAULT_PORT, dbname=DEFAULT_DBNAME,
-            auth_dbname=DEFAULT_AUTH_DBNAME, username=DEFAULT_USERNAME,
-            password=DEFAULT_PASSWORD):
-        self.host = host
-        self.port = port
-        self.dbname = dbname
-        self.auth_dbname = auth_dbname
-        self.username = username
-        self.password = password
-
-    def __str__(self):
-        return "Config(%r, %r, %r, %r, %r, \"*****\")" % (
-            self.host, self.port, self.dbname, self.auth_dbname, self.username
-        )
-
-
-def _hide_password(conf):
-    conf = dict(conf)
-    if 'password' in conf:
-        conf['password'] = '*' * len(conf['password'])
-    return conf
-
-
-def _load_configuration_helper(fin):
-    conf = yaml.full_load(fin)
-    if not conf:
-        conf = {}
-    LOGGER.info("conf: %r", _hide_password(conf))
-    host = conf.get("host", DEFAULT_HOST)
-    port = conf.get("port", DEFAULT_PORT)
-    dbname = conf.get("dbname", DEFAULT_DBNAME)
-    auth_dbname = conf.get("auth_dbname", DEFAULT_AUTH_DBNAME)
-    username = conf.get("username", DEFAULT_USERNAME)
-    password = conf.get("password", DEFAULT_PASSWORD)
-    return Config(host, port, dbname, auth_dbname, username, password)
-
-
-def _load_configuration():
-    """Reload the configuration from $HOME/pygeons.yaml, if it exists."""
-    default_path = P.expanduser("~/pygeons.yaml")
-    config_path = P.abspath(os.environ.get("PYGEON_CONFIG_PATH", default_path))
-    if P.isfile(config_path):
-        LOGGER.info("loading configuration from %r", config_path)
-        with open(config_path) as fin:
-            return _load_configuration_helper(fin)
-    else:
-        LOGGER.warning("%r does not exist, using default config", config_path)
-    return Config()
-
-CONFIG = _load_configuration()
 
 
 class NotFound(Exception):
     """Raised when we're unable to find the required place in the DB."""
     pass
-
-
-def reconnect(connect=True):
-    """Reconnect to the database.  If using pygeon in a multi-threaded or
-    multi-process application, call this function immediately after you fork.
-
-    See
-    http://api.mongodb.org/python/current/faq.html#using-pymongo-with-multiprocessing
-    for details."""
-    global CLIENT
-    global DB
-    CLIENT, DB = _reconnect_helper(connect)
-
-
-def _reconnect_helper(connect=True):
-    """Returns a client and database handle."""
-    client = pymongo.MongoClient(CONFIG.host, CONFIG.port, connect=connect)
-    db = client[CONFIG.dbname]
-    if CONFIG.username and CONFIG.password and CONFIG.auth_dbname:
-        db.authenticate(CONFIG.username, CONFIG.password,
-                        source=CONFIG.auth_dbname)
-    return client, db
-
-
-def _test_connection():
-    """If we're not already connected, then connect. Otherwise, do nothing."""
-    if not (CLIENT and DB):
-        reconnect()
-
-    #
-    # Everything that touches the DB should first call _test_connection to
-    # ensure a DB connection is available.
-    #
-
-
-def get_version():
-    """Return the version of the database to use."""
-    _test_connection()
-    ver = DB.util.find_one({"name": "version"})
-    if ver:
-        return datetime.datetime.strptime(ver["value"], "%Y.%m.%d-%H.%M.%S")
-    return None
-
-
-def check_version():
-    """Print a warning if the current version is not the expected version."""
-    try:
-        version = get_version()
-    except pymongo.errors.OperationFailure as opf:
-        LOGGER.error(opf)
-        version = None
-    if version is None or version < EXPECTED_VERSION:
-        warnings.warn("unexpected version: %s" % repr(version), RuntimeWarning)
 
 
 def country_to_iso(name):
@@ -209,6 +51,10 @@ def country_to_iso(name):
     :param str name: The name of the country.
     :returns: The ISO2 code.
     :rtype: str
+
+    In the new API, use::
+
+        Country(name).iso
     """
     return country_info(name)["iso"]
 
@@ -222,15 +68,19 @@ def country_info(name):
     :param str name: The name of the country.
     :returns: The country information.
     :rtype: dict
+
+    In the new API, use::
+
+        dict(Country(name))
     """
     if not name:
         raise ValueError("country name may not be empty")
-    _test_connection()
-    country = DB.countries.find_one({"names": _scrub(name)})
+    test_connection()
+    country = db.DB.countries.find_one({"names": _scrub(name)})
     if country:
         return country
 
-    country = DB.countries.find_one({"abbr": _scrub(name)})
+    country = db.DB.countries.find_one({"abbr": _scrub(name)})
     if country:
         return country
 
@@ -251,9 +101,18 @@ def norm(collection, country_code, name, lang=DEFAULT_LANG):
     :param str lang: The language that the name is in.
     :returns: The normalized name.
     :rtype: str
+
+    In the new API, use::
+
+        find_state('leningrad', 'ru').name
+        Country('ru').State('leningrad')['name']
+        Country('ru').City('peterburg')['name']
+
+        Country('ru').State('leningrad').normalize(language='ru')
+        Country('ru').City('peterburg').normalize(language='ru')
     """
     LOGGER.debug("norm: %r", locals())
-    _test_connection()
+    test_connection()
 
     if collection not in [ADM1, ADM2, ADMD, CITY]:
         raise ValueError("invalid collection")
@@ -261,7 +120,7 @@ def norm(collection, country_code, name, lang=DEFAULT_LANG):
     name = _scrub(name)
     query = {"countryCode": country_code, "names_lang.%s" % lang: name}
     LOGGER.debug("norm_admin: collection: %r query: %r", collection, query)
-    admin = DB[collection].find_one(query)
+    admin = db.DB[collection].find_one(query)
     if not admin:
         if lang == DEFAULT_LANG:
             try:
@@ -283,15 +142,22 @@ def norm_country(country_name, lang=DEFAULT_LANG):
     :param str country_name: The name of the country to normalize.
     :param str lang: The language that the country name is in.
     :returns: The canonical country name.
-    :rtype: str"""
+    :rtype: str
+
+    In the new API, use:
+
+        Country('jp').normalize()
+        Country('japan').normalize(language='ja')
+
+    """
     meth_name = "norm_country"
-    _test_connection()
+    test_connection()
     country_name = _scrub(country_name)
     LOGGER.debug("%s: country_name: %s lang: %s",
                  meth_name, repr(country_name), repr(lang))
     query = {"names_lang.%s" % lang: country_name}
     LOGGER.debug("%s: query: %s", meth_name, query)
-    country = DB.countries.find_one(query)
+    country = db.DB.countries.find_one(query)
     if country:
         return country["name"]
 
@@ -310,14 +176,19 @@ def norm_ppc(country_code, place_name):
     :param str place_name: The place name to normalize.
     :returns: The canonical place name.
     :rtype: str
+
+    In the new API, use::
+
+        Country(country_code).Postcode(place_name).normalize()
+
     """
-    _test_connection()
+    test_connection()
     #
     # TODO: make placeNames lowercase on the DB side for these lookups to
     # be more reliable
     #
     query = {"countryCode": country_code, "placeName": place_name.title()}
-    place = DB.postcodes.find_one(query)
+    place = db.DB.postcodes.find_one(query)
     if place:
         return place["placeName"]
     raise NotFound("unknown place: %s" % repr(place_name))
@@ -459,13 +330,17 @@ def expand(collection, country_code, abbr):
     :param str abbr: The abbreviation to expand.
     :returns: The expanded abbreviation.
     :rtype: str
+
+    With the new API, use::
+
+        Country('au').State('nsw').normalize()
     """
-    _test_connection()
+    test_connection()
     logging.debug("expand: %r", locals())
     if collection not in [ADM1, ADM2, ADMD, CITY]:
         raise ValueError("invalid collection: %r", collection)
-    place = DB[collection].find_one({"abbr": _scrub(abbr),
-                                     "countryCode": country_code})
+    place = db.DB[collection].find_one({"abbr": _scrub(abbr),
+                                        "countryCode": country_code})
     if place:
         return place["name"]
     raise NotFound("no such %r abbreviation: %r" % (collection, abbr))
@@ -482,23 +357,31 @@ def expand_country(abbr):
     :param str abbr: The abbreviation to expand.
     :returns: The canonical country name.
     :rtype: str
+
+    With the new API, use::
+
+        Country('ru').normalize()
+        Country('rus').normalize()
     """
-    _test_connection()
-    country = DB.countries.find_one({"abbr": _scrub(abbr)})
+    test_connection()
+    country = db.DB.countries.find_one({"abbr": _scrub(abbr)})
     if country:
         return country["name"]
     raise NotFound("no such country abbreviation: %s" % repr(abbr))
 
 
 def find_country(country_name, lang=DEFAULT_LANG):
-    _test_connection()
-    country = DB.countries.find_one(
+    #
+    # TODO
+    #
+    test_connection()
+    country = db.DB.countries.find_one(
         {"names_lang.%s" % lang: _scrub(country_name)}
     )
     if country:
         return country
     elif lang == DEFAULT_LANG:
-        country = DB.countries.find_one({"abbr": _scrub(country_name)})
+        country = db.DB.countries.find_one({"abbr": _scrub(country_name)})
         if country:
             return country
         raise NotFound("no such country: %r" % country_name)
@@ -523,9 +406,14 @@ def csc_exists(city_str, state_str, country_str):
     :param str state_str: The state name.
     :param str country_str: The country name.
     :rtype: boolean
+
+    With the new API, use::
+
+        'sydney' in Country('au').State('nsw')
+        find(city='sydney', state='nsw', country='au')
     """
     LOGGER.debug("csc_exists: %r" % locals())
-    _test_connection()
+    test_connection()
 
     iso = country_to_iso(country_str)
     city_str = _scrub(city_str)
@@ -538,7 +426,7 @@ def csc_exists(city_str, state_str, country_str):
         query = {"names": city_str, "countryCode": iso}
         query.update(subquery)
         LOGGER.debug("query: %r", query)
-        return DB.cities.find(query).count()
+        return db.DB.cities.find(query).count()
 
     adm1 = find({"admin1names": state_str})
     adm2 = find({"admin2names": state_str})
@@ -568,9 +456,13 @@ def csc_find(city, state, country, dedup=True):
     :param boolean dedup: Whether to deduplicate the found results.
     :returns: Cities that match the (city, state, country) query.
     :rtype: list of dict
+
+    With the new API, use::
+
+        find(city='sydney')
     """
     LOGGER.debug("csc_find: %r", locals())
-    _test_connection()
+    test_connection()
     clean_city, state, iso2, _ = _csc_clean_params(city, state, country)
     return _csc_find(clean_city, state, iso2, dedup=dedup)
 
@@ -589,7 +481,7 @@ def _csc_find(city, state, iso2, dedup=True):
         if iso2:
             query["countryCode"] = iso2
         LOGGER.debug("_csc_find: query: %r", query)
-        cities.update({c["_id"]: c for c in DB.cities.find(query)})
+        cities.update({c["_id"]: c for c in db.DB.cities.find(query)})
 
     #
     # Perhaps state is an admin1, but city is an admin2 or admind?
@@ -604,7 +496,7 @@ def _csc_find(city, state, iso2, dedup=True):
                 query["admin1names"] = state
             if iso2:
                 query["countryCode"] = iso2
-            cities.update({c["_id"]: c for c in DB[collection].find(query)})
+            cities.update({c["_id"]: c for c in db.DB[collection].find(query)})
 
     cities = sorted(cities.values(), key=lambda x: x.get("population", 0),
                     reverse=True)
@@ -760,10 +652,17 @@ def is_state(state, country):
     :param str state: The name of the state.
     :param str country: The name of the country.
     :rtype: boolean
+
+    With the new API, use::
+
+        Country(country).State(state)
+
+    It will return None if the country has no such state.
+
     """
     if not (state and country):
         raise ValueError("state and country may not be empty or None")
-    _test_connection()
+    test_connection()
     collections = [("admin1", "admin1names"), ("admin2", "admin2names"),
                    ("admind", "names")]
     clean_state = _clean_nonalpha(state)
@@ -773,7 +672,7 @@ def is_state(state, country):
     except (ValueError, NotFound):
         raise ValueError("no such country: %r", country)
     for col, field in collections:
-        if DB[col].find({field: clean_state, "countryCode": clean_country}):
+        if db.DB[col].find({field: clean_state, "countryCode": clean_country}):
             return True
     return False
 
@@ -911,11 +810,11 @@ def sc_scrub(state, country):
     :param str country: The name of the country.
     :rtype: dict"""
     LOGGER.debug("sc_scrub: %r", locals())
-    _test_connection()
+    test_connection()
     _, state, country, _ = _csc_clean_params(None, state, country)
 
     def find(coll, key):
-        return list(DB[coll].find({key: state, "countryCode": country}))
+        return list(db.DB[coll].find({key: state, "countryCode": country}))
 
     pairs = [("admin1", "admin1names"), ("admin2", "admin2names"),
              ("admind", "names")]
@@ -935,7 +834,7 @@ def sc_scrub(state, country):
         #
         # Perhaps the country is wrong?  Try omitting it.
         #
-        res.extend(list(DB[coll].find({key: state})))
+        res.extend(list(db.DB[coll].find({key: state})))
         LOGGER.debug("sc_scrub: res: %r", res)
         if len(res) == 1:
             return {"result": res[0], "score": 0.8,
@@ -1015,7 +914,7 @@ def sc_list(state, country):
     :param str state: The name of the state.
     :param str country: The name of the country.  May be None.
     """
-    _test_connection()
+    test_connection()
 
     if not state:
         raise ValueError("state may not be empty")
@@ -1025,7 +924,7 @@ def sc_list(state, country):
         if ccode:
             query["countryCode"] = ccode
         LOGGER.debug("find: query: %r", query)
-        return DB[coll].find(query)
+        return db.DB[coll].find(query)
 
     def state_generator(state, country):
         pairs = [("admin1", "admin1names"), ("admin2", "admin2names"),
@@ -1059,22 +958,3 @@ def _haversine_dist(lat1, lng1, lat2, lng2):
         )
     )
     return d
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("command", nargs="?")
-    args = parser.parse_args()
-
-    if args.command is None:
-        print(CONFIG.dbname)
-    elif args.command == "version":
-        print(get_version())
-    elif args.command == "expected-version":
-        print("-".join([DEFAULT_DBNAME, EXPECTED_VERSION]))
-    elif args.command == "db":
-        print(CONFIG.dbname)
-    else:
-        parser.error("invalid command: %s" % args[0])
-
-    sys.exit(0 if get_version() > EXPECTED_VERSION else 1)
