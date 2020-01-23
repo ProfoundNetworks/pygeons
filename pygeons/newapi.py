@@ -215,10 +215,10 @@ class State:
         self.data = info
 
     def __repr__(self):
-        return 'State.gid(%(_id)r, %(name)r, %(countryCode)r)' % self.data
+        return 'State.gid(%(_id)r, %(featureCode)r, %(name)r, %(countryCode)r)' % self.data
 
     def __str__(self):
-        return 'State(%(name)r, %(countryCode)r)' % self.data
+        return 'State(%(featureCode)r, %(name)r, %(countryCode)r)' % self.data
 
     def __getattr__(self, name):
         try:
