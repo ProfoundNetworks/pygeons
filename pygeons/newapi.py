@@ -139,9 +139,6 @@ class Country:
             return self.name.lower()
         return self.names_lang[language][0]
 
-    def find(self, name):
-        pass
-
     def expand(self, abbreviation):
         for col in (pygeons.ADM1, pygeons.ADM2, pygeons.ADMD, pygeons.CITY):
             return pygeons.expand(col, self.iso, abbreviation)
@@ -161,12 +158,7 @@ class Country:
 
     @property
     def cities(self):
-        def gen():
-            query = {'countryCode': self.iso}
-            for info in db.DB.cities.find(query):
-                yield City(info)
-
-        return list(gen())
+        return CityCollection({'countryCode': self.iso})
 
     @property
     def postcodes(self):
@@ -218,6 +210,39 @@ class State:
         #
         info = db.DB.admin1.find_one({'_id': geonames_id})
         return State(info)
+
+    @property
+    def cities(self):
+        return CityCollection({'countryCode': self.iso, 'admin1names': self.name})
+
+
+class CityCollection:
+    def __init__(self, query):
+        self._query = query
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        for info in db.DB.cities.find(self._query):
+            yield City(info)
+
+    def __getitem__(self, key):
+        #
+        # FIXME: What about admin2, admind?
+        #
+        state = self._query.get('admin1names', None)
+        country = self._query.get('countryCode', None)
+        return pygeons.find_city(key, state=state, country=country)
+
+    def __contains__(self, key):
+        return pygeons.is_city(key, ...)
+
+    def __str__(self):
+        return 'CityCollection(%r)' % self._query
+
+    def __repr__(self):
+        return 'CityCollection(%r)' % self._query
 
 
 class City:
