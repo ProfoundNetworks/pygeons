@@ -222,6 +222,10 @@ def is_city(country_code, city_name, lang=DEFAULT_LANG):
     :param str city_name: The city name to look for.
     :param str lang: The language that the city name is in.
     :rtype: boolean
+
+    With new API, use::
+
+       'sapporo' in Country('jp').cities 
     """
     meth_name = "is_city"
     try:
@@ -655,7 +659,7 @@ def is_state(state, country):
 
     With the new API, use::
 
-        Country(country).State(state)
+        state in Country(country).states
 
     It will return None if the country has no such state.
 
@@ -672,7 +676,8 @@ def is_state(state, country):
     except (ValueError, NotFound):
         raise ValueError("no such country: %r", country)
     for col, field in collections:
-        if db.DB[col].find({field: clean_state, "countryCode": clean_country}):
+        cursor = db.DB[col].find({field: clean_state, "countryCode": clean_country})
+        if cursor.count():
             return True
     return False
 

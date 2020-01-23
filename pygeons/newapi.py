@@ -69,6 +69,24 @@ City.gid(3133880, 'Trondheim', 'Trøndelag', 'NO')
 >>> round(oslo.distance_to(trondheim))
 392
 
+Testing for valid city and country combinations:
+
+>>> 'sapporo' in Country('jp').cities
+True
+>>> 'auckland' in Country('nz').cities
+True
+>>> 'auckland' in Country('au').cities
+False
+
+Testing for valid state and country combinations:
+
+>>> 'hokkaido' in Country('jp').states
+True
+>>> 'nsw' in Country('au').states
+True
+>>> 'new mexico' in Country('ca').states
+False
+
 Expanding country-specific abbreviations:
 
 >>> Country('au').expand('nsw')
@@ -145,16 +163,7 @@ class Country:
 
     @property
     def states(self):
-        def state_generator():
-            query = {'countryCode': self.iso}
-            for info in db.DB[self._state_collection].find(query):
-                #
-                # Do not output historical entities (they don't exist anymore).
-                #
-                if not info['featureCode'].endswith('H'):
-                    yield State(info)
-
-        return list(state_generator())
+        return StateCollection({'countryCode': self.iso})
 
     @property
     def cities(self):
@@ -168,6 +177,37 @@ class Country:
                 yield Postcode(info)
 
         return list(gen())
+
+
+class StateCollection:
+    def __init__(self, query, collection='admin1'):
+        self._query = query
+        self._collection = collection
+
+    def __iter__(self):
+        self._cursor = db.DB[self._collection].find(self._query)
+        return self
+
+    def __next__(self):
+        info = next(self._cursor)
+        return State(info)
+
+    def __getitem__(self, key):
+        country = self._query.get('countryCode', None)
+        return find_state(key, country=country)
+
+    def __contains__(self, key):
+        country = self._query.get('countryCode', None)
+        return pygeons.is_state(key, country)
+
+    def __str__(self):
+        return 'StateCollection(%r)' % self._query
+
+    def __repr__(self):
+        return 'StateCollection(%r)' % self._query
+
+    def __len__(self):
+        return db.DB[self._collection].find(self._query).count()
 
 
 class State:
@@ -221,11 +261,12 @@ class CityCollection:
         self._query = query
 
     def __iter__(self):
+        self._cursor = db.DB.cities.find(self._query)
         return self
 
     def __next__(self):
-        for info in db.DB.cities.find(self._query):
-            yield City(info)
+        info = next(self._cursor)
+        return City(info)
 
     def __getitem__(self, key):
         #
@@ -233,16 +274,20 @@ class CityCollection:
         #
         state = self._query.get('admin1names', None)
         country = self._query.get('countryCode', None)
-        return pygeons.find_city(key, state=state, country=country)
+        return find_city(key, state=state, country=country)
 
     def __contains__(self, key):
-        return pygeons.is_city(key, ...)
+        country = self._query.get('countryCode', None)
+        return pygeons.is_city(country, key)
 
     def __str__(self):
         return 'CityCollection(%r)' % self._query
 
     def __repr__(self):
         return 'CityCollection(%r)' % self._query
+
+    def __len__(self):
+        return db.DB.cities.find(self._query).count()
 
 
 class City:
@@ -308,7 +353,12 @@ def find_city(name, state=None, country=None):
     if len(cities) == 1:
         return cities[0]
 
-    raise ValueError('ambiguous query (%d unique results)' % len(cities))
+    raise ValueError(
+        'Ambiguous query (%d unique results).  Call '
+        'find_cities(%r, %r, %r) to see them all.' % (
+            len(cities), name, state, country
+        )
+    )
 
 
 def find_states(name, country=None):
