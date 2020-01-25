@@ -6,12 +6,64 @@ Offers the following abstraction over the geonames data:
 - Each country is divided into states (see the State class)
 - A state includes multiple cities (see the City class)
 
-Geographic trivia:
+Countries are at the very top level.
+You may access them via the constructor directly.
+
+>>> Country('ivory coast')
+Country('Ivory Coast')
+
+Common alternative names also work:
+
+>>> Country('côte d’ivoire')
+Country('Ivory Coast')
+
+ISO abbreviations (both two- and three-letter) also work:
+
+>>> Country('civ')
+Country('Ivory Coast')
+>>> _.iso
+'CI'
+
+You can access the states of a country with the obvious syntax:
+
+>>> Country('usa').states['idaho']
+State.gid(5596512, 'ADM1', 'Idaho', 'US')
+>>> 'idaho' in Country('usa').states
+True
+
+States are administrative divisions of a country.
+They're called different things depending on the country (e.g. territory, province, region, prefecture, etc.), but most countries have such divisions for administrative purposes.
+
+In geonames, there are multiple levels of administrative entities, such as:
+
+    - ADM1
+    - ADM2
+    - ADMD
+
+Pygeons groups all the administrative entities under the State class.
+
+Common names and abbreviations work:
+
+>>> Country('usa').states['id']
+State.gid(5596512, 'ADM1', 'Idaho', 'US')
+
+On the next level down, you have cities:
+
+>>> Country('usa').states['idaho'].cities['moscow']
+City.gid(5601538, 'Moscow', 'Idaho', 'US')
+>>> 'moscow' in Country('usa').states['idaho']
+True
+
+You can shortcut the state level altogether.
+This is particularly useful if you don't know the state.
 
 >>> 'moscow' in Country('russia')
 True
->>> 'moscow' in find_state('idaho', 'us')
-True
+>>> Country('russia').cities['moscow']
+City.gid(524901, 'Moscow', 'Moskva', 'RU')
+
+You may be surprised that city names are not necessarily unique.
+In such cases, use the find_cities function:
 
 >>> find_cities("oslo")
 [City.gid(3143244, 'Oslo', 'Oslo County', 'NO'), City.gid(5040425, 'Oslo', 'Minnesota', 'US'), City.gid(4167241, 'Oslo', 'Florida', 'US'), City.gid(5040424, 'Oslo', 'Minnesota', 'US'), City.gid(6674712, 'Oslo', 'Junín', 'PE')]
@@ -211,20 +263,16 @@ class StateCollection:
 
 
 class State:
-    def __init__(self, info):
-        self.data = info
+    def __init__(self, data):
+        self.data = data
+        for key, value in self.data.items():
+            setattr(self, key, value)
 
     def __repr__(self):
         return 'State.gid(%(_id)r, %(featureCode)r, %(name)r, %(countryCode)r)' % self.data
 
     def __str__(self):
         return 'State(%(featureCode)r, %(name)r, %(countryCode)r)' % self.data
-
-    def __getattr__(self, name):
-        try:
-            return self.data[name]
-        except KeyError:
-            raise AttributeError('no such attribute: %r in self.data' % name)
 
     def __contains__(self, item):
         if isinstance(item, str):
@@ -253,7 +301,10 @@ class State:
 
     @property
     def cities(self):
-        return CityCollection({'countryCode': self.iso, 'admin1names': self.name})
+        #
+        # FIXME:
+        #
+        return CityCollection({'countryCode': self.countryCode, 'admin1names': self.name})
 
 
 class CityCollection:
