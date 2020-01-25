@@ -17,7 +17,7 @@ Common alternative names also work:
 >>> Country('côte d’ivoire')
 Country('Ivory Coast')
 
-ISO abbreviations (both two- and three-letter) also work:
+ISO abbreviations (both two- and three-letter, [ISO-3166 alpha-1 and alpha-2](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes), respectively) also work:
 
 >>> Country('civ')
 Country('Ivory Coast')
@@ -88,24 +88,54 @@ City.gid(3143244, 'Oslo', 'Oslo County', 'NO')
 
 Each place is backed by a dict.  You can access its contents directly:
 
->>> for key in sorted(oslo.data.keys()):
-...     print(key)
-_id
-abbr
-admin1
-admin1names
-admin2
-admin2names
-asciiname
-countryCode
-featureClass
-featureCode
-latitude
-longitude
-name
-names
-names_lang
-population
+>>> import json
+>>> print(json.dumps(oslo.data, indent=2, sort_keys=True))
+{
+  "_id": 3143244,
+  "abbr": [],
+  "admin1": "Oslo County",
+  "admin1names": [
+    "oslo",
+    "oslo county",
+    "oslo fylke"
+  ],
+  "admin2": "0301",
+  "admin2names": [],
+  "asciiname": "Oslo",
+  "countryCode": "NO",
+  "featureClass": "P",
+  "featureCode": "PPLC",
+  "latitude": 59.91273,
+  "longitude": 10.74609,
+  "name": "Oslo",
+  "names": [
+    "christiania (historical)",
+    "kristiania (historical)",
+    "oslo"
+  ],
+  "names_lang": {
+    "??": [
+      "christiania (historical)",
+      "kristiania (historical)"
+    ],
+    "en": [
+      "oslo"
+    ],
+    "fi": [
+      "oslo"
+    ],
+    "nn": [
+      "oslo"
+    ],
+    "no": [
+      "oslo"
+    ],
+    "se": [
+      "oslo"
+    ]
+  },
+  "population": 580000
+}
 
 You can also access them more conveniently as attributes:
 
@@ -168,6 +198,8 @@ DEFAULT_LANGUAGE = 'en'
 class Country:
     def __init__(self, name):
         self.data = pygeons.country_info(name)
+        for key, value in self.data.items():
+            setattr(self, key, value)
 
         #
         # The collection to go through depends on the country.
@@ -176,12 +208,6 @@ class Country:
         # top level contains country names like England, Scotland, etc.
         #
         self._state_collection = 'admin1'
-
-    def __getattr__(self, name):
-        try:
-            return self.data[name]
-        except KeyError:
-            raise AttributeError('no such attribute: %r in self.data' % name)
 
     def __repr__(self):
         return 'Country(%(name)r)' % self.data
@@ -344,12 +370,8 @@ class CityCollection:
 class City:
     def __init__(self, info):
         self.data = info
-
-    def __getattr__(self, name):
-        try:
-            return self.data[name]
-        except KeyError:
-            raise AttributeError('no such attribute: %r in self.data' % name)
+        for key, value in self.data.items():
+            setattr(self, key, value)
 
     def __repr__(self):
         return 'City.gid(%(_id)r, %(name)r, %(admin1)r, %(countryCode)r)' % self.data
