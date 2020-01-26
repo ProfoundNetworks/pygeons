@@ -68,15 +68,9 @@ In such cases, use the find_cities function:
 >>> find_cities("oslo")
 [City.gid(3143244, 'Oslo', 'Oslo County', 'NO'), City.gid(5040425, 'Oslo', 'Minnesota', 'US'), City.gid(4167241, 'Oslo', 'Florida', 'US'), City.gid(5040424, 'Oslo', 'Minnesota', 'US'), City.gid(6674712, 'Oslo', 'Junín', 'PE')]
 
+If there are multiple results, then they get sorted by decreasing population.
+
 >>> oslo = find_cities("oslo", country='no')[0]
-
-If your query is sufficiently narrow and yields only one result, you may find the find_city function more helpful than the above:
-
->>> oslo = find_city("oslo", country="no")
-
-However, if there are multiple matches, the find_city function will fail.
-Use find_cities instead, and then narrow down the results as necessary.
-
 >>> oslo
 City.gid(3143244, 'Oslo', 'Oslo County', 'NO')
 
@@ -144,7 +138,7 @@ You can also access them more conveniently as attributes:
 
 Calculating the distance between two cities::
 
->>> trondheim = find_city('trondheim')
+>>> trondheim = find_cities('trondheim')[0]
 >>> trondheim
 City.gid(3133880, 'Trondheim', 'Trøndelag', 'NO')
 
@@ -178,10 +172,10 @@ Expanding country-specific abbreviations:
 
 Pygeons understands names in English and languages local to a particular country:
 
->>> find_city('札幌')
+>>> find_cities('札幌')[0]
 City.gid(2128295, 'Sapporo', 'Hokkaido', 'JP')
 
->>> find_city('москва', country='ru')
+>>> find_cities('москва', country='ru')[0]
 City.gid(524901, 'Moscow', 'Moskva', 'RU')
 
 >>> Country('jp').normalize(language='ja')
@@ -207,7 +201,7 @@ class Country:
         # For GB, it makes more sense to go through admin2, because the
         # top level contains country names like England, Scotland, etc.
         #
-        self._state_collection = 'admin1'
+        self._state_feature_code = 'ADM1'
 
     def __repr__(self):
         return 'Country(%(name)r)' % self.data
@@ -241,11 +235,23 @@ class Country:
 
     @property
     def states(self):
-        return StateCollection({'countryCode': self.iso})
+        return StateCollection(countryCode=self.iso, featureCode=self._state_feature_code)
+
+    @property
+    def admin1(self):
+        return StateCollection(countryCode=self.iso, featureCode='ADM1')
+
+    @property
+    def admin2(self):
+        return StateCollection(countryCode=self.iso, featureCode='ADM2')
+
+    @property
+    def admind(self):
+        return StateCollection(countryCode=self.iso, featureCode='ADMD')
 
     @property
     def cities(self):
-        return CityCollection({'countryCode': self.iso})
+        return CityCollection(countryCode=self.iso)
 
     @property
     def postcodes(self):
@@ -258,21 +264,29 @@ class Country:
 
 
 class StateCollection:
-    def __init__(self, query, collection='admin1'):
+    def __init__(self, **query):
         self._query = query
-        self._collection = collection
+
+        try:
+            feature_code = query['featureCode']
+        except KeyError:
+            self._collection = db.ADM1
+        else:
+            assert feature_code.startswith('ADM')
+            suffix = feature_code.replace('ADM', '').rstrip('H').lower()
+            self._collection = 'admin%s' % suffix
+
+        self._cursor = db.DB[self._collection].find(self._query)
 
     def __iter__(self):
-        self._cursor = db.DB[self._collection].find(self._query)
         return self
 
     def __next__(self):
-        info = next(self._cursor)
-        return State(info)
+        return State(next(self._cursor))
 
     def __getitem__(self, key):
         country = self._query.get('countryCode', None)
-        return find_state(key, country=country)
+        return find_states(key, country=country)[0]
 
     def __contains__(self, key):
         country = self._query.get('countryCode', None)
@@ -330,20 +344,19 @@ class State:
         #
         # FIXME:
         #
-        return CityCollection({'countryCode': self.countryCode, 'admin1names': self.name})
+        return CityCollection(countryCode=self.countryCode, admin1names=self.name)
 
 
 class CityCollection:
-    def __init__(self, query):
+    def __init__(self, **query):
         self._query = query
+        self._cursor = db.DB.cities.find(self._query)
 
     def __iter__(self):
-        self._cursor = db.DB.cities.find(self._query)
         return self
 
     def __next__(self):
-        info = next(self._cursor)
-        return City(info)
+        return City(next(self._cursor))
 
     def __getitem__(self, key):
         #
@@ -351,7 +364,7 @@ class CityCollection:
         #
         state = self._query.get('admin1names', None)
         country = self._query.get('countryCode', None)
-        return find_city(key, state=state, country=country)
+        return find_cities(key, state=state, country=country)[0]
 
     def __contains__(self, key):
         country = self._query.get('countryCode', None)
@@ -418,33 +431,10 @@ class Postcode:
 
 
 def find_cities(name, state=None, country=None):
-    return [City(data) for data in pygeons.csc_list(name, state, country)]
-
-
-def find_city(name, state=None, country=None):
-    cities = find_cities(name, state=state, country=country)
-    if len(cities) == 1:
-        return cities[0]
-
-    raise ValueError(
-        'Ambiguous query (%d unique results).  Call '
-        'find_cities(%r, %r, %r) to see them all.' % (
-            len(cities), name, state, country
-        )
-    )
+    cities = [City(data) for data in pygeons.csc_list(name, state, country)]
+    return sorted(cities, key=lambda s: s.population, reverse=True)
 
 
 def find_states(name, country=None):
-    return [State(data) for data in pygeons.sc_list(name, country)]
-
-
-def find_state(name, country=None):
-    states = find_states(name, country=country)
-    if len(states) == 1:
-        return states[0]
-
-    admin1 = [s for s in states if s.featureCode == 'ADM1']
-    if len(admin1) == 1:
-        return admin1[0]
-
-    raise ValueError('ambiguous query (%d unique results)' % len(states))
+    states = [State(data) for data in pygeons.sc_list(name, country)]
+    return sorted(states, key=lambda s: s.population, reverse=True)
