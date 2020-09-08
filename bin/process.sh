@@ -70,6 +70,11 @@ then
         '. + {"admin1names": .names} | del(.names)' > adm1.json
     python $SCRIPT_DIR/split_by_cc.py adm1.json split/
 fi
+#
+# FIXME: why do we rename names to admin1names?
+# Is it because we promote/demote them down to the city objects later? (Yes)
+# Why is that necessary?  (For indexing, see gns_indices.js)
+#
 
 if [ ! -s adm2.json ]
 then

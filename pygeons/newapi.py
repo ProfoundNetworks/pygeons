@@ -18,7 +18,8 @@ Common alternative names also work:
 Country('Ivory Coast')
 
 ISO abbreviations (both two- and three-letter,
-[ISO-3166 alpha-1 and alpha-2](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes),
+`ISO-3166 alpha-1 and alpha-2
+<https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes>`__,
 respectively) also work:
 
 >>> Country('civ')
@@ -34,12 +35,16 @@ State.gid(5596512, 'ADM1', 'Idaho', 'US')
 True
 
 States are administrative divisions of a country.
-They're called different things depending on the country (e.g. territory, province, region, prefecture, etc.), but most countries have such divisions for administrative purposes.
+They're called different things depending on the country
+(e.g. territory, province, region, prefecture, etc.),
+but most countries have such divisions for administrative purposes.
 
 In geonames, there are multiple levels of administrative entities, such as:
 
     - ADM1
     - ADM2
+    - ADM3
+    - ADM4
     - ADMD
 
 Pygeons groups all the administrative entities under the State class.
@@ -68,7 +73,7 @@ You may be surprised that city names are not necessarily unique.
 In such cases, use the find_cities function:
 
 >>> find_cities("oslo")
-[City.gid(3143244, 'Oslo', 'NO'), City.gid(5040425, 'Oslo', 'US'), City.gid(4167241, 'Oslo', 'US'), City.gid(5040424, 'Oslo', 'US'), City.gid(6674712, 'Oslo', 'PE')]
+[City.gid(3143244, 'Oslo', 'NO'), City.gid(5040425, 'Oslo', 'US')]
 
 If there are multiple results, then they get sorted by decreasing population.
 
@@ -116,10 +121,10 @@ False
 
 Expanding country-specific abbreviations:
 
->>> Country('au').expand('nsw')
-'State of New South Wales'
->>> Country('usa').expand('co')
-'Colorado'
+>>> [g.name for g in Country('au').expand('nsw')]
+['State of New South Wales']
+>>> [g.name for g in Country('usa').expand('co')]
+['Colorado']
 
 Pygeons understands names in English and languages local to a particular country:
 
@@ -134,11 +139,180 @@ City.gid(524901, 'Moscow', 'RU')
 
 """
 
+import io
+import math
+
+from typing import (
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
+
 from pygeons import newdb as db
 
 db.connect()
+assert db.TRIE
+assert db.CONN
 
 DEFAULT_LANGUAGE = 'en'
+
+
+def expand(abbreviation: str, country_code: Optional[str] = None) -> List[db.Geoname]:
+    """
+    >>> [g.name for g in expand('ca')]
+    ['California', 'Provincia di Cagliari']
+    """
+    try:
+        alt_name_ids, _ = zip(*db.TRIE[abbreviation.lower()])
+    except KeyError:
+        return []
+
+    c = db.CONN.cursor()
+
+    command = (
+        'SELECT geonameid, isolanguage, isShortName '
+        'FROM alternatename WHERE alternateNameId IN '
+        '(%s)' % ','.join('?' for _ in alt_name_ids)
+    )
+
+    def g():
+        for (geonameid, isolanguage, is_short) in c.execute(command, alt_name_ids):
+            if isolanguage == 'abbr' or is_short:
+                yield geonameid
+
+    geoname_ids = set(g())
+    result = db.select_geonames_ids(geoname_ids, country_code=country_code)
+    c.close()
+
+    return result
+
+
+def contains(large: Union[db.Geoname, db.CountryInfo], small: db.Geoname) -> bool:
+    if isinstance(large, db.CountryInfo):
+        return large.iso == small.country_code
+    elif small.country_code != large.country_code:
+        return False
+
+    if large.feature_code == 'PCLI':
+        return True
+    elif large.feature_code.startswith('ADM1'):
+        return small.admin1_code == large.admin1_code
+    elif large.feature_code.startswith('ADM2'):
+        return small.admin2_code == large.admin2_code
+    elif large.feature_code.startswith('ADM3'):
+        return small.admin3_code == large.admin3_code
+    elif large.feature_code.startswith('ADM4'):
+        return small.admin4_code == large.admin4_code
+
+    return False
+
+
+def _match(
+    cities: List[db.Geoname],
+    states: List[db.Geoname],
+) -> Iterable[Tuple[db.Geoname, db.Geoname]]:
+    for s in states:
+        for c in cities:
+            if contains(s, c):
+                yield c, s
+
+
+def csc_list(
+    city: str,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
+) -> List[db.Geoname]:
+    """
+    >>> [g.country_code for g in csc_list('sydney')]
+    ['AU', 'CA', 'US', 'US']
+    >>> [g.name for g in csc_list('sydney', country='australia')]
+    ['Sydney']
+    >>> [g.timezone for g in csc_list('sydney', state='victoria')]
+    ['Australia/Sydney', 'America/Glace_Bay', 'America/Phoenix', 'America/New_York']
+    """
+    if state and country:
+        cinfo = db.country_info(country)
+        states = [
+            g for g in db.select_geonames_name(state)
+            if g.feature_class == 'A' and g.country_code == cinfo.iso
+        ]
+        cities = [
+            g for g in db.select_geonames_name(city)
+            if g.feature_class == 'P' and g.country_code == cinfo.iso
+        ]
+        city_matches = list(_match(cities, states))
+        if city_matches:
+            return [c for (c, _) in city_matches]
+
+    #
+    # Try omitting state.  If the country is specified, that alone may be sufficient.
+    #
+    if country:
+        cinfo = db.country_info(country)
+        cities = [
+            g for g in db.select_geonames_name(city)
+            if g.feature_class == 'P' and g.country_code == cinfo.iso
+        ]
+        if cities:
+            return cities
+
+    #
+    # Perhaps state is really a city?
+    #
+    if state and country:
+        cinfo = db.country_info(country)
+        cities = [
+            g for g in db.select_geonames_name(state)
+            if g.country_code == cinfo.iso
+        ]
+        if cities:
+            return cities
+
+    #
+    # Perhaps the specified country is wrong?
+    #
+    if state:
+        states = [g for g in db.select_geonames_name(state) if g.feature_class == 'A']
+        cities = [g for g in db.select_geonames_name(city) if g.feature_class == 'P']
+        city_matches = list(_match(cities, states))
+        if city_matches:
+            return [c for (c, _) in city_matches]
+
+    #
+    # Perhaps city itself is unique?
+    #
+    cities = [g for g in db.select_geonames_name(city) if g.feature_class == 'P']
+    if cities:
+        return cities
+
+    return list(db.select_geonames_name(city))
+
+
+def sc_list(state: str, country: Optional[str] = None) -> List[db.Geoname]:
+    """
+    >>> [g.name for g in sc_list('or', None)]
+    ['State of Odisha', 'Oregon', 'Provincia di Oristano']
+    >>> [g.name for g in sc_list('or', 'US')]
+    ['Oregon']
+    >>> [g.name for g in sc_list('or', 'united states')]
+    ['Oregon']
+    """
+    buf = io.StringIO()
+    buf.write('WHERE feature_code in ("ADM1", "ADM2", "ADM3")')
+
+    params = [t[1] for t in db.TRIE[state.lower()]]
+    buf.write(' AND geonameid IN (%s)' % ','.join(['?' for _ in params]))
+
+    if country:
+        buf.write(' AND country_code = ?')
+        params.append(db.country_info(country).iso)
+
+    buf.write(' ORDER BY population DESC')
+    subcommand = buf.getvalue()
+
+    return db.select_geonames(subcommand, params)
 
 
 class Country:
@@ -164,20 +338,24 @@ class Country:
     def __contains__(self, item):
         if isinstance(item, (City, State)):
             return item.countryCode == self.iso
-
-        if isinstance(item, str):
-            #
-            # FIXME:
-            #
-            return False
+        elif isinstance(item, str):
+            for g in db.select_geonames_name(item):
+                if contains(self.data, g):
+                    return True
+        return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
-        if language == DEFAULT_LANGUAGE:
-            return self.name.lower()
-        return self.names_lang[language][0]
+        c = db.CONN.cursor()
+        command = (
+            'SELECT alternate_name FROM alternatename'
+            ' WHERE geonameid = ? AND isolanguage = ?'
+            ' ORDER BY isPreferredName DESC'
+        )
+        result = c.execute(command, (self.geonameid, language))
+        return next(result)[0]
 
     def expand(self, abbreviation):
-        return db.expand(abbreviation)
+        return expand(abbreviation, country_code=self.iso)
 
     @property
     def states(self):
@@ -214,7 +392,7 @@ class StateCollection:
         self.country_code = country_code
         self.feature_code = feature_code
 
-        self._cursor = db._CONN.cursor()
+        self._cursor = db.CONN.cursor()
         command = (
             'SELECT * FROM geoname'
             ' WHERE country_code = ? AND feature_code = ?'
@@ -241,7 +419,7 @@ class StateCollection:
         return 'StateCollection(%r, %r)' % (self.country_code, self.feature_code)
 
     def __len__(self):
-        cursor = db._CONN.cursor()
+        cursor = db.CONN.cursor()
         command = (
             'SELECT COUNT(*) FROM geoname'
             ' WHERE country_code = ? AND feature_code = ?'
@@ -256,17 +434,19 @@ class State:
             setattr(self, key, value)
 
     def __repr__(self):
-        return 'State.gid(%(geonameid)r, %(feature_code)r, %(name)r, %(country_code)r)' % self.data._asdict()
+        return 'State.gid(%r, %r, %r, %r)' % (
+            self.geonameid, self.feature_code, self.name, self.country_code,
+        )
 
     def __str__(self):
-        return 'State(%(feature_code)r, %(name)r, %(country_code)r)' % self.data._asdict()
+        return 'State(%r, %r, %r)' % (self.feature_code, self.name, self.country_code)
 
     def __contains__(self, item):
         if isinstance(item, str):
-            #
-            # FIXME: abusing the indexed admin1names field here
-            #
-            return False
+            for g in db.select_geonames_name(item):
+                if contains(self.data, g):
+                    return True
+        return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
         return self.names_lang[language][0]
@@ -277,7 +457,7 @@ class State:
 
     @staticmethod
     def gid(geonames_id, *args, **kwargs):
-        c = db._CONN.cursor()
+        c = db.CONN.cursor()
         result = c.execute('SELECT * FROM geoname WHERE geonameid = ?', (geonames_id,))
         return State(db.Geoname(*next(result)))
 
@@ -290,7 +470,7 @@ class CityCollection:
     def __init__(self, parent):
         self.parent = parent
 
-        self._cursor = db._CONN.cursor()
+        self._cursor = db.CONN.cursor()
 
         if isinstance(self.parent, Country):
             self._where = 'country_code = ? AND feature_class = "P"'
@@ -324,10 +504,17 @@ class CityCollection:
         else:
             return find_cities(key, state=self.parent.name, country=self.parent.country_code)[0]
 
-    def __contains__(self, key):
-        #
-        # FIXME:
-        #
+    def __contains__(self, item):
+        if isinstance(self.parent, Country):
+            country_code = self.parent.iso
+        else:
+            country_code = self.parent.country_code
+
+        if isinstance(item, str):
+            for g in db.select_geonames_name(item):
+                if g.country_code == country_code:
+                    return True
+
         return False
 
     def __str__(self):
@@ -363,16 +550,16 @@ class City:
 
     @staticmethod
     def gid(geonames_id, *args, **kwargs):
-        c = db._CONN.cursor()
+        c = db.CONN.cursor()
         result = c.execute('SELECT * FROM geoname WHERE geonameid = ?', (geonames_id,))
-        return State(db.Geoname(*next(result)))
+        return City(db.Geoname(*next(result)))
 
     def distance_to(self, other):
-        # FIXME:
-        return -1
-        return pygeons._haversine_dist(
-            self.latitude, self.longitude,
-            other.latitude, other.longitude,
+        return _haversine_dist(
+            self.latitude,
+            self.longitude,
+            other.latitude,
+            other.longitude,
         )
 
 
@@ -394,10 +581,33 @@ class Postcode:
 
 
 def find_cities(name, state=None, country=None):
-    cities = [City(data) for data in db.csc_list(name, state, country)]
+    cities = [City(data) for data in csc_list(name, state, country)]
     return sorted(cities, key=lambda s: s.population, reverse=True)
 
 
 def find_states(name, country=None):
-    states = [State(data) for data in db.sc_list(name, country)]
+    states = [State(data) for data in sc_list(name, country)]
     return sorted(states, key=lambda s: s.population, reverse=True)
+
+
+def _to_radian(degrees: float) -> float:
+    return math.pi * degrees / 180
+
+
+def _haversine_dist(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Calculate the distance between two latitude-long pairs."""
+    #
+    # https://en.wikipedia.org/wiki/Haversine_formula
+    #
+    def hav(theta):
+        """The haversine function."""
+        return math.pow(math.sin(theta / 2), 2)
+
+    R = 6371
+    fi1, lam1, fi2, lam2 = [_to_radian(x) for x in [lat1, lng1, lat2, lng2]]
+    d = 2 * R * math.asin(
+        math.sqrt(
+            hav(fi2 - fi1) + math.cos(fi1) * math.cos(fi2) * hav(lam2 - lam1)
+        )
+    )
+    return d

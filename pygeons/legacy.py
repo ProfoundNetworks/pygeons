@@ -940,26 +940,3 @@ def sc_list(state, country):
 
     _, state, country, _ = _csc_clean_params(None, state, country)
     return list(state_generator(state, country))
-
-
-def _to_radian(degrees):
-    return math.pi * degrees / 180
-
-
-def _haversine_dist(lat1, lng1, lat2, lng2):
-    """Calculate the distance between two latitude-long pairs."""
-    #
-    # https://en.wikipedia.org/wiki/Haversine_formula
-    #
-    def hav(theta):
-        """The haversine function."""
-        return math.pow(math.sin(theta / 2), 2)
-
-    R = 6371
-    fi1, lam1, fi2, lam2 = [_to_radian(x) for x in [lat1, lng1, lat2, lng2]]
-    d = 2 * R * math.asin(
-        math.sqrt(
-            hav(fi2 - fi1) + math.cos(fi1) * math.cos(fi2) * hav(lam2 - lam1)
-        )
-    )
-    return d
