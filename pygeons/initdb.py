@@ -1,9 +1,20 @@
+import codecs
 import csv
+import contextlib
 import io
 import logging
+import os
+import os.path as P
 import sqlite3
+import zipfile
+
+from typing import (
+    IO,
+    Iterator,
+)
 
 import marisa_trie  # type: ignore
+import pySmartDL  # type: ignore
 import smart_open  # type: ignore
 
 _ENCODING = 'utf-8'
@@ -53,7 +64,7 @@ CREATE TABLE countryinfo(
     conn.commit()
 
 
-def init_geoname(db_path: str, txt_path: str) -> None:
+def init_geoname(db_path: str, fin: IO[str]) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("""
@@ -85,13 +96,12 @@ INSERT INTO geoname
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
 
-    with open(txt_path) as fin:
-        reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
-        for row in reader:
-            if len(row) != 19:
-                logging.error('bad row: %r', row)
-            elif row[6] in ('A', 'P'):
-                c.execute(insert_cmd, row)
+    reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
+    for row in reader:
+        if len(row) != 19:
+            logging.error('bad row: %r', row)
+        elif row[6] in ('A', 'P'):
+            c.execute(insert_cmd, row)
 
     c.execute('CREATE INDEX geoname_name on geoname(name)')
     c.execute('CREATE INDEX geoname_asciiname on geoname(asciiname)')
@@ -108,7 +118,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     conn.commit()
 
 
-def init_alternatename(db_path: str, txt_path: str) -> None:
+def init_alternatename(db_path: str, fin: IO[str]) -> None:
     geonameids = set()
 
     conn = sqlite3.connect(db_path)
@@ -134,13 +144,12 @@ CREATE TABLE alternatename(
 
     insert_cmd = 'INSERT INTO alternatename VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 
-    with open(txt_path) as fin:
-        reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
-        for row in reader:
-            geonameid = int(row[1])
-            isolanguage = row[2]
-            if geonameid in geonameids and isolanguage not in ('link', 'wkdt'):
-                c.execute(insert_cmd, row)
+    reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
+    for row in reader:
+        geonameid = int(row[1])
+        isolanguage = row[2]
+        if geonameid in geonameids and isolanguage not in ('link', 'wkdt'):
+            c.execute(insert_cmd, row)
 
     #
     # TODO: add our own alternate names below
@@ -169,11 +178,32 @@ def build_trie(db_path: str, marisa_path: str) -> None:
     c.close()
 
 
+@contextlib.contextmanager
+def _unzip_temporary(url: str, member: str) -> Iterator[IO[str]]:
+    dl = pySmartDL.SmartDL(url, progress_bar=False)
+    dl.start()
+    with zipfile.ZipFile(dl.get_dest()) as fin_zip:
+        yield codecs.getreader(_ENCODING)(fin_zip.open(member))
+
+
 def main():
-    init_countryinfo('db.sqlite3')
-    # init_geoname('db.sqlite3', '/Users/misha/Downloads/allCountries.txt')
-    # init_alternatename('db.sqlite3', '/Users/misha/Downloads/alternateNamesV2.txt')
-    # build_trie('db.sqlite3', 'trie.ii')
+    logging.basicConfig(level=logging.INFO)
+
+    dbpath = 'db.sqlite3'
+    if P.isfile(dbpath):
+        os.unlink(dbpath)
+
+    init_countryinfo(dbpath)
+
+    url = 'http://download.geonames.org/export/dump/allCountries.zip'
+    with _unzip_temporary(url, 'allCountries.txt') as fin:
+        init_geoname(dbpath, fin)
+
+    url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
+    with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
+        init_alternatename(dbpath, fin)
+
+    build_trie(dbpath, 'trie.ii')
 
 
 if __name__ == '__main__':

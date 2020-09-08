@@ -17,7 +17,9 @@ Common alternative names also work:
 >>> Country('côte d’ivoire')
 Country('Ivory Coast')
 
-ISO abbreviations (both two- and three-letter, [ISO-3166 alpha-1 and alpha-2](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes), respectively) also work:
+ISO abbreviations (both two- and three-letter,
+[ISO-3166 alpha-1 and alpha-2](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes),
+respectively) also work:
 
 >>> Country('civ')
 Country('Ivory Coast')
@@ -50,7 +52,7 @@ State.gid(5596512, 'ADM1', 'Idaho', 'US')
 On the next level down, you have cities:
 
 >>> Country('usa').states['idaho'].cities['moscow']
-City.gid(5601538, 'Moscow', 'Idaho', 'US')
+City.gid(5601538, 'Moscow', 'US')
 >>> 'moscow' in Country('usa').states['idaho']
 True
 
@@ -60,78 +62,27 @@ This is particularly useful if you don't know the state.
 >>> 'moscow' in Country('russia')
 True
 >>> Country('russia').cities['moscow']
-City.gid(524901, 'Moscow', 'Moskva', 'RU')
+City.gid(524901, 'Moscow', 'RU')
 
 You may be surprised that city names are not necessarily unique.
 In such cases, use the find_cities function:
 
 >>> find_cities("oslo")
-[City.gid(3143244, 'Oslo', 'Oslo County', 'NO'), City.gid(5040425, 'Oslo', 'Minnesota', 'US'), City.gid(4167241, 'Oslo', 'Florida', 'US'), City.gid(5040424, 'Oslo', 'Minnesota', 'US'), City.gid(6674712, 'Oslo', 'Junín', 'PE')]
+[City.gid(3143244, 'Oslo', 'NO'), City.gid(5040425, 'Oslo', 'US'), City.gid(4167241, 'Oslo', 'US'), City.gid(5040424, 'Oslo', 'US'), City.gid(6674712, 'Oslo', 'PE')]
 
 If there are multiple results, then they get sorted by decreasing population.
 
 >>> oslo = find_cities("oslo", country='no')[0]
 >>> oslo
-City.gid(3143244, 'Oslo', 'Oslo County', 'NO')
+City.gid(3143244, 'Oslo', 'NO')
 
 The gid is the unique geonames ID for a place.
 You can use it as a compact identifier to reconstruct place names:
 
 >>> City.gid(3143244)
-City.gid(3143244, 'Oslo', 'Oslo County', 'NO')
+City.gid(3143244, 'Oslo', 'NO')
 
-Each place is backed by a dict.  You can access its contents directly:
-
->>> import json
->>> print(json.dumps(oslo.data, indent=2, sort_keys=True))
-{
-  "_id": 3143244,
-  "abbr": [],
-  "admin1": "Oslo County",
-  "admin1names": [
-    "oslo",
-    "oslo county",
-    "oslo fylke"
-  ],
-  "admin2": "0301",
-  "admin2names": [],
-  "asciiname": "Oslo",
-  "countryCode": "NO",
-  "featureClass": "P",
-  "featureCode": "PPLC",
-  "latitude": 59.91273,
-  "longitude": 10.74609,
-  "name": "Oslo",
-  "names": [
-    "christiania (historical)",
-    "kristiania (historical)",
-    "oslo"
-  ],
-  "names_lang": {
-    "??": [
-      "christiania (historical)",
-      "kristiania (historical)"
-    ],
-    "en": [
-      "oslo"
-    ],
-    "fi": [
-      "oslo"
-    ],
-    "nn": [
-      "oslo"
-    ],
-    "no": [
-      "oslo"
-    ],
-    "se": [
-      "oslo"
-    ]
-  },
-  "population": 580000
-}
-
-You can also access them more conveniently as attributes:
+You can access all the fields from the geonames data model directly:
 
 >>> oslo.latitude, oslo.longitude, oslo.population
 (59.91273, 10.74609, 580000)
@@ -140,7 +91,7 @@ Calculating the distance between two cities::
 
 >>> trondheim = find_cities('trondheim')[0]
 >>> trondheim
-City.gid(3133880, 'Trondheim', 'Trøndelag', 'NO')
+City.gid(3133880, 'Trondheim', 'NO')
 
 >>> round(oslo.distance_to(trondheim))
 392
@@ -173,26 +124,27 @@ Expanding country-specific abbreviations:
 Pygeons understands names in English and languages local to a particular country:
 
 >>> find_cities('札幌')[0]
-City.gid(2128295, 'Sapporo', 'Hokkaido', 'JP')
+City.gid(2128295, 'Sapporo', 'JP')
 
 >>> find_cities('москва', country='ru')[0]
-City.gid(524901, 'Moscow', 'Moskva', 'RU')
+City.gid(524901, 'Moscow', 'RU')
 
 >>> Country('jp').normalize(language='ja')
 '日本'
 
 """
 
-from . import pygeons
-from . import db
+from pygeons import newdb as db
+
+db.connect()
 
 DEFAULT_LANGUAGE = 'en'
 
 
 class Country:
     def __init__(self, name):
-        self.data = pygeons.country_info(name)
-        for key, value in self.data.items():
+        self.data = db.country_info(name)
+        for key, value in self.data._asdict().items():
             setattr(self, key, value)
 
         #
@@ -204,25 +156,20 @@ class Country:
         self._state_feature_code = 'ADM1'
 
     def __repr__(self):
-        return 'Country(%(name)r)' % self.data
+        return 'Country(%r)' % self.country
 
     def __str__(self):
-        return 'Country(%(name)r)' % self.data
+        return 'Country(%r)' % self.country
 
     def __contains__(self, item):
         if isinstance(item, (City, State)):
             return item.countryCode == self.iso
 
         if isinstance(item, str):
-            for fn in (pygeons.is_city, pygeons.is_ppc, pygeons.is_state):
-                try:
-                    if fn(self.iso, item):
-                        return True
-                except Exception:
-                    #
-                    # TODO:
-                    #
-                    pass
+            #
+            # FIXME:
+            #
+            return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
         if language == DEFAULT_LANGUAGE:
@@ -230,28 +177,27 @@ class Country:
         return self.names_lang[language][0]
 
     def expand(self, abbreviation):
-        for col in (pygeons.ADM1, pygeons.ADM2, pygeons.ADMD, pygeons.CITY):
-            return pygeons.expand(col, self.iso, abbreviation)
+        return db.expand(abbreviation)
 
     @property
     def states(self):
-        return StateCollection(countryCode=self.iso, featureCode=self._state_feature_code)
+        return StateCollection(country_code=self.iso, feature_code=self._state_feature_code)
 
     @property
     def admin1(self):
-        return StateCollection(countryCode=self.iso, featureCode='ADM1')
+        return StateCollection(country_code=self.iso, feature_code='ADM1')
 
     @property
     def admin2(self):
-        return StateCollection(countryCode=self.iso, featureCode='ADM2')
+        return StateCollection(country_code=self.iso, feature_code='ADM2')
 
     @property
     def admind(self):
-        return StateCollection(countryCode=self.iso, featureCode='ADMD')
+        return StateCollection(country_code=self.iso, feature_code='ADMD')
 
     @property
     def cities(self):
-        return CityCollection(countryCode=self.iso)
+        return CityCollection(parent=self)
 
     @property
     def postcodes(self):
@@ -264,133 +210,148 @@ class Country:
 
 
 class StateCollection:
-    def __init__(self, **query):
-        self._query = query
+    def __init__(self, country_code, feature_code):
+        self.country_code = country_code
+        self.feature_code = feature_code
 
-        try:
-            feature_code = query['featureCode']
-        except KeyError:
-            self._collection = db.ADM1
-        else:
-            assert feature_code.startswith('ADM')
-            suffix = feature_code.replace('ADM', '').rstrip('H').lower()
-            self._collection = 'admin%s' % suffix
-
-        self._cursor = db.DB[self._collection].find(self._query)
+        self._cursor = db._CONN.cursor()
+        command = (
+            'SELECT * FROM geoname'
+            ' WHERE country_code = ? AND feature_code = ?'
+        )
+        self._cursor.execute(command, (self.country_code, self.feature_code))
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return State(next(self._cursor))
+        result = next(self._cursor)
+        return State(db.Geoname(*result))
 
     def __getitem__(self, key):
-        country = self._query.get('countryCode', None)
-        return find_states(key, country=country)[0]
+        return find_states(key, country=self.country_code)[0]
 
     def __contains__(self, key):
-        country = self._query.get('countryCode', None)
-        return pygeons.is_state(key, country)
+        return bool(find_states(key, country=self.country_code))
 
     def __str__(self):
-        return 'StateCollection(%r)' % self._query
+        return 'StateCollection(%r, %r)' % (self.country_code, self.feature_code)
 
     def __repr__(self):
-        return 'StateCollection(%r)' % self._query
+        return 'StateCollection(%r, %r)' % (self.country_code, self.feature_code)
 
     def __len__(self):
-        return db.DB[self._collection].find(self._query).count()
+        cursor = db._CONN.cursor()
+        command = (
+            'SELECT COUNT(*) FROM geoname'
+            ' WHERE country_code = ? AND feature_code = ?'
+        )
+        return cursor.execute(command, (self.country_code, self.feature_code))
 
 
 class State:
     def __init__(self, data):
         self.data = data
-        for key, value in self.data.items():
+        for key, value in self.data._asdict().items():
             setattr(self, key, value)
 
     def __repr__(self):
-        return 'State.gid(%(_id)r, %(featureCode)r, %(name)r, %(countryCode)r)' % self.data
+        return 'State.gid(%(geonameid)r, %(feature_code)r, %(name)r, %(country_code)r)' % self.data._asdict()
 
     def __str__(self):
-        return 'State(%(featureCode)r, %(name)r, %(countryCode)r)' % self.data
+        return 'State(%(feature_code)r, %(name)r, %(country_code)r)' % self.data._asdict()
 
     def __contains__(self, item):
         if isinstance(item, str):
             #
             # FIXME: abusing the indexed admin1names field here
             #
-            query = {'names': item, 'admin1names': self.data['admin1names'][0]}
-            results = db.DB.cities.find(query)
-            return bool(results.count())
+            return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
         return self.names_lang[language][0]
 
     @property
     def country(self):
-        return Country(self.countryCode)
+        return Country(self.country_code)
 
     @staticmethod
     def gid(geonames_id, *args, **kwargs):
-        db.test_connection()
-        #
-        # Maybe try admin2?
-        #
-        info = db.DB.admin1.find_one({'_id': geonames_id})
-        return State(info)
+        c = db._CONN.cursor()
+        result = c.execute('SELECT * FROM geoname WHERE geonameid = ?', (geonames_id,))
+        return State(db.Geoname(*next(result)))
 
     @property
     def cities(self):
-        #
-        # FIXME:
-        #
-        return CityCollection(countryCode=self.countryCode, admin1names=self.name)
+        return CityCollection(parent=self)
 
 
 class CityCollection:
-    def __init__(self, **query):
-        self._query = query
-        self._cursor = db.DB.cities.find(self._query)
+    def __init__(self, parent):
+        self.parent = parent
+
+        self._cursor = db._CONN.cursor()
+
+        if isinstance(self.parent, Country):
+            self._where = 'country_code = ? AND feature_class = "P"'
+            self._params = (self.parent.iso, )
+        else:
+            the_map = {
+                'ADM1': 'admin1_code',
+                'ADM2': 'admin2_code',
+                'ADM3': 'admin3_code',
+                'ADM4': 'admin4_code',
+            }
+            self._admin_field = the_map[parent.feature_code]
+            self._admin_code = getattr(parent, self._admin_field)
+
+            self._where = 'country_code = ? AND ? = ? AND feature_class = "P"'
+            self._params = (self.parent.country_code, self._admin_field, self._admin_code)
+
+        command = 'SELECT * FROM geoname WHERE ' + self._where
+        self._cursor.execute(command, self._params)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return City(next(self._cursor))
+        result = next(self._cursor)
+        return City(db.Geoname(*result))
 
     def __getitem__(self, key):
-        #
-        # FIXME: What about admin2, admind?
-        #
-        state = self._query.get('admin1names', None)
-        country = self._query.get('countryCode', None)
-        return find_cities(key, state=state, country=country)[0]
+        if isinstance(self.parent, Country):
+            return find_cities(key, country=self.parent.iso)[0]
+        else:
+            return find_cities(key, state=self.parent.name, country=self.parent.country_code)[0]
 
     def __contains__(self, key):
-        country = self._query.get('countryCode', None)
-        return pygeons.is_city(country, key)
+        #
+        # FIXME:
+        #
+        return False
 
     def __str__(self):
-        return 'CityCollection(%r)' % self._query
+        return 'CityCollection(%r)' % self.parent
 
     def __repr__(self):
-        return 'CityCollection(%r)' % self._query
+        return 'CityCollection(%r)' % self.parent
 
     def __len__(self):
-        return db.DB.cities.find(self._query).count()
+        command = 'SELECT * FROM geoname WHERE ' + self._where
+        return self._cursor.execute(command, self._params)[0]
 
 
 class City:
     def __init__(self, info):
         self.data = info
-        for key, value in self.data.items():
+        for key, value in self.data._asdict().items():
             setattr(self, key, value)
 
     def __repr__(self):
-        return 'City.gid(%(_id)r, %(name)r, %(admin1)r, %(countryCode)r)' % self.data
+        return 'City.gid(%r, %r, %r)' % (self.geonameid, self.name, self.country_code)
 
     def __str__(self):
-        return 'City(%(name)r, %(admin1)r, %(countryCode)r)' % self.data
+        return 'City(%r, %r)' % (self.name, self.country_code)
 
     @property
     def state(self):
@@ -398,15 +359,17 @@ class City:
 
     @property
     def country(self):
-        return Country(self.countryCode)
+        return Country(self.country_code)
 
     @staticmethod
     def gid(geonames_id, *args, **kwargs):
-        db.test_connection()
-        info = db.DB.cities.find_one({'_id': geonames_id})
-        return City(info)
+        c = db._CONN.cursor()
+        result = c.execute('SELECT * FROM geoname WHERE geonameid = ?', (geonames_id,))
+        return State(db.Geoname(*next(result)))
 
     def distance_to(self, other):
+        # FIXME:
+        return -1
         return pygeons._haversine_dist(
             self.latitude, self.longitude,
             other.latitude, other.longitude,
@@ -431,10 +394,10 @@ class Postcode:
 
 
 def find_cities(name, state=None, country=None):
-    cities = [City(data) for data in pygeons.csc_list(name, state, country)]
+    cities = [City(data) for data in db.csc_list(name, state, country)]
     return sorted(cities, key=lambda s: s.population, reverse=True)
 
 
 def find_states(name, country=None):
-    states = [State(data) for data in pygeons.sc_list(name, country)]
+    states = [State(data) for data in db.sc_list(name, country)]
     return sorted(states, key=lambda s: s.population, reverse=True)

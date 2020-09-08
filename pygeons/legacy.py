@@ -12,8 +12,8 @@ import itertools
 import pkg_resources
 import sys
 
-from . import db
-from .db import ADM1, ADM2, ADMD, CITY, test_connection, reconnect
+# from . import db
+# from .db import ADM1, ADM2, ADMD, CITY, test_connection, reconnect
 
 #
 # http://stackoverflow.com/questions/2058802/how-can-i-get-the-version-defined-in-setup-py-setuptools-in-my-package

@@ -8,6 +8,7 @@ from typing import (
     Iterable,
     List,
     Optional,
+    Tuple,
 )
 
 import marisa_trie  # type: ignore
@@ -141,7 +142,11 @@ def country_info(name: str) -> CountryInfo:
     assert _TRIE
     assert _COUNTRYINFO
 
-    ids = {geonameid for (_, geonameid) in _TRIE[name.lower()]}
+    try:
+        ids = {geonameid for (_, geonameid) in _TRIE[name.lower()]}
+    except KeyError:
+        ids = set()
+
     candidates = [
         ci
         for ci in _COUNTRYINFO
@@ -190,6 +195,15 @@ def expand(abbreviation: str) -> List[Geoname]:
     return result
 
 
+def _match(cities: List[Geoname], states: List[Geoname]) -> Iterable[Tuple[Geoname, Geoname]]:
+    for c in cities:
+        left = {c.admin1_code, c.admin2_code, c.admin3_code, c.admin4_code}
+        for s in states:
+            right = {s.admin1_code, s.admin2_code, s.admin3_code, s.admin4_code}
+            if s.country_code == c.country_code and left.intersection(right):
+                yield c, s
+
+
 def csc_list(
     city: str,
     state: Optional[str] = None,
@@ -200,28 +214,62 @@ def csc_list(
     >>> [g.country_code for g in csc_list('sydney')]
     ['AU', 'AU', 'CA', 'US', 'US']
     >>> [g.name for g in csc_list('sydney', country='australia')]
-    ['Sydney', 'City of Sydney']
-    >>> [g.name for g in csc_list('sydney', state='victoria')]
-    ['Sydney', 'City of Sydney']
+    ['Sydney']
+    >>> [g.timezone for g in csc_list('sydney', state='victoria')]
+    ['Australia/Sydney', 'America/Phoenix', 'America/New_York']
     """
-    cities = _select_geonames_name(city)
-    states = _select_geonames_name(state) if state else []
-    country = country_info(country) if country else None
-    # breakpoint()
+    if state and country:
+        cinfo = country_info(country)
+        states = [
+            g for g in _select_geonames_name(state)
+            if g.feature_class == 'A' and g.country_code == cinfo.iso
+        ]
+        cities = [
+            g for g in _select_geonames_name(city)
+            if g.feature_class == 'P' and g.country_code == cinfo.iso
+        ]
+        city_matches = list(_match(cities, states))
+        if city_matches:
+            return [c for (c, _) in city_matches]
 
-    if states and country:
-        pass
-    elif states:
-        #
-        # check that states are actually states (A as opposed to P)
-        #
-        # matches = [c for c in cities if c. ]
-        pass
-    elif country:
-        matches = [c for c in cities if c.country_code == country.iso]
-        if matches:
-            return matches
+    #
+    # Try omitting state.  If the country is specified, that alone may be sufficient.
+    #
+    if country:
+        cinfo = country_info(country)
+        cities = [
+            g for g in _select_geonames_name(city)
+            if g.feature_class == 'P' and g.country_code == cinfo.iso
+        ]
+        if cities:
+            return cities
 
+    #
+    # Perhaps state is really a city?
+    #
+    if state and country:
+        cinfo = country_info(country)
+        cities = [
+            g for g in _select_geonames_name(state)
+            if g.feature_class == 'P' and g.country_code == cinfo.iso
+        ]
+        if cities:
+            return cities
+
+    #
+    # Perhaps the specified country is wrong?
+    #
+    if state:
+        states = [g for g in _select_geonames_name(state) if g.feature_class == 'A']
+        cities = [g for g in _select_geonames_name(city) if g.feature_class == 'P']
+        city_matches = list(_match(cities, states))
+        if city_matches:
+            return [c for (c, _) in city_matches]
+
+    #
+    # Perhaps city itself is unique?
+    #
+    cities = [g for g in _select_geonames_name(city) if g.feature_class == 'P']
     return cities
 
 
