@@ -1,0 +1,180 @@
+import csv
+import io
+import logging
+import sqlite3
+
+import marisa_trie  # type: ignore
+import smart_open  # type: ignore
+
+_ENCODING = 'utf-8'
+_CSV_PARAMS = dict(delimiter='\t', quotechar='', quoting=csv.QUOTE_NONE)
+
+
+def init_countryinfo(db_path: str) -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("""
+CREATE TABLE countryinfo(
+    iso TEXT PRIMARY_KEY,
+    iso3 TEXT,
+    iso_numeric TEXT,
+    fips TEXT,
+    country TEXT,
+    capital TEXT,
+    area NUMERIC,
+    population NUMERIC,
+    continent TEXT,
+    tld TEXT,
+    currency_code TEXT,
+    currency_name TEXT,
+    phone TEXT,
+    postal_code_format TEXT,
+    postal_code_regex TEXT,
+    languages TEXT,
+    geonameid NUMERIC,
+    neighbors TEXT,
+    equivalent_fips_code TEXT
+)
+""")
+
+    url = 'http://download.geonames.org/export/dump/countryInfo.txt'
+    lines = [line for line in smart_open.open(url) if not line.startswith('#')]
+    buf = io.StringIO('\n'.join(lines))
+    reader = csv.reader(buf, **_CSV_PARAMS)  # type: ignore
+    command = (
+        'INSERT INTO countryinfo VALUES '
+        '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    )
+    for row in reader:
+        if len(row) == 19:
+            c.execute(command, row)
+
+    c.close()
+    conn.commit()
+
+
+def init_geoname(db_path: str, txt_path: str) -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("""
+CREATE TABLE geoname(
+    geonameid NUMERIC PRIMARY KEY,  -- integer id of record in geonames database
+    name TEXT,              -- name of geographical point (utf8) varchar(200)
+    asciiname TEXT,         -- name of geographical point in plain ascii characters
+    alternatenames TEXT,    -- comma separated, ascii names automatically transliterated
+    latitude NUMERIC,       -- latitude in decimal degrees (wgs84)
+    longitude NUMERIC,      -- longitude in decimal degrees (wgs84)
+    feature_class TEXT,     -- see http://www.geonames.org/export/codes.html, char(1)
+    feature_code TEXT,      -- see http://www.geonames.org/export/codes.html, varchar(10)
+    country_code TEXT,      -- ISO-3166 2-letter country code, 2 characters
+    cc2 TEXT,               -- alternate country codes, comma separated
+    admin1_code TEXT,       -- fipscode (subject to change to iso code)
+    admin2_code TEXT,       -- code for the second administrative division
+    admin3_code TEXT,       -- code for third level administrative division, varchar(20)
+    admin4_code TEXT,       -- code for fourth level administrative division, varchar(20)
+    population NUMERIC,     -- bigint (8 byte int)
+    elevation NUMERIC,      -- in meters, integer
+    dem NUMERIC,            -- digital elevation model, srtm3 or gtopo30
+    timezone TEXT,          -- the iana timezone id (see file timeZone.txt) varchar(40)
+    modification_date TEXT  -- date of last modification in yyyy-MM-dd format
+);
+""")
+
+    insert_cmd = """
+INSERT INTO geoname
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+"""
+
+    with open(txt_path) as fin:
+        reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
+        for row in reader:
+            if len(row) != 19:
+                logging.error('bad row: %r', row)
+            elif row[6] in ('A', 'P'):
+                c.execute(insert_cmd, row)
+
+    c.execute('CREATE INDEX geoname_name on geoname(name)')
+    c.execute('CREATE INDEX geoname_asciiname on geoname(asciiname)')
+    c.execute('CREATE INDEX geoname_feature_class on geoname(feature_class)')
+    c.execute('CREATE INDEX geoname_feature_code on geoname(feature_code)')
+    c.execute('CREATE INDEX geoname_country_code on geoname(country_code)')
+    c.execute('CREATE INDEX geoname_cc2 on geoname(cc2)')
+    c.execute('CREATE INDEX geoname_admin1_code on geoname(admin1_code)')
+    c.execute('CREATE INDEX geoname_admin2_code on geoname(admin2_code)')
+    c.execute('CREATE INDEX geoname_admin3_code on geoname(admin3_code)')
+    c.execute('CREATE INDEX geoname_admin4_code on geoname(admin4_code)')
+
+    c.close()
+    conn.commit()
+
+
+def init_alternatename(db_path: str, txt_path: str) -> None:
+    geonameids = set()
+
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    for result in c.execute('SELECT geonameid FROM geoname'):
+        geonameids.add(result[0])
+    for result in c.execute('SELECT geonameid FROM countryinfo'):
+        geonameids.add(result[0])
+
+    c.execute("""
+CREATE TABLE alternatename(
+    alternateNameId NUMERIC PRIMARY KEY,    -- the id of this alternate name, int
+    geonameid NUMERIC,          -- geonameId referring to id in table 'geoname', int
+    isolanguage TEXT,           -- iso 639 language code 2- or 3-characters
+    alternate_name TEXT,        -- alternate name or name variant, varchar(400)
+    isPreferredName BOOLEAN,    -- if this alternate name is an official/preferred name
+    isShortName BOOLEAN,        -- if this is a short name
+    isColloquial BOOLEAN,       -- if this alternate name is a colloquial or slang term.
+    isHistoric BOOLEAN,         -- if this alternate name was used in the past.
+    fromPeriod TEXT,            -- from period when the name was used
+    toPeriod TEXT               -- to period when the name was used
+)""")
+
+    insert_cmd = 'INSERT INTO alternatename VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+
+    with open(txt_path) as fin:
+        reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
+        for row in reader:
+            geonameid = int(row[1])
+            isolanguage = row[2]
+            if geonameid in geonameids and isolanguage not in ('link', 'wkdt'):
+                c.execute(insert_cmd, row)
+
+    #
+    # TODO: add our own alternate names below
+    #
+
+    c.execute('CREATE INDEX alternatename_geonameid on alternatename(geonameid)')
+    c.execute('CREATE INDEX alternatename_alternate_name on alternatename(alternate_name)')
+
+    c.close()
+    conn.commit()
+
+
+def build_trie(db_path: str, marisa_path: str) -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    command = 'SELECT alternateNameId, geonameid, alternate_name FROM alternatename'
+
+    def g():
+        for (alternate_name_id, geoname_id, alternate_name) in c.execute(command):
+            yield alternate_name.lower(), (alternate_name_id, geoname_id)
+
+    trie = marisa_trie.RecordTrie('ii', g())
+    trie.save(marisa_path)
+
+    c.close()
+
+
+def main():
+    init_countryinfo('db.sqlite3')
+    # init_geoname('db.sqlite3', '/Users/misha/Downloads/allCountries.txt')
+    # init_alternatename('db.sqlite3', '/Users/misha/Downloads/alternateNamesV2.txt')
+    # build_trie('db.sqlite3', 'trie.ii')
+
+
+if __name__ == '__main__':
+    main()
