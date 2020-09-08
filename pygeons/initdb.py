@@ -154,6 +154,13 @@ CREATE TABLE alternatename(
     #
     # TODO: add our own alternate names below
     #
+    # In particular, we should add all canonical names to the alternatename table.
+    # We must do this because that table is missing data for some important
+    # cities, like Yono (Saitama, JP) and we build the trie directly from that
+    # table.
+    #
+    # Deduplication will be tough - do we need to bother with it?
+    #
 
     c.execute('CREATE INDEX alternatename_geonameid on alternatename(geonameid)')
     c.execute('CREATE INDEX alternatename_alternate_name on alternatename(alternate_name)')

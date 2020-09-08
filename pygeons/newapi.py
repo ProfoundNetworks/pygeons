@@ -164,11 +164,14 @@ def expand(abbreviation: str, country_code: Optional[str] = None) -> List[db.Geo
     >>> [g.name for g in expand('ca')]
     ['California', 'Provincia di Cagliari']
     """
+    assert db.TRIE
+
     try:
         alt_name_ids, _ = zip(*db.TRIE[abbreviation.lower()])
     except KeyError:
         return []
 
+    assert db.CONN
     c = db.CONN.cursor()
 
     command = (
@@ -232,6 +235,7 @@ def csc_list(
     >>> [g.timezone for g in csc_list('sydney', state='victoria')]
     ['Australia/Sydney', 'America/Glace_Bay', 'America/Phoenix', 'America/New_York']
     """
+    if city == 'yono': breakpoint()
     if state and country:
         cinfo = db.country_info(country)
         states = [
@@ -302,6 +306,7 @@ def sc_list(state: str, country: Optional[str] = None) -> List[db.Geoname]:
     buf = io.StringIO()
     buf.write('WHERE feature_code in ("ADM1", "ADM2", "ADM3")')
 
+    assert db.TRIE
     params = [t[1] for t in db.TRIE[state.lower()]]
     buf.write(' AND geonameid IN (%s)' % ','.join(['?' for _ in params]))
 
@@ -488,7 +493,7 @@ class CityCollection:
             self._where = 'country_code = ? AND ? = ? AND feature_class = "P"'
             self._params = (self.parent.country_code, self._admin_field, self._admin_code)
 
-        command = 'SELECT * FROM geoname WHERE ' + self._where
+        command = 'SELECT * FROM geoname WHERE %s ORDER BY population DESC' % self._where
         self._cursor.execute(command, self._params)
 
     def __iter__(self):
@@ -540,9 +545,38 @@ class City:
     def __str__(self):
         return 'City(%r, %r)' % (self.name, self.country_code)
 
+    def _get_adm(self, level):
+        c = db.CONN.cursor()
+        admin_field = 'admin%d_code' % level
+        admin_code = getattr(self, admin_field)
+        feature_code = 'ADM%d' % level
+        command = (
+            'SELECT * FROM geoname WHERE '
+            'country_code = ? AND feature_code = ? AND %s = ?' % admin_field
+        )
+        params = (self.country_code, feature_code, admin_code)
+        result = c.execute(command, params)
+        return db.Geoname(*next(result))
+
+    @property
+    def admin1(self):
+        return State(self._get_adm(1))
+
+    @property
+    def admin2(self):
+        return State(self._get_adm(2))
+
+    @property
+    def admin3(self):
+        return State(self._get_adm(3))
+
+    @property
+    def admin4(self):
+        return State(self._get_adm(4))
+
     @property
     def state(self):
-        pass
+        return self.admin1
 
     @property
     def country(self):
@@ -581,6 +615,10 @@ class Postcode:
 
 
 def find_cities(name, state=None, country=None):
+    """
+    >>> find_cities('yono', country='JP')[0].state.name
+    'Saitama-ken'
+    """
     cities = [City(data) for data in csc_list(name, state, country)]
     return sorted(cities, key=lambda s: s.population, reverse=True)
 
