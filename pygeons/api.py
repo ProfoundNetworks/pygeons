@@ -150,7 +150,7 @@ from typing import (
     Union,
 )
 
-from pygeons import newdb as db
+from pygeons import db
 
 db.connect()
 assert db.TRIE
@@ -175,9 +175,8 @@ def expand(abbreviation: str, country_code: Optional[str] = None) -> List[db.Geo
     c = db.CONN.cursor()
 
     command = (
-        'SELECT geonameid, isolanguage, isShortName '
-        'FROM alternatename WHERE alternateNameId IN '
-        '(%s)' % ','.join('?' for _ in alt_name_ids)
+        'SELECT geonameid, isolanguage, isShortName FROM alternatename'
+        ' WHERE alternateNameId IN (%s)' % ','.join('?' for _ in alt_name_ids)
     )
 
     def g():
@@ -235,7 +234,6 @@ def csc_list(
     >>> [g.timezone for g in csc_list('sydney', state='victoria')]
     ['Australia/Sydney', 'America/Glace_Bay', 'America/Phoenix', 'America/New_York']
     """
-    if city == 'yono': breakpoint()
     if state and country:
         cinfo = db.country_info(country)
         states = [
@@ -391,6 +389,10 @@ class Country:
 
         return list(gen())
 
+    @property
+    def names(self):
+        return db.get_alternatenames(self.geonameid)
+
 
 class StateCollection:
     def __init__(self, country_code, feature_code):
@@ -454,7 +456,14 @@ class State:
         return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
-        return self.names_lang[language][0]
+        c = db.CONN.cursor()
+        command = (
+            'SELECT alternate_name FROM alternatename'
+            ' WHERE geonameid = ? AND isolanguage = ?'
+            ' ORDER BY isPreferredName DESC'
+        )
+        result = c.execute(command, (self.geonameid, language))
+        return next(result)[0]
 
     @property
     def country(self):
@@ -469,6 +478,10 @@ class State:
     @property
     def cities(self):
         return CityCollection(parent=self)
+
+    @property
+    def names(self):
+        return db.get_alternatenames(self.geonameid)
 
 
 class CityCollection:
@@ -490,8 +503,8 @@ class CityCollection:
             self._admin_field = the_map[parent.feature_code]
             self._admin_code = getattr(parent, self._admin_field)
 
-            self._where = 'country_code = ? AND ? = ? AND feature_class = "P"'
-            self._params = (self.parent.country_code, self._admin_field, self._admin_code)
+            self._where = 'country_code = ? AND %s = ? AND feature_class = "P"' % self._admin_field
+            self._params = (self.parent.country_code, self._admin_code)
 
         command = 'SELECT * FROM geoname WHERE %s ORDER BY population DESC' % self._where
         self._cursor.execute(command, self._params)
@@ -595,6 +608,20 @@ class City:
             other.latitude,
             other.longitude,
         )
+
+    @property
+    def names(self):
+        return db.get_alternatenames(self.geonameid)
+
+    def normalize(self, language=DEFAULT_LANGUAGE):
+        c = db.CONN.cursor()
+        command = (
+            'SELECT alternate_name FROM alternatename'
+            ' WHERE geonameid = ? AND isolanguage = ?'
+            ' ORDER BY isPreferredName DESC'
+        )
+        result = c.execute(command, (self.geonameid, language))
+        return next(result)[0]
 
 
 class Postcode:

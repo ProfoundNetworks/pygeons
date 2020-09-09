@@ -1,3 +1,9 @@
+"""Implements low-level database structures and functions.
+
+Expects you to call :func:`connect` before you do anything with the DB.
+
+Expects the database to be initialized.  If it is not, see :mod:`pygeons.initialize`.
+"""
 import collections
 import io
 import os.path as P
@@ -8,6 +14,7 @@ from typing import (
     Iterable,
     List,
     Optional,
+    Tuple,
 )
 
 import marisa_trie  # type: ignore
@@ -167,3 +174,18 @@ def country_info(name: str) -> CountryInfo:
         return candidates[0]
     else:
         raise ValueError('ambiguous country name: %r' % name)
+
+
+def get_alternatenames(geonameid: str) -> List[Tuple[str, str]]:
+    assert CONN
+    c = CONN.cursor()
+    command = (
+        'SELECT isolanguage, alternate_name FROM alternatename'
+        ' WHERE geonameid = ?'
+    )
+
+    def g():
+        for isolanguage, alternate_name in c.execute(command, (geonameid, )):
+            yield isolanguage, alternate_name
+
+    return list(g())

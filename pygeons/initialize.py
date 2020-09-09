@@ -1,3 +1,7 @@
+"""Initialize data structures.
+
+Downloads approx. 500MB of data from geonames.org.
+"""
 import codecs
 import csv
 import contextlib
@@ -154,13 +158,6 @@ CREATE TABLE alternatename(
     #
     # TODO: add our own alternate names below
     #
-    # In particular, we should add all canonical names to the alternatename table.
-    # We must do this because that table is missing data for some important
-    # cities, like Yono (Saitama, JP) and we build the trie directly from that
-    # table.
-    #
-    # Deduplication will be tough - do we need to bother with it?
-    #
 
     c.execute('CREATE INDEX alternatename_geonameid on alternatename(geonameid)')
     c.execute('CREATE INDEX alternatename_alternate_name on alternatename(alternate_name)')
@@ -173,11 +170,21 @@ def build_trie(db_path: str, marisa_path: str) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    command = 'SELECT alternateNameId, geonameid, alternate_name FROM alternatename'
-
     def g():
+        command = 'SELECT alternateNameId, geonameid, alternate_name FROM alternatename'
         for (alternate_name_id, geoname_id, alternate_name) in c.execute(command):
             yield alternate_name.lower(), (alternate_name_id, geoname_id)
+
+        #
+        # canonical name and asciiname seem to be missing from the alternatename
+        # table for most records, so we add them explicitly here.  Don't worry
+        # about deduplicating for now.
+        #
+        command = 'SELECT geonameid, name, asciiname FROM geoname'
+        for (geonameid, name, asciiname) in c.execute(command):
+            yield name.lower(), (-1, geonameid)
+            if asciiname != name:
+                yield asciiname.lower(), (-1, geonameid)
 
     trie = marisa_trie.RecordTrie('ii', g())
     trie.save(marisa_path)
@@ -197,6 +204,13 @@ def main():
     logging.basicConfig(level=logging.INFO)
 
     dbpath = 'db.sqlite3'
+
+    #
+    # FIXME
+    #
+    build_trie(dbpath, 'trie.ii')
+    return
+
     if P.isfile(dbpath):
         os.unlink(dbpath)
 
