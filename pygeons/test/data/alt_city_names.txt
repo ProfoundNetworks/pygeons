@@ -1,0 +1,290 @@
+Sydney on Vaal	sydney
+Sunrise-on-Sea	sunrise
+Saint Michael’s on Sea	saint michael’s
+Kenton on Sea	kenton
+Henley on Klip	henley
+Brenton-on-Sea	brenton
+Woodstock-on-Loddon	woodstock
+Woolsthorpe by Belvoir	woolsthorpe
+Winterton-on-Sea	winterton
+Willoughby on the Wolds	willoughby
+Weston on the Green	weston
+Weston on Avon	weston
+Westgate on Sea	westgate
+Westbury on Severn	westbury
+Warwick-on-Eden	warwick
+Walton-on-the-Naze	walton
+Waltham on the Wolds	waltham
+Walton on the Hill	walton
+Walton-on-Thames	walton
+Walsgrave on Sowe	walsgrave
+Thorpe on the Hill	thorpe
+Thornaby-on-Tees	thornaby
+Sutton on Trent	sutton
+Sutton on the Hill	sutton
+Sutton on the Forest	sutton
+Sutton on Sea	sutton
+Sutton on Hull	sutton
+Sunbury-on-Thames	sunbury
+Stretton on Fosse	stretton
+Stratton-on-the-Fosse	stratton
+Stow on the Wold	stow
+Stourport-on-Severn	stourport
+Stoke-on-Trent	stoke
+Stoke-by-Nayland	stoke
+Stoke by Clare	stoke
+Stockton-on-Tees	stockton
+Stockton on Teme	stockton
+Staunton on Wye	staunton
+Stanton by Dale	stanton
+Stanford on Teme	stanford
+Stanford on Avon	stanford
+Stanford on Soar	stanford
+Southend-on-Sea	southend
+Shoreham-by-Sea	shoreham
+Shipston on Stour	shipston
+Saltburn-by-the-Sea	saltburn
+Saint Michaels on Wyre	saint michaels
+Saint Leonards-on-Sea	saint leonards
+Saint Giles on the Heath	saint giles
+Saint Annes on the Sea	saint annes
+Ryton on Dunsmore	ryton
+Ross on Wye	ross
+Rhôs-on-Sea	rhôs
+Ratcliffe on the Wreake	ratcliffe
+Ratcliffe on Soar	ratcliffe
+Radcliffe on Trent	radcliffe
+Preston on the Hill	preston
+Preston on Wye	preston
+Portslade-by-Sea	portslade
+Owmby-by-Spital	owmby
+Orton on the Hill	orton
+Oldbury-on-Severn	oldbury
+Oldbury on the Hill	oldbury
+Normanton on the Wolds	normanton
+Normanton on Trent	normanton
+Normanby-by-Spital	normanby
+Newton on Trent	newton
+Newton on the Moor	newton
+Newton by Toft	newton
+Newton by the Sea	newton
+Newport-on-Tay	newport
+Newbridge on Wye	newbridge
+Newbold on Stour	newbold
+Newbold on Avon	newbold
+Newbiggin-by-the-Sea	newbiggin
+Newark on Trent	newark
+Napton on the Hill	napton
+Myton on Swale	myton
+Moreton on Lugg	moreton
+Milford on Sea	milford
+Middleton on the Wolds	middleton
+Middleton on the Hill	middleton
+Middleton-on-Sea	middleton
+Middleton-by-Youlgreave	middleton
+Middleton-by-Wirksworth	middleton
+Marske-by-the-Sea	marske
+Mareham on the Hill	mareham
+Holland-on-Sea	holland
+Leysdown-on-Sea	leysdown
+Leigh-on-Sea	leigh
+Lee-on-the-Solent	lee
+Langton by Wragby	langton
+Kirkby on Bain	kirkby
+Kingston on Soar	kingston
+Illston on the Hill	illston
+Houghton on the Hill	houghton
+Hough on the Hill	hough
+Horndon on the Hill	horndon
+Hopton on Sea	hopton
+Hinton on the Green	hinton
+Higham on the Hill	higham
+Henley-on-Thames	henley
+Heddon on the Wall	heddon
+Harrow on the Hill	harrow
+Gringley on the Hill	gringley
+Grantown on Spey	grantown
+Gorleston-on-Sea	gorleston
+Goring-by-Sea	goring
+Garton on the Wolds	garton
+Frisby on the Wreak	frisby
+Frinton-on-Sea	frinton
+Frampton on Severn	frampton
+Foston on the Wolds	foston
+Easton on the Hill	easton
+Dunham on the Hill	dunham
+Donington on Bain	donington
+Croft - On - Tees	croft -
+Clacton-on-Sea	clacton
+Charlton on Otmoor	charlton
+Carlton on Trent	carlton
+Caister-on-Sea	caister
+Burton on the Wolds	burton
+Burnham-on-Crouch	burnham
+Burnham-on-Sea	burnham
+Burgh by Sands	burgh
+Breedon on the Hill	breedon
+Bradwell on Sea	bradwell
+Bradford-on-Avon	bradford
+Bowness-on-Solway	bowness
+Bowness-on-Windermere	bowness
+Bourton on the Water	bourton
+Bourton on the Hill	bourton
+Bourton on Dunsmore	bourton
+Bolton by Bowland	bolton
+Blaydon-on-Tyne	blaydon
+Birchington-on-Sea	birchington
+Bigbury on Sea	bigbury
+Bidford-on-Avon	bidford
+Bexhill-on-Sea	bexhill
+Barton on Sea	barton
+Barmby on the Moor	barmby
+Barmby on the Marsh	barmby
+Newmarket on Fergus	newmarket
+Carrick-on-Shannon	carrick
+Carrick-on-Suir	carrick
+Ogmore-by-Sea	ogmore
+Milton on Stour	milton
+Forestdale by the Brook	forestdale
+Angola by the Bay	angola
+The Woods on Herring Creek	the woods
+Gables by the Sea	gables
+Lauderdale-by-the-Sea	lauderdale
+Little Harbor on the Hillsboro	little harbor
+Ormond-by-the-Sea	ormond
+Wilbur-by-the-Sea	wilbur
+Pineworth by the Lake	pineworth
+Shangri-La on the Lake	shangri-la
+Sidney on Lanier	sidney
+Sundown on Lanier	sundown
+The Heather on Houston Lake	the heather
+Windsor on the Marsh	windsor
+Wymberly on the Marsh	wymberly
+Wymberly-On-The-Marsh	wymberly
+Arden on the Severn	arden
+Arundel on the Bay	arundel
+Battersea on the Bay	battersea
+Beechwood on the Burley	beechwood
+Briar Cliff on the Severn	briar cliff
+Brookfield on the Magothy	brookfield
+Buena Vista on the Patuxent	buena vista
+Chesapeake Heights on the Bay	chesapeake heights
+Cheston on the Wye	cheston
+Clifton on the Potomac	clifton
+Colchester on the Severn	colchester
+Downs on the Severn	downs
+Fairhaven-on-the-Bay	fairhaven
+Franklin Manor-on-the-Bay	franklin manor
+Lindamoor on the Severn	lindamoor
+Linstead-on-the-Severn	linstead
+Long Point on the Magothy	long point
+Milburn on the Magothy	milburn
+Moorings on the Magothy	moorings
+Palisades on the Severn	palisades
+Pinehurst on the Bodkin	pinehurst
+Point Field Landing on the Severn	point field landing
+Queen Annes on Wye	queen annes
+Romancoke on the Bay	romancoke
+Saint Martins by the Bay	saint martins
+Saltworks on the Severn	saltworks
+Selby-on-the-Bay	selby
+Tydings on the Bay	tydings
+Venice on the Bay	venice
+Winchester-on-the-Severn	winchester
+Woodburn on the Potomac	woodburn
+Dunhaven by the Lake	dunhaven
+Riviera on the Barnegat	riviera
+Hollywood by the Lake	hollywood
+Litchfield by the Sea	litchfield
+Ingleside On-the-Bay	ingleside
+Cape Story by the Sea	cape story
+Kingsmill on the James	kingsmill
+Stratford on the Potomac	stratford
+Camden on Gauley	camden
+Manchester-by-the-Sea	manchester
+Wellfleet by the Sea	wellfleet
+Marine on Saint Croix	marine
+Avon-by-the-Sea	avon
+Riviera on the Bay	riviera
+Angola on the Lake	angola
+Angola-on-the-Lake	angola
+Annandale-on-Hudson	annandale
+Ardsley-on-Hudson	ardsley
+Castleton-on-Hudson	castleton
+Croton-on-Hudson	croton
+Grand View-on-Hudson	grand view
+Hastings-on-Hudson	hastings
+Highland-on-the-Lake	highland
+Malden-on-Hudson	malden
+Ontario on the Lake	ontario
+Chippewa-on-the-Lake	chippewa
+Eastpointe on the Mall	eastpointe
+Geneva-on-the-Lake	geneva
+Kingsville On-the-Lake	kingsville
+Madison-on-the-Lake	madison
+Meigs on the River	meigs
+Mentor-on-the-Lake	mentor
+Mineyahta-on-the Bay	mineyahta
+Painesville on-the-Lake	painesville
+Palermo-on-the-Lakes	palermo
+Saybrook-on-the-lake	saybrook
+Vermilion-on-the-Lake	vermilion
+Will-O-Bee on the Lake	will-o-bee
+Williamsburg-On-The-River	williamsburg
+Shawnee on Delaware	shawnee
+Cardiff-by-the-Sea	cardiff
+Carmel-by-the-Sea	carmel
+Cuesta-by-the-Sea	cuesta
+Hollywood by the Sea	hollywood
+Bonneville on the Hill	bonneville
+Cove on Mount Olympus Place	cove
+Dexter by the Sea	dexter
+Wildebrook On The Green	wildebrook
+Warwick on the James	warwick
+Cornhill on Tweed	cornhill
+Sandford-on-Thames	sandford
+Westcliff-on-Sea	westcliff
+Bidford-on-avon	bidford
+Amersham on the Hill	amersham
+Stockton on the Forest	stockton
+Thorpe on the Hill	thorpe
+Dorchester on Thames	dorchester
+Mobiland by the Sea	mobiland
+The Preserve on Aquia Creek	the preserve
+Wellington Chase on the Rappahannock	wellington chase
+Willamsburg on the Potomac	willamsburg
+Walden on Lake Houston	walden
+Aberdeen on Glen	aberdeen
+Brigadoon on Lake Heather	brigadoon
+Country Haven on Bullfrog Creek	country haven
+Gibsonton on the Bay	gibsonton
+Hampton on the Green	hampton
+Huntington by the Campus	huntington
+Idlewild on the Hillsborough	idlewild
+O'Ryans Point on Half Moon Lake	o'ryans point
+Sanctuary on Livingston	sanctuary
+Surfside Estates by the Bay	surfside estates
+Waterford on the Bay	waterford
+Waterford on the Alafia	waterford
+Idlewood On The Lake	idlewood
+Selby-on-the-Bay	selby
+Shipton On Cherwell	shipton
+Stratford on Slaney	stratford
+Greenough-on-Sea	greenough
+Carshalton on the Hill	carshalton
+Lydd-on-Sea	lydd
+Aston-on-Trent	aston
+Woolsthorpe-by-Colsterworth	woolsthorpe
+River Mist On The Fox	river mist
+Saweto-on-Sea	saweto
+Westbury on Trym	westbury
+Witham on the Hill	witham
+Stretton-on-Dunsmore	stretton
+Morton-on-Swale	morton
+Welford-on-Avon	welford
+Hay-on-Wye	hay
+Normanton on Soar	normanton
+Kingston On Murray	kingston
+Bridgewater On Loddon	bridgewater
+Four By Four	four
+Bromley-by-Bow	bromley
