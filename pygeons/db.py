@@ -23,6 +23,10 @@ CONN = None
 TRIE = None
 _COUNTRYINFO = None
 
+MARISA_FORMAT = 'c2sii'
+MARISA_FILENAME = 'marisa_trie.' + MARISA_FORMAT
+ENCODING = 'utf-8'
+
 
 Geoname = collections.namedtuple(
     'Geoname',
@@ -86,7 +90,7 @@ def _load_country_info() -> List[CountryInfo]:
     return result
 
 
-def connect(subdir: str = '.') -> None:
+def connect(subdir: str = '/home/misha/.pygeons') -> None:
     global CONN
     global TRIE
     global _COUNTRYINFO
@@ -95,7 +99,7 @@ def connect(subdir: str = '.') -> None:
         CONN = sqlite3.connect(P.join(subdir, 'db.sqlite3'))
         _COUNTRYINFO = _load_country_info()
     if TRIE is None:
-        TRIE = marisa_trie.RecordTrie('ii').load(P.join(subdir, 'trie.ii'))
+        TRIE = marisa_trie.RecordTrie(MARISA_FORMAT).load(P.join(subdir, MARISA_FILENAME))
 
 
 def select_geonames(subcommand: str, params: Iterable[Any]) -> List[Geoname]:
@@ -140,8 +144,9 @@ def select_geonames_name(name: str) -> List[Geoname]:
         except KeyError:
             pass
         else:
-            for (_, geoname_id) in matches:
-                yield geoname_id
+            for m in matches:
+                if m[0] in (b'A', b'P'):
+                    yield m[2]
 
     geoname_ids = set(g())
     return select_geonames_ids(geoname_ids)
@@ -158,7 +163,7 @@ def country_info(name: str) -> CountryInfo:
     assert _COUNTRYINFO
 
     try:
-        ids = {geonameid for (_, geonameid) in TRIE[name.lower()]}
+        ids = {m[2] for m in TRIE[name.lower()]}
     except KeyError:
         ids = set()
 

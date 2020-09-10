@@ -21,6 +21,8 @@ import marisa_trie  # type: ignore
 import pySmartDL  # type: ignore
 import smart_open  # type: ignore
 
+import pygeons.db
+
 _ENCODING = 'utf-8'
 _CSV_PARAMS = dict(delimiter='\t', quotechar='', quoting=csv.QUOTE_NONE)
 
@@ -166,27 +168,88 @@ CREATE TABLE alternatename(
     conn.commit()
 
 
+def init_postcode(db_path: str, fin: IO[str]) -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("""
+CREATE TABLE postcode(
+    id NUMERIC PRIMARY KEY,
+    country_code TEXT, -- iso country code, 2 characters
+    postal_code TEXT,  -- varchar(20)
+    place_name TEXT,   -- varchar(180)
+    admin_name1 TEXT,  -- 1. order subdivision (state) varchar(100)
+    admin_code1 TEXT,  -- 1. order subdivision (state) varchar(20)
+    admin_name2 TEXT,  -- 2. order subdivision (county/province) varchar(100)
+    admin_code2 TEXT,  -- 2. order subdivision (county/province) varchar(20)
+    admin_name3 TEXT,  -- 3. order subdivision (community) varchar(100)
+    admin_code3 TEXT,  -- 3. order subdivision (community) varchar(20)
+    latitude TEXT,     -- estimated latitude (wgs84)
+    longitude TEXT,    -- estimated longitude (wgs84)
+    accuracy NUMERIC  -- accuracy of lat/lng from 1=estimated, 4=geonameid, 6=centroid of addresses or shape
+)""")
+
+    insert_cmd = 'INSERT INTO postcode VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+
+    reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
+    for i, row in enumerate(reader):
+        #
+        # NB. the admin_ stuff is all denormalized.  Would have been much more
+        # helpful if it consisted of geonameids so that it could be joined
+        # onto the geoname table.
+        #
+        c.execute(insert_cmd, [i] + row)
+
+    c.execute('CREATE INDEX postcode_country_code on postcode(country_code)')
+    c.execute('CREATE INDEX postcode_postal_code on postcode(postal_code)')
+    c.execute('CREATE INDEX postcode_place_name on postcode(place_name)')
+
+    #
+    # FIXME: what other indices do we need here?
+    #
+
+    c.close()
+
+    conn.commit()
+
+
 def build_trie(db_path: str, marisa_path: str) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
+    def record(feature_class, country_code, pk, alt_name_id=-1):
+        #
+        # See db.MARISA_FORMAT for the packing format of the record
+        # Also https://docs.python.org/3/library/struct.html
+        #
+        return (feature_class.encode(_ENCODING), country_code.encode(_ENCODING), pk, alt_name_id)
+
     def g():
-        command = 'SELECT alternateNameId, geonameid, alternate_name FROM alternatename'
-        for (alternate_name_id, geoname_id, alternate_name) in c.execute(command):
-            yield alternate_name.lower(), (alternate_name_id, geoname_id)
+        command = (
+            'SELECT G.geonameid, G.feature_class, G.country_code, alternateNameId, alternate_name '
+            'FROM geoname G JOIN alternatename A ON G.geonameid = A.geonameid'
+        )
+        for r in c.execute(command):
+            geonameid, feature_class, country_code, alt_name_id, alt_name = r
+            yield alt_name.lower(), record(feature_class, country_code, geonameid, alt_name_id)
 
         #
         # canonical name and asciiname seem to be missing from the alternatename
         # table for most records, so we add them explicitly here.  Don't worry
         # about deduplicating for now.
         #
-        command = 'SELECT geonameid, name, asciiname FROM geoname'
-        for (geonameid, name, asciiname) in c.execute(command):
-            yield name.lower(), (-1, geonameid)
+        command = 'SELECT geonameid, name, asciiname, feature_class, country_code FROM geoname'
+        for (geonameid, name, asciiname, feature_class, country_code) in c.execute(command):
+            rec = record(feature_class, country_code, geonameid)
+            yield name.lower(), rec
             if asciiname != name:
-                yield asciiname.lower(), (-1, geonameid)
+                yield asciiname.lower(), rec
 
-    trie = marisa_trie.RecordTrie('ii', g())
+        command = 'SELECT id, country_code, place_name FROM postcode'
+        for (pk, country_code, place_name) in c.execute(command):
+            yield place_name.lower(), record('Z', country_code, pk)
+
+    trie = marisa_trie.RecordTrie(pygeons.db.MARISA_FORMAT, g())
     trie.save(marisa_path)
 
     c.close()
@@ -194,7 +257,7 @@ def build_trie(db_path: str, marisa_path: str) -> None:
 
 @contextlib.contextmanager
 def _unzip_temporary(url: str, member: str) -> Iterator[IO[str]]:
-    dl = pySmartDL.SmartDL(url, progress_bar=False)
+    dl = pySmartDL.SmartDL(url)
     dl.start()
     with zipfile.ZipFile(dl.get_dest()) as fin_zip:
         yield codecs.getreader(_ENCODING)(fin_zip.open(member))
@@ -203,28 +266,26 @@ def _unzip_temporary(url: str, member: str) -> Iterator[IO[str]]:
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    dbpath = 'db.sqlite3'
+    dbpath = '/home/misha/.pygeons/db.sqlite3'
 
-    #
-    # FIXME
-    #
-    build_trie(dbpath, 'trie.ii')
-    return
+#   if P.isfile(dbpath):
+#       os.unlink(dbpath)
 
-    if P.isfile(dbpath):
-        os.unlink(dbpath)
+#   init_countryinfo(dbpath)
+#
+#   url = 'http://download.geonames.org/export/dump/allCountries.zip'
+#   with _unzip_temporary(url, 'allCountries.txt') as fin:
+#       init_geoname(dbpath, fin)
+#
+#   url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
+#   with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
+#       init_alternatename(dbpath, fin)
+#
+#   url = 'http://download.geonames.org/export/zip/allCountries.zip'
+#   with _unzip_temporary(url, 'allCountries.txt') as fin:
+#       init_postcode(dbpath, fin)
 
-    init_countryinfo(dbpath)
-
-    url = 'http://download.geonames.org/export/dump/allCountries.zip'
-    with _unzip_temporary(url, 'allCountries.txt') as fin:
-        init_geoname(dbpath, fin)
-
-    url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
-    with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
-        init_alternatename(dbpath, fin)
-
-    build_trie(dbpath, 'trie.ii')
+    build_trie(dbpath, '/home/misha/.pygeons/' + pygeons.db.MARISA_FILENAME)
 
 
 if __name__ == '__main__':

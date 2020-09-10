@@ -72,7 +72,7 @@ City.gid(524901, 'Moscow', 'RU')
 You may be surprised that city names are not necessarily unique.
 In such cases, use the find_cities function:
 
->>> find_cities("oslo")
+>>> find_cities("oslo")[:2]
 [City.gid(3143244, 'Oslo', 'NO'), City.gid(5040425, 'Oslo', 'US')]
 
 If there are multiple results, then they get sorted by decreasing population.
@@ -167,9 +167,11 @@ def expand(abbreviation: str, country_code: Optional[str] = None) -> List[db.Geo
     assert db.TRIE
 
     try:
-        alt_name_ids, _ = zip(*db.TRIE[abbreviation.lower()])
+        matches = db.TRIE[abbreviation.lower()]
     except KeyError:
         return []
+
+    alt_name_ids = [m[3] for m in matches if m[3] != -1]
 
     assert db.CONN
     c = db.CONN.cursor()
@@ -228,11 +230,11 @@ def csc_list(
 ) -> List[db.Geoname]:
     """
     >>> [g.country_code for g in csc_list('sydney')]
-    ['AU', 'CA', 'US', 'US']
+    ['AU', 'CA', 'US', 'US', 'ZA', 'VU', 'US', 'US', 'CA']
     >>> [g.name for g in csc_list('sydney', country='australia')]
     ['Sydney']
-    >>> [g.timezone for g in csc_list('sydney', state='victoria')]
-    ['Australia/Sydney', 'America/Glace_Bay', 'America/Phoenix', 'America/New_York']
+    >>> [g.timezone for g in csc_list('sydney', state='victoria')][:3]
+    ['Australia/Sydney', 'America/Glace_Bay', 'America/Phoenix']
     """
     if state and country:
         cinfo = db.country_info(country)
@@ -305,7 +307,7 @@ def sc_list(state: str, country: Optional[str] = None) -> List[db.Geoname]:
     buf.write('WHERE feature_code in ("ADM1", "ADM2", "ADM3")')
 
     assert db.TRIE
-    params = [t[1] for t in db.TRIE[state.lower()]]
+    params = [t[2] for t in db.TRIE[state.lower()]]
     buf.write(' AND geonameid IN (%s)' % ','.join(['?' for _ in params]))
 
     if country:
@@ -348,14 +350,7 @@ class Country:
         return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
-        c = db.CONN.cursor()
-        command = (
-            'SELECT alternate_name FROM alternatename'
-            ' WHERE geonameid = ? AND isolanguage = ?'
-            ' ORDER BY isPreferredName DESC'
-        )
-        result = c.execute(command, (self.geonameid, language))
-        return next(result)[0]
+        return _normalize(self.geonameid, language)
 
     def expand(self, abbreviation):
         return expand(abbreviation, country_code=self.iso)
@@ -403,6 +398,7 @@ class StateCollection:
         command = (
             'SELECT * FROM geoname'
             ' WHERE country_code = ? AND feature_code = ?'
+            ' ORDER BY population DESC'
         )
         self._cursor.execute(command, (self.country_code, self.feature_code))
 
@@ -456,14 +452,7 @@ class State:
         return False
 
     def normalize(self, language=DEFAULT_LANGUAGE):
-        c = db.CONN.cursor()
-        command = (
-            'SELECT alternate_name FROM alternatename'
-            ' WHERE geonameid = ? AND isolanguage = ?'
-            ' ORDER BY isPreferredName DESC'
-        )
-        result = c.execute(command, (self.geonameid, language))
-        return next(result)[0]
+        return _normalize(self.geonameid, language)
 
     @property
     def country(self):
@@ -614,14 +603,39 @@ class City:
         return db.get_alternatenames(self.geonameid)
 
     def normalize(self, language=DEFAULT_LANGUAGE):
-        c = db.CONN.cursor()
+        return _normalize(self.geonameid, language)
+
+
+def _normalize(geonameid, language):
+    c = db.CONN.cursor()
+
+    canonical = db.select_geonames_ids([geonameid])[0].name
+    if language == 'en':
+        return canonical
+
+    def _lookup(subcommand):
         command = (
-            'SELECT alternate_name FROM alternatename'
-            ' WHERE geonameid = ? AND isolanguage = ?'
-            ' ORDER BY isPreferredName DESC'
-        )
-        result = c.execute(command, (self.geonameid, language))
-        return next(result)[0]
+            'SELECT alternate_name FROM alternatename '
+            'WHERE geonameid = ? AND isolanguage = ? AND '
+        ) + subcommand
+        result = c.execute(command, (geonameid, language))
+        try:
+            return next(result)[0]
+        except StopIteration:
+            return None
+
+    preferred = _lookup('isPreferredName = 1')
+    if preferred:
+        return preferred
+
+    alt = _lookup(
+        'isHistoricName != 1 AND isColloquial != 1 '
+        'ORDER BY length(alternate_name) DESC'
+    )
+    if alt:
+        return alt
+
+    return canonical
 
 
 class Postcode:
