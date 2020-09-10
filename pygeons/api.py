@@ -193,6 +193,18 @@ def expand(abbreviation: str, country_code: Optional[str] = None) -> List[db.Geo
     return result
 
 
+def _normalize(geonameid: int, language: str) -> str:
+    assert db.CONN
+    c = db.CONN.cursor()
+    command = (
+        'SELECT alternate_name FROM alternatename'
+        ' WHERE geonameid = ? AND isolanguage = ?'
+        ' ORDER BY isPreferredName DESC'
+    )
+    result = c.execute(command, (geonameid, language))
+    return next(result)[0]
+
+
 def contains(large: Union[db.Geoname, db.CountryInfo], small: db.Geoname) -> bool:
     if isinstance(large, db.CountryInfo):
         return large.iso == small.country_code
@@ -324,7 +336,8 @@ class Country:
     def __init__(self, name):
         self.data = db.country_info(name)
         for key, value in self.data._asdict().items():
-            setattr(self, key, value)
+            if key not in ('capital', 'neighbors'):
+                setattr(self, key, value)
 
         #
         # The collection to go through depends on the country.
@@ -333,6 +346,20 @@ class Country:
         # top level contains country names like England, Scotland, etc.
         #
         self._state_feature_code = 'ADM1'
+
+    @property
+    def capital(self):
+        c = db.CONN.cursor()
+        command = (
+            'SELECT * FROM geoname '
+            'WHERE name = ? AND country_code = ? AND feature_code = "PPLC"'
+        )
+        result = c.execute(command, (self.data.capital, self.iso))
+        return City(db.Geoname(*next(result)))
+
+    @property
+    def neighbors(self):
+        return [Country(x) for x in self.data.neighbors.split(',') if x]
 
     def __repr__(self):
         return 'Country(%r)' % self.country
@@ -374,15 +401,6 @@ class Country:
     @property
     def cities(self):
         return CityCollection(parent=self)
-
-    @property
-    def postcodes(self):
-        def gen():
-            query = {'countryCode': self.iso}
-            for info in db.DB.postcodes.find(query):
-                yield Postcode(info)
-
-        return list(gen())
 
     @property
     def names(self):
@@ -460,9 +478,7 @@ class State:
 
     @staticmethod
     def gid(geonames_id, *args, **kwargs):
-        c = db.CONN.cursor()
-        result = c.execute('SELECT * FROM geoname WHERE geonameid = ?', (geonames_id,))
-        return State(db.Geoname(*next(result)))
+        return State(db.select_geonames_ids([geonames_id])[0])
 
     @property
     def cities(self):
@@ -586,9 +602,7 @@ class City:
 
     @staticmethod
     def gid(geonames_id, *args, **kwargs):
-        c = db.CONN.cursor()
-        result = c.execute('SELECT * FROM geoname WHERE geonameid = ?', (geonames_id,))
-        return City(db.Geoname(*next(result)))
+        return City(db.select_geonames_ids([geonames_id])[0])
 
     def distance_to(self, other):
         return _haversine_dist(
@@ -629,7 +643,7 @@ def _normalize(geonameid, language):
         return preferred
 
     alt = _lookup(
-        'isHistoricName != 1 AND isColloquial != 1 '
+        'isHistoric != 1 AND isColloquial != 1 '
         'ORDER BY length(alternate_name) DESC'
     )
     if alt:

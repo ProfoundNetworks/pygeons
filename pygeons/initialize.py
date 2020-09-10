@@ -114,11 +114,11 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     c.execute('CREATE INDEX geoname_feature_class on geoname(feature_class)')
     c.execute('CREATE INDEX geoname_feature_code on geoname(feature_code)')
     c.execute('CREATE INDEX geoname_country_code on geoname(country_code)')
-    c.execute('CREATE INDEX geoname_cc2 on geoname(cc2)')
-    c.execute('CREATE INDEX geoname_admin1_code on geoname(admin1_code)')
-    c.execute('CREATE INDEX geoname_admin2_code on geoname(admin2_code)')
-    c.execute('CREATE INDEX geoname_admin3_code on geoname(admin3_code)')
-    c.execute('CREATE INDEX geoname_admin4_code on geoname(admin4_code)')
+    c.execute('CREATE INDEX geoname_country_feature on geoname(country_code, feature_code)')
+    c.execute('CREATE INDEX geoname_admin1_code on geoname(country_code, admin1_code)')
+    c.execute('CREATE INDEX geoname_admin2_code on geoname(country_code, admin2_code)')
+    c.execute('CREATE INDEX geoname_admin3_code on geoname(country_code, admin3_code)')
+    c.execute('CREATE INDEX geoname_admin4_code on geoname(country_code, admin4_code)')
 
     c.close()
     conn.commit()
@@ -266,7 +266,7 @@ def _unzip_temporary(url: str, member: str) -> Iterator[IO[str]]:
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    dbpath = '/home/misha/.pygeons/db.sqlite3'
+    dbpath = P.join(pygeons.db.DEFAULT_SUBDIR, 'db.sqlite3')
 
 #   if P.isfile(dbpath):
 #       os.unlink(dbpath)
@@ -281,11 +281,11 @@ def main():
 #   with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
 #       init_alternatename(dbpath, fin)
 #
-#   url = 'http://download.geonames.org/export/zip/allCountries.zip'
-#   with _unzip_temporary(url, 'allCountries.txt') as fin:
-#       init_postcode(dbpath, fin)
+    url = 'http://download.geonames.org/export/zip/allCountries.zip'
+    with _unzip_temporary(url, 'allCountries.txt') as fin:
+        init_postcode(dbpath, fin)
 
-    build_trie(dbpath, '/home/misha/.pygeons/' + pygeons.db.MARISA_FILENAME)
+    build_trie(dbpath, P.join(pygeons.db.DEFAULT_SUBDIR, pygeons.db.MARISA_FILENAME))
 
 
 if __name__ == '__main__':

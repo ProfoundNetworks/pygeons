@@ -3,9 +3,14 @@
 Expects you to call :func:`connect` before you do anything with the DB.
 
 Expects the database to be initialized.  If it is not, see :mod:`pygeons.initialize`.
+
+By default, the database lives under ``$HOME/.pygeons``.
+You can modify this behavior using the ``PYGEONS_HOME`` environment variable.
+You can also specify the subdirectory explicitly when you call :func:`connect`.
 """
 import collections
 import io
+import os
 import os.path as P
 import sqlite3
 
@@ -27,6 +32,7 @@ MARISA_FORMAT = 'c2sii'
 MARISA_FILENAME = 'marisa_trie.' + MARISA_FORMAT
 ENCODING = 'utf-8'
 
+DEFAULT_SUBDIR = os.environ.get('PYGEONS_HOME', P.expanduser('~/.pygeons'))
 
 Geoname = collections.namedtuple(
     'Geoname',
@@ -90,7 +96,7 @@ def _load_country_info() -> List[CountryInfo]:
     return result
 
 
-def connect(subdir: str = '/home/misha/.pygeons') -> None:
+def connect(subdir: str = DEFAULT_SUBDIR) -> None:
     global CONN
     global TRIE
     global _COUNTRYINFO
