@@ -7,9 +7,9 @@
 
 import logging
 
-__author__ = """Michael Penkov"""
-__email__ = 'misha.penkov@gmail.com'
-__version__ = '0.1.1'
+__author__ = 'Michael Penkov'
+__email__ = 'm@penkov.dev'
+__version__ = '0.9.0'
 
 _LOGGER = logging.getLogger(__name__)
 #
