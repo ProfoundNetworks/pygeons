@@ -2,7 +2,6 @@
 pygeons
 =======
 
-
 .. image:: https://img.shields.io/pypi/v/pygeons.svg
         :target: https://pypi.python.org/pypi/pygeons
 
@@ -17,44 +16,38 @@ pygeons
      :target: https://pyup.io/repos/github/mpenkov/pygeons/
      :alt: Updates
 
-
 Geographical queries made simple.
 
 * Free software: MIT license
 * Documentation: https://pygeons.readthedocs.io.
 
->>> from pprint import pprint
->>> import pygeons
->>> # Scrub a (city, state, country) combination
->>> scrubbed = pygeons.csc_scrub('sydney', 'nsw', 'au')
->>> result = scrubbed.pop('result')
->>> scrubbed
-{'score': 0.9, 'st_status': 'O', 'cc_status': 'O', 'count': 1}
->>> pprint(result)
-{'_id': 2147714,
- 'abbr': [],
- 'admin1': 'State of New South Wales',
- 'admin1names': ['new south wales', 'nsw', 'state of new south wales'],
- 'admin2': '17200',
- 'admin2names': [],
- 'asciiname': 'Sydney',
- 'countryCode': 'AU',
- 'featureClass': 'P',
- 'featureCode': 'PPLA',
- 'latitude': -33.86785,
- 'longitude': 151.20732,
- 'name': 'Sydney',
- 'names': ['syd', 'sydney', 'sydney city'],
- 'names_lang': {'en': ['syd', 'sydney', 'sydney city']},
- 'population': 4627345}
->>> pygeons.csc_scrub('sydney', 'nsw', None)['result']['_id']  # same GeoNames ID as above
-2147714
->>> # Normalize a state abbreviation
->>> pygeons.norm('admin1', 'AU', 'nsw')
-'State of New South Wales'
->>> # Translate a country name in the native language into English
->>> pygeons.country_info('россия')['names_lang']['en'][:4]
-['ru', 'rus', 'russia', 'russian federation']
+Some examples::
+
+    >>> from pygeons.api import Country, find_cities
+    >>> Country('ivory coast')
+    Country('Ivory Coast')
+    >>> Country('côte d’ivoire')
+    Country('Ivory Coast')
+    >>> Country('civ')
+    Country('Ivory Coast')
+    >>> _.iso
+    'CI'
+    >>> Country('ivory coast').capital.name
+    'Yamoussoukro'
+    >>> Country('ivory coast').neighbors
+    [Country('Liberia'), Country('Ghana'), Country('Guinea'), Country('Burkina Faso'), Country('Mali')]
+    >>>
+    >>> Country('us').cities['moscow']
+    City.gid(5601538, 'Moscow', 'US')
+    >>> Country('us').cities['moscow'].admin2
+    State.gid(5598264, 'ADM2', 'Latah County', 'US')
+    >>> Country('us').cities['moscow'].admin1
+    State.gid(5596512, 'ADM1', 'Idaho', 'US')
+    >>> Country('us').cities['moscow'].distance_to(Country('ru').cities['moscow'])
+    8375.215117486288
+    >>>
+    >>> find_cities("oslo")[:2]
+    [City.gid(3143244, 'Oslo', 'NO'), City.gid(5040425, 'Oslo', 'US')]
 
 Features
 --------
