@@ -177,16 +177,12 @@ def expand(abbreviation: str, country_code: Optional[str] = None) -> List[db.Geo
     c = db.CONN.cursor()
 
     command = (
-        'SELECT geonameid, isolanguage, isShortName FROM alternatename'
-        ' WHERE alternateNameId IN (%s)' % ','.join('?' for _ in alt_name_ids)
+        'SELECT geonameid FROM alternatename '
+        'WHERE (isolanguage == "abbr" OR isShortName) AND '
+        'alternateNameId IN (%s)' % ','.join('?' for _ in alt_name_ids)
     )
 
-    def g():
-        for (geonameid, isolanguage, is_short) in c.execute(command, alt_name_ids):
-            if isolanguage == 'abbr' or is_short:
-                yield geonameid
-
-    geoname_ids = set(g())
+    geoname_ids = {geonameid for (geonameid, ) in c.execute(command, alt_name_ids)}
     result = db.select_geonames_ids(geoname_ids, country_code=country_code)
     c.close()
 
