@@ -340,83 +340,105 @@ def sc_list(
 # Wraps the db.Geoname namedtuple to provide additional behavior.
 #
 class Geoname:
+    """Represents a record in the ``geoname`` table.
+
+    Every place name in the ``geonames.org`` dataset, including countries,
+    states, etc. corresponds to one of these.
+
+    Corresponds directly to the data model described at 
+    http://download.geonames.org/export/dump/.
+    """
     def __init__(self, geoname: db.Geoname) -> None:
         self.geoname = geoname
 
     @property
-    def geonameid(self):
+    def geonameid(self) -> int:
+        """integer id of record in geonames database"""
         return self.geoname.geonameid
 
     @property
-    def name(self):
+    def name(self) -> str:
+        """name of geographical point"""
         return self.geoname.name
 
     @property
-    def asciiname(self):
+    def asciiname(self) -> str:
+        """name of geographical point in plain ascii characters"""
         return self.geoname.asciiname
 
     @property
-    def alternatenames(self):
-        return self.geoname.geonameid
-
-    @property
-    def latitude(self):
+    def latitude(self) -> float:
+        """latitude in decimal degrees (wgs84)"""
         return self.geoname.latitude
 
     @property
-    def longitude(self):
+    def longitude(self) -> float:
+        """longitude in decimal degrees (wgs84)"""
         return self.geoname.longitude
 
     @property
-    def feature_class(self):
+    def feature_class(self) -> str:
+        """see http://www.geonames.org/export/codes.html"""
         return self.geoname.feature_class
 
     @property
-    def feature_code(self):
+    def feature_code(self) -> str:
+        """see http://www.geonames.org/export/codes.html"""
         return self.geoname.feature_code
 
     @property
-    def country_code(self):
+    def country_code(self) -> str:
+        """ISO-3166 2-letter country code, 2 characters"""
         return self.geoname.country_code
 
     @property
-    def cc2(self):
+    def cc2(self) -> str:
+        """alternate country codes, comma separated"""
         return self.geoname.cc2
 
     @property
-    def admin1_code(self):
+    def admin1_code(self) -> str:
+        """fipscode (subject to change to iso code)"""
         return self.geoname.admin1_code
 
     @property
-    def admin2_code(self):
+    def admin2_code(self) -> str:
+        """code for the second administrative division"""
         return self.geoname.admin2_code
 
     @property
-    def admin3_code(self):
+    def admin3_code(self) -> str:
+        """code for third level administrative division"""
         return self.geoname.admin3_code
 
     @property
-    def admin4_code(self):
+    def admin4_code(self) -> str:
+        """code for fourth level administrative division"""
         return self.geoname.admin4_code
 
     @property
-    def population(self):
+    def population(self) -> int:
+        """"""
         return self.geoname.population
 
     @property
-    def elevation(self):
+    def elevation(self) -> str:
+        """in meters"""
         return self.geoname.elevation
 
     @property
-    def dem(self):
+    def dem(self) -> str:
+        """digital elevation model, srtm3 or gtopo30"""
         return self.geoname.dem
 
     @property
-    def timezone(self):
+    def timezone(self) -> str:
+        """the iana timezone id (see file timeZone.txt)"""
         return self.geoname.timezone
 
     @property
-    def modification_date(self):
+    def modification_date(self) -> str:
+        """date of last modification in yyyy-MM-dd format"""
         return self.geoname.modification_date
 
     def __contains__(self, other):
@@ -430,7 +452,8 @@ class Geoname:
             return contains(self.geoname, other)
         return False
 
-    def normalize(self, language=DEFAULT_LANGUAGE):
+    def normalize(self, language: str = DEFAULT_LANGUAGE) -> str:
+        """Returns the preferred name of this place."""
         c = db.CONN.cursor()
 
         canonical = db.select_geonames_ids([self.geonameid])[0].name
@@ -462,11 +485,13 @@ class Geoname:
         return canonical
 
     @property
-    def country(self):
+    def country(self) -> 'Country':
+        """Returns the country that contains this place."""
         return Country(self.country_code)
 
     @property
-    def names(self):
+    def names(self) -> List[Tuple[str, str]]:
+        """Returns all the names of this place, for all languages."""
         return db.get_alternatenames(self.geonameid)
 
     def _get_parent_adm(self, level):
@@ -574,7 +599,8 @@ class Geoname:
     def state(self):
         return self.admin1
 
-    def distance_to(self, other):
+    def distance_to(self, other: 'Geoname') -> float:
+        """Returns the distance to the other place."""
         return _haversine_dist(self.latitude, self.longitude, other.latitude, other.longitude)
 
 
@@ -583,7 +609,12 @@ class Geoname:
 # additional useful behavior.
 #
 class Country(Geoname):
-    def __init__(self, name):
+    """Represents a country.
+
+    On top of the regular :class:`Geoname` fields, also exposes country information.
+    See http://download.geonames.org/export/dump/countryInfo.txt
+    """
+    def __init__(self, name: str) -> None:
         self.info = db.country_info(name)
         geoname = db.select_geonames_ids([self.info.geonameid])[0]
 
@@ -598,77 +629,77 @@ class Country(Geoname):
         self._state_feature_code = 'ADM1'
 
     @property
-    def iso(self):
+    def iso(self) -> str:
         return self.info.iso
 
     @property
-    def iso3(self):
+    def iso3(self) -> str:
         return self.info.iso2
 
     @property
-    def iso_numeric(self):
+    def iso_numeric(self) -> int:
         return self.info.iso_numeric
 
     @property
-    def fips(self):
+    def fips(self) -> str:
         return self.info.fips
 
     @property
-    def country(self):
+    def country(self) -> str:
         return self.info.country
 
     @property
-    def capital(self):
+    def capital(self) -> 'City':
         c = db.CONN.cursor()
         command = (
             'SELECT * FROM geoname '
             'WHERE name = ? AND country_code = ? AND feature_code = "PPLC"'
         )
-        result = c.execute(command, (self.data.capital, self.iso))
+        result = c.execute(command, (self.info.capital, self.iso))
         return City(db.Geoname(*next(result)))
 
     @property
-    def area(self):
+    def area(self) -> int:
         return self.info.area
 
     @property
-    def continent(self):
+    def continent(self) -> str:
         return self.info.continent
 
     @property
-    def tld(self):
+    def tld(self) -> str:
         return self.info.tld
 
     @property
-    def currency_code(self):
+    def currency_code(self) -> str:
         return self.info.currency_code
 
     @property
-    def currency_name(self):
+    def currency_name(self) -> str:
         return self.info.currency_name
 
     @property
-    def phone(self):
+    def phone(self) -> str:
         return self.info.phone
 
     @property
-    def postal_code_format(self):
+    def postal_code_format(self) -> str:
         return self.info.postal_code_format
 
     @property
-    def postal_code_regex(self):
+    def postal_code_regex(self) -> str:
         return self.info.postal_code_regex
 
     @property
-    def languages(self):
-        return self.info.languages
+    def languages(self) -> List[str]:
+        return self.info.languages.split(',')
 
     @property
-    def neighbors(self):
-        return [Country(x) for x in self.data.neighbors.split(',') if x]
+    def neighbors(self) -> List['Country']:
+        return [Country(x) for x in self.info.neighbors.split(',') if x]
 
     @property
-    def equivalent_fips_code(self):
+    def equivalent_fips_code(self) -> str:
         return self.info.equivalent_fips_code
 
     def __repr__(self):
@@ -690,27 +721,28 @@ class Country(Geoname):
         return expand(abbreviation, country_code=self.iso)
 
     @property
-    def states(self):
+    def states(self) -> 'StateCollection':
         return StateCollection(parent=self, feature_code=self._state_feature_code)
 
     @property
-    def admin1(self):
+    def admin1(self) -> 'StateCollection':
         return StateCollection(parent=self, feature_code='ADM1')
 
     @property
-    def admin2(self):
+    def admin2(self) -> 'StateCollection':
         return StateCollection(parent=self, feature_code='ADM2')
 
     @property
-    def admind(self):
+    def admind(self) -> 'StateCollection':
         return StateCollection(parent=self, feature_code='ADMD')
 
     @property
-    def cities(self):
+    def cities(self) -> 'CityCollection':
         return CityCollection(parent=self)
 
 
 class Collection:
+    """Represents an abstract collection of places."""
     def __init__(
         self,
         parent: Geoname,
@@ -874,6 +906,9 @@ class City(Geoname):
 
 
 class Postcode:
+    #
+    # FIXME: implement me
+    #
     def __init__(self, info):
         self.data = info
 

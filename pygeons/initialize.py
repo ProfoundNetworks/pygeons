@@ -104,9 +104,14 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
     reader = csv.reader(fin, **_CSV_PARAMS)  # type: ignore
     for row in reader:
+
         if len(row) != 19:
             logging.error('bad row: %r', row)
         elif row[6] in ('A', 'P'):
+            #
+            # get rid of alternatenames, we have a separate table for that
+            #
+            row[3] = ''
             c.execute(insert_cmd, row)
 
     c.execute('CREATE INDEX geoname_name on geoname(name)')
@@ -268,19 +273,19 @@ def main():
 
     dbpath = P.join(pygeons.db.DEFAULT_SUBDIR, 'db.sqlite3')
 
-#   if P.isfile(dbpath):
-#       os.unlink(dbpath)
-
-#   init_countryinfo(dbpath)
-#
-#   url = 'http://download.geonames.org/export/dump/allCountries.zip'
-#   with _unzip_temporary(url, 'allCountries.txt') as fin:
-#       init_geoname(dbpath, fin)
-#
-#   url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
-#   with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
-#       init_alternatename(dbpath, fin)
-#
+    if P.isfile(dbpath):
+        os.unlink(dbpath)
+ 
+    init_countryinfo(dbpath)
+ 
+    url = 'http://download.geonames.org/export/dump/allCountries.zip'
+    with _unzip_temporary(url, 'allCountries.txt') as fin:
+        init_geoname(dbpath, fin)
+ 
+    url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
+    with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
+        init_alternatename(dbpath, fin)
+ 
     url = 'http://download.geonames.org/export/zip/allCountries.zip'
     with _unzip_temporary(url, 'allCountries.txt') as fin:
         init_postcode(dbpath, fin)
