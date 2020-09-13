@@ -2,6 +2,13 @@
 History
 =======
 
+0.9.0 (2020-09-11)
+------------------
+
+* Added new API
+* Switched database backend from MongoDB to sqlite3
+* Implemented import scripts in Python
+
 0.1.1 (2017-12-03)
 ------------------
 
