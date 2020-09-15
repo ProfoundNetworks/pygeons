@@ -26,6 +26,10 @@ import marisa_trie  # type: ignore
 
 CONN = None
 TRIE = None
+
+#
+# FIXME: Expose this to outside the module
+#
 _COUNTRYINFO = None
 
 MARISA_FORMAT = 'c2sii'

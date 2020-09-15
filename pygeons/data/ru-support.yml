@@ -2,143 +2,158 @@ unconjugation:
   #
   # oblast' (female gender)
   #
-  amurskaya: amur
-  astrakhanskaya: astrakhan
-  arkhangel’skaya: arkhangel’sk
-  belgorodskaya: belgorod
-  bryanskaya: bryansk
-  vladimirskaya: vladimir
-  volgogradskaya: volgograd
-  vologodskaya: vologda
-  voronezhskaya: voronezh
-  ivanovskaya: ivanovo
-  irkutskaya: irkutsk
-  kaliningradskaya: kaliningrad
-  kaluzhskaya: kaluga
-  kemerovskaya: kemerovo
-  kirovskaya: kirov
-  kostromskaya: kostroma
-  kurskaya: kursk
-  kurganskaya: kurgan
-  leningradskaya: leningrad
-  lipetskaya: lipetsk
-  magadanskaya: magadan
-  moscow: moscow
-  murmanskaya: murmansk
-  nizhegorodskaya: nizhny novgorod
-  novgorodskaya: novgorod
-  novosibirskaya: novosibirsk
-  omskaya: omsk
-  orenburgskaya: orenburg
-  orlovskaya: oryol
-  penzenskaya: penza
-  pskovskaya: pskov
-  rostovskaya: rostov
-  ryazanskaya: ryazan
-  samarskaya: samara
-  saratovskaya: saratov
-  sakhalinskaya: sakhalin
-  sverdlovskaya: sverdlovsk
-  smolenskaya: smolensk
-  tambovskaya: tambov
-  tverskaya: tver
-  tomskaya: tomsk
-  tul’skaya: tula
-  tyumenskaya: tyumen
-  ulyanovsk: ulyanovsk
-  chelyabinskaya: chelyabinsk
-  yaroslavskaya: yaroslavl
-  yevreyskaya avtonomnaya: jewish autonomous
+  amurskaya: Amur
+  astrakhanskaya: Astrakhan
+  arkhangel’skaya: Arkhangel’sk
+  belgorodskaya: Belgorod
+  bryanskaya: Bryansk
+  vladimirskaya: Vladimir
+  volgogradskaya: Volgograd
+  vologodskaya: Vologda
+  voronezhskaya: Voronezh
+  ivanovskaya: Ivanovo
+  irkutskaya: Irkutsk
+  kaliningradskaya: Kaliningrad
+  kaluzhskaya: Kaluga
+  kemerovskaya: Kemerovo
+  kirovskaya: Kirov
+  kostromskaya: Kostroma
+  kurskaya: Kursk
+  kurganskaya: Kurgan
+  leningradskaya: Leningrad
+  lipetskaya: Lipetsk
+  magadanskaya: Magadan
+  moscow: Moscow
+  murmanskaya: Murmansk
+  nizhegorodskaya: Nizhny Novgorod
+  novgorodskaya: Novgorod
+  novosibirskaya: Novosibirsk
+  omskaya: Omsk
+  orenburgskaya: Orenburg
+  orlovskaya: Oryol
+  penzenskaya: Penza
+  pskovskaya: Pskov
+  rostovskaya: Rostov
+  ryazanskaya: Ryazan
+  samarskaya: Samara
+  saratovskaya: Saratov
+  sakhalinskaya: Sakhalin
+  sverdlovskaya: Sverdlovsk
+  smolenskaya: Smolensk
+  tambovskaya: Tambov
+  tverskaya: Tver
+  tomskaya: Tomsk
+  tul’skaya: Tula
+  tyumenskaya: Tyumen
+  ulyanovsk: Ulyanovsk
+  chelyabinskaya: Chelyabinsk
+  yaroslavskaya: Yaroslavl
+  yevreyskaya avtonomnaya: Jewish Autonomous
 
   #
   # kray (male gender)
   #
-  altayskiy: altay
-  kamtchatski: kamchatka
-  krasnodarskiy: krasnodar
-  krasnoyarskiy: krasnoyarsk
-  khabarovskiy: khabarovsk
-  perm: perm
-  stavropol’skiy: stavropol
-  primorskiy: maritime
-  zabaykal’skiy: transbaikal
-alternative_names:
-  en:
-    moscow oblast:
-      - mo
-    saint petersburg:
-      - st petersburg
-      - sankt peterburg
-    bashkortostan:
-      - republic of bashkortostan
-      - bashkiria
-      - bashkiriya
-      - rb
-    respublika kareliya:
-      - republic of karelia
-      - republic of kareliya
-      - karelia
-      - kareliya
-    respublika khakasiya:
-      - republic of khakasia
-      - republic of khakasiya
-      - khakasia
-      - khakasiya
-    respublika mordoviya:
-      - republic of mordovia
-      - republic of mordovia
-      - mordovia
-      - mordoviya
-    respublika sakha (yakutiya):
-      - republic of sakha (yakutia)
-      - republic of sakha (yakutiya)
-      - republic of sakha
-      - republic of yakutia
-      - republic of yakutiya
-      - respublika sakha (yakutia)
-      - respublika sakha (yakutiya)
-      - sakha republic
-      - yakutia
-      - yakutiya
-    tatarstan:
-      - republic of tatarstan
-      - tatarstan
-      - tatar republic
-      - respublika tatarstan
-      - rt
-    udmurtskaya respublika:
-      - udmurt republic
-      - udmurtia
-      - udmurtiya
-    respublika mariy-el:
-      - republic of mariy el
-      - republic of mari el
-      - mariy el
-      - mari el
-      - mariy el republic
-      - mari el republic
-    kalmykiya:
-      - republic of kalmykiya
-      - republic of kalmykia
-    altayskiy kray:
-      - altai
-      - altai krai
-      - altai region
-      - altai reg
-    khanty-mansiyskiy avtonomnyy okrug-yugra:
-      - khanty-mansi autonomous okrug
-      - khanty-mansiysk autonomous okrug
-  ru:
-    moscow oblast:
-      - москва
-      - моск обл
-      - мо
-    saint petersburg:
-      - санкт - петербург
-    respublika sakha (yakutiya):
-      - республика саха
-      - якутия
-    khanty-mansiyskiy avtonomnyy okrug-yugra:
-      - ханты-мансийский автономный округ - югра
-      - ханты-мансийский автономный округ югра
-      - хмао
+  altayskiy: Altay
+  kamtchatski: Kamchatka
+  krasnodarskiy: Krasnodar
+  krasnoyarskiy: Krasnoyarsk
+  khabarovskiy: Khabarovsk
+  perm: Perm
+  stavropol’skiy: Stavropol
+  primorskiy: Maritime
+  zabaykal’skiy: Transbaikal
+ADM1:
+  moscow oblast:
+    en:
+      - MO
+    ru:
+      - Москва
+      - Моск Обл
+      - МО
+  saint petersburg:
+    en:
+      - St Petersburg
+      - Sankt Peterburg
+    ru:
+      - Санкт - Петербург
+  bashkortostan:
+    en:
+      - Republic of Bashkortostan
+      - Bashkiria
+      - Bashkiriya
+      - RB
+  respublika kareliya:
+    en:
+      - Republic of Karelia
+      - Republic of Kareliya
+      - Karelia
+      - Kareliya
+  respublika khakasiya:
+    en:
+      - Republic of Khakasia
+      - Republic of Khakasiya
+      - Khakasia
+      - Khakasiya
+  respublika mordoviya:
+    en:
+      - Republic of Mordovia
+      - Republic of Mordovia
+      - Mordovia
+      - Mordoviya
+  respublika sakha (yakutiya):
+    en:
+      - Republic of Sakha (Yakutia)
+      - Republic of Sakha (Yakutiya)
+      - Republic of Sakha
+      - Republic of Yakutia
+      - Republic of Yakutiya
+      - Respublika Sakha (Yakutia)
+      - Respublika Sakha (Yakutiya)
+      - Sakha Republic
+      - Yakutia
+      - Yakutiya
+    ru:
+      - Республика Саха
+      - Якутия
+  tatarstan:
+    en:
+      - Republic of Tatarstan
+      - Tatarstan
+      - Tatar Republic
+      - Respublika Tatarstan
+      - RT
+  udmurtskaya respublika:
+    en:
+      - Udmurt republic
+      - Udmurtia
+      - Udmurtiya
+  respublika mariy-el:
+    en:
+      - Republic of Mariy El
+      - Republic of Mari El
+      - Mariy El
+      - Mari El
+      - Mariy El Republic
+      - Mari El Republic
+  kalmykiya:
+    en:
+      - Republic of Kalmykiya
+      - Republic of Kalmykia
+  altayskiy kray:
+    en:
+      - Altai
+      - Altai Krai
+      - Altai Region
+      - Altai Reg
+  khanty-mansiyskiy avtonomnyy okrug-yugra:
+    en:
+      - Khanty-Mansi Autonomous Okrug
+      - Khanty-Mansiysk Autonomous Okrug
+    ru:
+      - Ханты-мансийский Автономный Округ - Югра
+      - Ханты-мансийский Автономный Округ Югра
+      - ХМАО
+  yevrey (jewish) autonomous oblast:
+    en:
+      - Jewish Autonomous Oblast
+      - Yevrey Autonomous Oblast

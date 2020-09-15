@@ -87,12 +87,12 @@ CREATE TABLE geoname(
     cc2 TEXT,               -- alternate country codes, comma separated
     admin1_code TEXT,       -- fipscode (subject to change to iso code)
     admin2_code TEXT,       -- code for the second administrative division
-    admin3_code TEXT,       -- code for third level administrative division, varchar(20)
-    admin4_code TEXT,       -- code for fourth level administrative division, varchar(20)
+    admin3_code TEXT,       -- code for third level administrative division
+    admin4_code TEXT,       -- code for fourth level administrative division
     population NUMERIC,     -- bigint (8 byte int)
     elevation NUMERIC,      -- in meters, integer
     dem NUMERIC,            -- digital elevation model, srtm3 or gtopo30
-    timezone TEXT,          -- the iana timezone id (see file timeZone.txt) varchar(40)
+    timezone TEXT,          -- the iana timezone id (see file timeZone.txt)
     modification_date TEXT  -- date of last modification in yyyy-MM-dd format
 );
 """)
@@ -227,6 +227,8 @@ def build_trie(db_path: str, marisa_path: str) -> None:
         # See db.MARISA_FORMAT for the packing format of the record
         # Also https://docs.python.org/3/library/struct.html
         #
+        if alt_name_id is None:
+            alt_name_id = -1
         return (feature_class.encode(_ENCODING), country_code.encode(_ENCODING), pk, alt_name_id)
 
     def g():
@@ -236,7 +238,8 @@ def build_trie(db_path: str, marisa_path: str) -> None:
         )
         for r in c.execute(command):
             geonameid, feature_class, country_code, alt_name_id, alt_name = r
-            yield alt_name.lower(), record(feature_class, country_code, geonameid, alt_name_id)
+            rec = record(feature_class, country_code, geonameid, alt_name_id)
+            yield alt_name.lower(), rec
 
         #
         # canonical name and asciiname seem to be missing from the alternatename
@@ -261,31 +264,60 @@ def build_trie(db_path: str, marisa_path: str) -> None:
 
 
 @contextlib.contextmanager
-def _unzip_temporary(url: str, member: str) -> Iterator[IO[str]]:
-    dl = pySmartDL.SmartDL(url)
-    dl.start()
-    with zipfile.ZipFile(dl.get_dest()) as fin_zip:
+def _unzip_temporary(url: str, member: str, keep: bool) -> Iterator[IO[str]]:
+    if url.endswith('zip/allCountries.zip'):
+        local_path = P.join(pygeons.db.DEFAULT_SUBDIR, 'zip/allCountries.zip')
+    else:
+        local_path = P.join(pygeons.db.DEFAULT_SUBDIR, P.basename(url))
+
+    download = P.isfile(local_path)
+    if download:
+        pySmartDL.SmartDL(url, dest=local_path).start()
+
+    assert P.isfile(local_path)
+
+    with zipfile.ZipFile(local_path) as fin_zip:
         yield codecs.getreader(_ENCODING)(fin_zip.open(member))
+
+    if download and not keep:
+        os.unlink(local_path)
 
 
 def main():
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('command', nargs='?')
+    parser.add_argument('--keep', action='store_true', help='keep downloaded files')
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO)
 
     dbpath = P.join(pygeons.db.DEFAULT_SUBDIR, 'db.sqlite3')
 
+    if args.command == 'init_trie':
+        #
+        # Do this whenever the underlying DB has changed.  Useful for dev.
+        #
+        build_trie(dbpath, P.join(pygeons.db.DEFAULT_SUBDIR, pygeons.db.MARISA_FILENAME))
+        return
+
+    #
+    # Initialize everything from scratch.  Destroy existing database.
+    #
     if P.isfile(dbpath):
         os.unlink(dbpath)
- 
+
     init_countryinfo(dbpath)
- 
+
     url = 'http://download.geonames.org/export/dump/allCountries.zip'
     with _unzip_temporary(url, 'allCountries.txt') as fin:
         init_geoname(dbpath, fin)
- 
+
     url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
     with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
         init_alternatename(dbpath, fin)
- 
+
     url = 'http://download.geonames.org/export/zip/allCountries.zip'
     with _unzip_temporary(url, 'allCountries.txt') as fin:
         init_postcode(dbpath, fin)

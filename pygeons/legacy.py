@@ -129,6 +129,9 @@ def is_city(country_code: str, city_name: str, lang: str = DEFAULT_LANG) -> bool
     >>> is_city('JP', '札幌')
     True
     """
+    #
+    # FIXME: check language?
+    #
     return city_name in pygeons.api.Country(country_code)
 
 
