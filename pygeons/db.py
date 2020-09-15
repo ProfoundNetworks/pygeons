@@ -26,11 +26,7 @@ import marisa_trie  # type: ignore
 
 CONN = None
 TRIE = None
-
-#
-# FIXME: Expose this to outside the module
-#
-_COUNTRYINFO = None
+COUNTRYINFO = None
 
 MARISA_FORMAT = 'c2sii'
 MARISA_FILENAME = 'marisa_trie.' + MARISA_FORMAT
@@ -103,11 +99,13 @@ def _load_country_info() -> List[CountryInfo]:
 def connect(subdir: str = DEFAULT_SUBDIR) -> None:
     global CONN
     global TRIE
-    global _COUNTRYINFO
+    global COUNTRYINFO
 
     if CONN is None:
         CONN = sqlite3.connect(P.join(subdir, 'db.sqlite3'))
-        _COUNTRYINFO = _load_country_info()
+        if os.environ.get('PYGEONS_ECHO'):
+            CONN.set_trace_callback(print)
+        COUNTRYINFO = _load_country_info()
     if TRIE is None:
         TRIE = marisa_trie.RecordTrie(MARISA_FORMAT).load(P.join(subdir, MARISA_FILENAME))
 
@@ -170,7 +168,7 @@ def country_info(name: str) -> CountryInfo:
     ('Russia', 144478050, 'Ruble')
     """
     assert TRIE
-    assert _COUNTRYINFO
+    assert COUNTRYINFO
 
     try:
         ids = {m[2] for m in TRIE[name.lower()]}
@@ -179,7 +177,7 @@ def country_info(name: str) -> CountryInfo:
 
     candidates = [
         ci
-        for ci in _COUNTRYINFO
+        for ci in COUNTRYINFO
         if ci.geonameid in ids
         or name.lower() in (ci.iso.lower(), ci.iso3.lower())
     ]

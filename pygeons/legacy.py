@@ -109,8 +109,11 @@ def is_ppc(country_code: str, place_name: str) -> None:
     >>> is_ppc('NZ', 'randwick')
     False
     """
+    #
+    # FIXME: also do this scrubbing everywhere in pygeons.api
+    #
     try:
-        matches = pygeons.db.TRIE[place_name.lower()]
+        matches = pygeons.db.TRIE[_scrub(place_name)]
     except KeyError:
         pass
     else:
@@ -132,7 +135,7 @@ def is_city(country_code: str, city_name: str, lang: str = DEFAULT_LANG) -> bool
     #
     # FIXME: check language?
     #
-    return city_name in pygeons.api.Country(country_code)
+    return _scrub(city_name) in pygeons.api.Country(country_code)
 
 
 def is_admin1(country_code: str, admin1_name: str, lang: str = DEFAULT_LANG) -> bool:
@@ -143,7 +146,7 @@ def is_admin1(country_code: str, admin1_name: str, lang: str = DEFAULT_LANG) -> 
     >>> is_admin1('RU', 'ленинградская область')
     True
     """
-    return admin1_name in pygeons.api.Country(country_code).admin1
+    return _scrub(admin1_name) in pygeons.api.Country(country_code).admin1
 
 
 def is_admin2(country_code: str, admin2_name: str, lang: str = DEFAULT_LANG) -> bool:
@@ -152,7 +155,7 @@ def is_admin2(country_code: str, admin2_name: str, lang: str = DEFAULT_LANG) -> 
     >>> is_admin2('GB', 'shropshire')
     True
     """
-    return admin2_name in pygeons.api.Country(country_code).admin2
+    return _scrub(admin2_name) in pygeons.api.Country(country_code).admin2
 
 
 def is_country(country_name: str, lang: str = DEFAULT_LANG) -> bool:
