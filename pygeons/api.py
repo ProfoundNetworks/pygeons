@@ -353,8 +353,10 @@ def _generate_admin_codes(
             yield field_name, field_value
 
 
-def _wrap(geoname: db.Geoname) -> Union['Geoname', 'State', 'City']:
-    if geoname.feature_class == 'A':
+def _wrap(geoname: db.Geoname) -> Union['Geoname', 'Country', 'State', 'City']:
+    if geoname.feature_code == 'PCLI':
+        return Country(geoname.country_code)
+    elif geoname.feature_class == 'A':
         return State(geoname)
     elif geoname.feature_class == 'P':
         return City(geoname)
@@ -550,7 +552,7 @@ class Geoname:
         return db.Geoname(*next(result))
 
     @property
-    def admin1(self) -> 'State':
+    def admin1(self) -> Optional['State']:
         """Navigate to the first level of the administrative hierarchy.
 
         >>> Country('us').cities['boston'].admin1.name
@@ -560,11 +562,13 @@ class Geoname:
             return Collection(self, feature_code='ADM1')
         elif self.feature_code == 'ADM1':
             return self
-        else:
+        elif self.admin1_code:
             return State(self._get_parent_adm(1))
+        else:
+            return None
 
     @property
-    def admin2(self) -> Union['State', 'Collection']:
+    def admin2(self) -> Optional[Union['State', 'Collection']]:
         """Navigate to the second level of the administrative hierarchy.
 
         For entities that exist above that level, this will be a collection
@@ -583,11 +587,13 @@ class Geoname:
             return Collection(self, feature_code='ADM2')
         elif self.feature_code == 'ADM2':
             return self
-        else:
+        elif self.admin2_code:
             return State(self._get_parent_adm(2))
+        else:
+            return None
 
     @property
-    def admin3(self) -> Union['State', 'Collection']:
+    def admin3(self) -> Optional[Union['State', 'Collection']]:
         """Navigate to the third level of the administrative hierarchy.
 
         For entities that exist above that level, this will be a collection
@@ -606,17 +612,21 @@ class Geoname:
             return Collection(self, feature_code='ADM3')
         elif self.feature_code == 'ADM3':
             return self
-        else:
+        elif self.admin3_code:
             return State(self._get_parent_adm(3))
+        else:
+            return None
 
     @property
-    def admin4(self) -> Union['State', 'Collection']:
+    def admin4(self) -> Optional[Union['State', 'Collection']]:
         if self.feature_code in ('PCLI', 'ADM1', 'ADM2', 'ADM3'):
             return Collection(self, feature_code='ADM4')
         elif self.feature_code == 'ADM4':
             return self
-        else:
+        elif self.admin4_code:
             return State(self._get_parent_adm(4))
+        else:
+            return None
 
     @property
     def state(self):
@@ -654,13 +664,13 @@ class Geoname:
     def __len__(self):
         cursor = db.CONN.cursor()
         command = self._command.replace('SELECT *', 'SELECT COUNT(*)')
-        return cursor.execute(command, self._params)[0]
+        return next(cursor.execute(command, self._params))[0]
 
     def __getitem__(self, key):
         for geoname in db.select_geonames_name(key):
             if self.geoname != geoname and _contains(self.geoname, geoname):
                 return _wrap(geoname)
-        raise KeyError('not found: %r' % key)
+        raise KeyError('could not find %r in %r' % (key, self))
 
     def __contains__(self, other):
         if isinstance(other, str):
@@ -726,9 +736,10 @@ class Country(Geoname):
         c = db.CONN.cursor()
         command = (
             'SELECT * FROM geoname '
-            'WHERE name = ? AND country_code = ? AND feature_code = "PPLC"'
+            'WHERE (name = ? OR asciiname = ?) '
+            'AND country_code = ? AND feature_code = "PPLC"'
         )
-        result = c.execute(command, (self.info.capital, self.iso))
+        result = c.execute(command, (self.info.capital, self.info.capital, self.iso))
         return City(db.Geoname(*next(result)))
 
     @property
@@ -821,7 +832,7 @@ class Collection:
     """Represents an abstract collection of places."""
     def __init__(
         self,
-        parent: Geoname,
+        parent: Optional[Geoname],
         feature_class: Optional[str] = None,
         feature_code: Optional[str] = None,
     ) -> None:
@@ -830,24 +841,28 @@ class Collection:
         self._feature_code = feature_code
 
         self._params = []
-
         self._cursor = None
 
         buf = io.StringIO()
-        buf.write('SELECT * FROM geoname WHERE ')
+        buf.write('SELECT * FROM geoname ')
 
-        if feature_code:
-            buf.write('feature_code = ? ')
-            self._params.append(feature_code)
-        elif feature_class:
-            buf.write('feature_class = ? ')
-            self._params.append(feature_class)
+        def generate_constraints():
+            if feature_code:
+                yield 'feature_code', feature_code
+            if feature_class:
+                yield 'feature_class', feature_class
+            if self._parent:
+                for name, value in _generate_admin_codes(self._parent.geoname):
+                    yield name, value
 
-        for field_name, field_value in _generate_admin_codes(self._parent.geoname):
-            if self._params:
-                buf.write('AND ')
-            buf.write('%s = ? ' % field_name)
-            self._params.append(field_value)
+        constraints = list(generate_constraints())
+        if constraints:
+            field_names, self._params = zip(*constraints)
+            buf.write('WHERE ')
+            for i, name in enumerate(field_names):
+                buf.write('%s = ? ' % name)
+                if i != len(field_names) - 1:
+                    buf.write('AND ')
 
         buf.write('ORDER BY population DESC')
         self._command = buf.getvalue()
@@ -870,13 +885,9 @@ class Collection:
 
     def __getitem__(self, key):
         for g in db.select_geonames_name(key):
-            if self._feature_class and self._feature_class != g.feature_class:
-                continue
-            elif self._feature_code and self._feature_code != g.feature_code:
-                continue
-            if self._parent != g and _contains(self._parent, g):
+            if self._parent is None or (self._parent != g and _contains(self._parent, g)):
                 return _wrap(g)
-        raise KeyError('not found: %r' % key)
+        raise KeyError('could not find %r in %r' % (key, self))
 
     def __contains__(self, other):
         if isinstance(other, str):
@@ -887,8 +898,12 @@ class Collection:
             else:
                 return True
         elif isinstance(other, Geoname):
+            if not self._parent:
+                return True
             return _contains(self._parent, other.geoname)
         elif isinstance(other, db.Geoname):
+            if not self._parent:
+                return True
             return _contains(self._parent, other)
         return False
 
@@ -898,6 +913,9 @@ class Collection:
             self._feature_class,
             self._feature_code,
         )
+
+
+G = Collection(None)
 
 
 class State(Geoname):
