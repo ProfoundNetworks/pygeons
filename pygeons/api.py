@@ -658,7 +658,7 @@ class Geoname:
 
     def __getitem__(self, key):
         for geoname in db.select_geonames_name(key):
-            if _contains(self.geoname, geoname):
+            if self.geoname != geoname and _contains(self.geoname, geoname):
                 return _wrap(geoname)
         raise KeyError('not found: %r' % key)
 
@@ -874,7 +874,7 @@ class Collection:
                 continue
             elif self._feature_code and self._feature_code != g.feature_code:
                 continue
-            if _contains(self._parent, g):
+            if self._parent != g and _contains(self._parent, g):
                 return _wrap(g)
         raise KeyError('not found: %r' % key)
 
