@@ -62,45 +62,63 @@ unconjugation:
   stavropol’skiy: Stavropol
   primorskiy: Maritime
   zabaykal’skiy: Transbaikal
+oblast_barenames:
+  Arkhangel’skaya Oblast’: Akhangelsk
+  Astrakhanskaya Oblast’: Astrakhan
+  Saratovskaya Oblast: Saratov
+  Tverskaya Oblast’: Tver
+  Tyumenskaya Oblast’: Tyumen
+  Vladimirskaya Oblast’: Vladimir
+  Yaroslavskaya Oblast’: Yaroslavl
+krai_barenames:
+  Altayskiy Kray: Altay
+  Kamchatka Krai: Kamchatka
+  Khabarovskiy Kray: Khabarovsk
+  Krasnodarskiy Kray: Krasnodar
+  Krasnoyarskiy Kray: Krasnoyarsk
+  Primorskiy Kray: Maritime
+  Stavropol’skiy Kray: Stavropol
 ADM1:
-  moscow oblast:
+  Moscow Oblast:
     en:
       - MO
     ru:
       - Москва
       - Моск Обл
       - МО
-  saint petersburg:
+  Sankt-Peterburg:
     en:
       - St Petersburg
       - Sankt Peterburg
+      - SPb
     ru:
       - Санкт - Петербург
-  bashkortostan:
+      - СПб
+  Bashkortostan:
     en:
       - Republic of Bashkortostan
       - Bashkiria
       - Bashkiriya
       - RB
-  respublika kareliya:
+  Respublika Kareliya:
     en:
       - Republic of Karelia
       - Republic of Kareliya
       - Karelia
       - Kareliya
-  respublika khakasiya:
+  Respublika Khakasiya:
     en:
       - Republic of Khakasia
       - Republic of Khakasiya
       - Khakasia
       - Khakasiya
-  respublika mordoviya:
+  Respublika Mordoviya:
     en:
       - Republic of Mordovia
       - Republic of Mordovia
       - Mordovia
       - Mordoviya
-  respublika sakha (yakutiya):
+  Respublika Sakha (Yakutiya):
     en:
       - Republic of Sakha (Yakutia)
       - Republic of Sakha (Yakutiya)
@@ -115,19 +133,19 @@ ADM1:
     ru:
       - Республика Саха
       - Якутия
-  tatarstan:
+  Tatarstan:
     en:
       - Republic of Tatarstan
       - Tatarstan
       - Tatar Republic
       - Respublika Tatarstan
       - RT
-  udmurtskaya respublika:
+  Udmurtskaya Respublika:
     en:
       - Udmurt republic
       - Udmurtia
       - Udmurtiya
-  respublika mariy-el:
+  Respublika Mariy-El:
     en:
       - Republic of Mariy El
       - Republic of Mari El
@@ -135,17 +153,17 @@ ADM1:
       - Mari El
       - Mariy El Republic
       - Mari El Republic
-  kalmykiya:
+  Kalmykiya:
     en:
       - Republic of Kalmykiya
       - Republic of Kalmykia
-  altayskiy kray:
+  Altayskiy Kray:
     en:
       - Altai
       - Altai Krai
       - Altai Region
       - Altai Reg
-  khanty-mansiyskiy avtonomnyy okrug-yugra:
+  Khanty-Mansiyskiy Avtonomnyy Okrug-Yugra:
     en:
       - Khanty-Mansi Autonomous Okrug
       - Khanty-Mansiysk Autonomous Okrug
@@ -153,7 +171,7 @@ ADM1:
       - Ханты-мансийский Автономный Округ - Югра
       - Ханты-мансийский Автономный Округ Югра
       - ХМАО
-  yevrey (jewish) autonomous oblast:
+  Yevrey (Jewish) Autonomous Oblast:
     en:
       - Jewish Autonomous Oblast
       - Yevrey Autonomous Oblast
