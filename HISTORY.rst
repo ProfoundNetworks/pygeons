@@ -2,6 +2,12 @@
 History
 =======
 
+0.9.1 (2020-09-17)
+------------------
+
+* Added top-level `G`` collection to ``pygeons.api``
+* Implemented handling for alternative place names
+
 0.9.0 (2020-09-11)
 ------------------
 
