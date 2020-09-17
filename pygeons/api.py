@@ -885,6 +885,10 @@ class Collection:
 
     def __getitem__(self, key):
         for g in db.select_geonames_name(key):
+            if self._feature_class and self._feature_class != g.feature_class:
+                continue
+            elif self._feature_code and self._feature_code != g.feature_code:
+                continue
             if self._parent is None or (self._parent != g and _contains(self._parent, g)):
                 return _wrap(g)
         raise KeyError('could not find %r in %r' % (key, self))
