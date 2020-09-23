@@ -271,7 +271,7 @@ def build_trie(db_path: str, marisa_path: str) -> None:
 
 
 @contextlib.contextmanager
-def _unzip_temporary(url: str, member: str, keep: bool) -> Iterator[IO[str]]:
+def _unzip_temporary(url: str, member: str, keep: bool = False) -> Iterator[IO[str]]:
     if url.endswith('zip/allCountries.zip'):
         local_path = P.join(pygeons.db.DEFAULT_SUBDIR, 'zip/allCountries.zip')
     else:
@@ -299,6 +299,9 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
+
+    if not P.exists(pygeons.db.DEFAULT_SUBDIR):
+        os.makedirs(pygeons.db.DEFAULT_SUBDIR)
 
     dbpath = P.join(pygeons.db.DEFAULT_SUBDIR, 'db.sqlite3')
 
