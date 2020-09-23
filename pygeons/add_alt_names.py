@@ -100,7 +100,6 @@ def add_gb_county_names() -> None:
 
     params = list(record_generator())
     c.executemany(insert, params)
-    pygeons.db.CONN.commit()
 
 
 def add_ie_county_names() -> None:
@@ -134,7 +133,6 @@ def add_ie_county_names() -> None:
                     yield geonameid, name, 'en'
 
     _insert(record_generator)
-    pygeons.db.CONN.commit()
 
 
 def add_ru_oblast_and_krai():
@@ -209,50 +207,11 @@ def add_ru_oblast_and_krai():
                     yield place.geonameid, name, lang
 
     _insert(generate_records)
-    pygeons.db.CONN.commit()
 
 
 def add_ru_names():
     existing = _get_existing_names('ADM1', 'RU')
     data = _load('ru-support')
-
-    def generate_names(canonical_name):
-        if oblast_regex.search(canonical_name):
-            bare = oblast_regex.sub("", canonical_name)
-            assert bare != canonical_name
-
-            try:
-                bare = data['unconjugation'][bare.lower()]
-            except KeyError:
-                _LOGGER.error("unable to unconjugate bare name: %s", bare)
-
-            yield 'en', bare
-            yield 'en', bare + ' Oblast'
-            yield 'en', bare + ' Region'
-            yield 'en', bare + ' Reg'
-        elif krai_regex.search(canonical_name):
-            bare = krai_regex.sub("", canonical_name)
-            assert bare != canonical_name
-
-            try:
-                bare = data['unconjugation'][bare.lower()].title()
-            except KeyError:
-                _LOGGER.error("unable to unconjugate bare name: %s", bare)
-
-            yield 'en', bare
-            yield 'en', bare + ' Krai'
-            yield 'en', bare + ' Kray'
-            yield 'en', bare + ' Region'
-            yield 'en', bare + ' Reg'
-
-        try:
-            names_by_lang = data['ADM1'][canonical_name.lower()]
-        except KeyError:
-            pass
-        else:
-            for lang, names in names_by_lang.items():
-                for name in names:
-                    yield lang, name
 
     c = pygeons.db.CONN.cursor()
     command = (
@@ -275,7 +234,6 @@ def add_ru_names():
                     yield geonameid, new_name, lang
 
     _insert(generate_records)
-    pygeons.db.CONN.commit()
 
 
 def _strip_ken_suffix(name):
@@ -318,7 +276,6 @@ def add_jp_prefecture_names():
                     yield geonameid, name, 'en'
 
     _insert(generate_records)
-    pygeons.db.CONN.commit()
 
 
 def derive_english_names():
@@ -385,7 +342,6 @@ def derive_english_names():
                         yield geoname.geonameid, new_name, 'en'
 
     _insert(generate_records)
-    pygeons.db.CONN.commit()
 
 
 def derive_city_name(name: str) -> Optional[str]:
@@ -435,16 +391,23 @@ def derive_english_city_names() -> None:
                     yield geonameid, derived_name, 'en'
 
     _insert(generate_records)
+
+
+def main():
+    logging.basicConfig(level=logging.INFO, format='%(funcName)s: %(message)s')
+
+    pygeons.db.connect()
+
+    add_gb_county_names()
+    add_ie_county_names()
+    add_ru_oblast_and_krai()
+    add_ru_names()
+    add_jp_prefecture_names()
+    derive_english_names()
+    derive_english_city_names()
+
     pygeons.db.CONN.commit()
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(funcName)s: %(message)s')
-    pygeons.db.connect()
-    # add_gb_county_names()
-    # add_ie_county_names()
-    add_ru_oblast_and_krai()
-    # add_ru_names()
-    # add_jp_prefecture_names()
-    # derive_english_names()
-    # derive_english_city_names()
+    main()
