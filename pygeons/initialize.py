@@ -257,6 +257,13 @@ def build_trie(db_path: str, marisa_path: str) -> None:
         for (pk, country_code, place_name) in c.execute(command):
             yield place_name.lower(), record('Z', country_code, pk)
 
+        command = 'SELECT iso, iso3, country, geonameid FROM countryinfo'
+        for (iso, iso3, country, geonameid) in c.execute(command):
+            r = record('A', country_code, geonameid)
+            yield iso.lower(), r
+            yield iso3.lower(), r
+            yield country.lower(), r
+
     trie = marisa_trie.RecordTrie(pygeons.db.MARISA_FORMAT, g())
     trie.save(marisa_path)
 
@@ -270,7 +277,7 @@ def _unzip_temporary(url: str, member: str, keep: bool) -> Iterator[IO[str]]:
     else:
         local_path = P.join(pygeons.db.DEFAULT_SUBDIR, P.basename(url))
 
-    download = P.isfile(local_path)
+    download = not P.isfile(local_path)
     if download:
         pySmartDL.SmartDL(url, dest=local_path).start()
 
@@ -287,7 +294,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', nargs='?')
+    parser.add_argument('command', nargs='?', choices=('build_trie', ))
     parser.add_argument('--keep', action='store_true', help='keep downloaded files')
     args = parser.parse_args()
 
@@ -295,7 +302,7 @@ def main():
 
     dbpath = P.join(pygeons.db.DEFAULT_SUBDIR, 'db.sqlite3')
 
-    if args.command == 'init_trie':
+    if args.command == 'build_trie':
         #
         # Do this whenever the underlying DB has changed.  Useful for dev.
         #
@@ -311,15 +318,15 @@ def main():
     init_countryinfo(dbpath)
 
     url = 'http://download.geonames.org/export/dump/allCountries.zip'
-    with _unzip_temporary(url, 'allCountries.txt') as fin:
+    with _unzip_temporary(url, 'allCountries.txt', args.keep) as fin:
         init_geoname(dbpath, fin)
 
     url = 'http://download.geonames.org/export/dump/alternateNamesV2.zip'
-    with _unzip_temporary(url, 'alternateNamesV2.txt') as fin:
+    with _unzip_temporary(url, 'alternateNamesV2.txt', args.keep) as fin:
         init_alternatename(dbpath, fin)
 
     url = 'http://download.geonames.org/export/zip/allCountries.zip'
-    with _unzip_temporary(url, 'allCountries.txt') as fin:
+    with _unzip_temporary(url, 'allCountries.txt', args.keep) as fin:
         init_postcode(dbpath, fin)
 
     build_trie(dbpath, P.join(pygeons.db.DEFAULT_SUBDIR, pygeons.db.MARISA_FILENAME))
