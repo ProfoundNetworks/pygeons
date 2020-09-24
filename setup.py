@@ -20,15 +20,13 @@ requirements = [
 
 setup_requirements = [
     'pytest-runner',
-    # TODO(mpenkov): put setup requirements (distutils extensions, etc.) here
 ]
 
-test_requirements = [
+test_requirements = requirements + setup_requirements + [
     'pytest',
     'parameterizedtestcase',
     'mock',
     'nose',
-    # TODO: put package test requirements here
 ]
 
 setup(
