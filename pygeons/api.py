@@ -824,6 +824,11 @@ class Country(Geoname):
     def cities(self) -> 'Collection':
         return Collection(parent=self, feature_class='P')
 
+    def normalize(self, language=DEFAULT_LANGUAGE):
+        if language == DEFAULT_LANGUAGE:
+            return self.info.country
+        return super().normalize(language=language)
+
 
 COUNTRIES = [Country(i.iso) for i in db.COUNTRYINFO]
 
