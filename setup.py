@@ -31,7 +31,7 @@ test_requirements = requirements + setup_requirements + [
 
 setup(
     name='pygeons',
-    version='0.9.1',
+    version='0.9.2',
     description="Geographical queries made easy.",
     long_description=readme + '\n\n' + history,
     author="Michael Penkov",

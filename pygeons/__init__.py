@@ -9,7 +9,7 @@ import logging
 
 __author__ = 'Michael Penkov'
 __email__ = 'm@penkov.dev'
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 
 _LOGGER = logging.getLogger(__name__)
 #
